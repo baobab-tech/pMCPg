@@ -114,6 +114,19 @@ Anyone can use Private MCP Gateway. Baobab Tech builds it with a focus on nonpro
 | [Security](docs/security.md) | Web UI security, process isolation, threat model |
 | [Catalog](docs/catalog.md) | Server entries and presets (coming soon) |
 | [Concept](docs/concept.md) and [Design](docs/design.md) | Why it exists and how it is built |
+| [Roadmap](docs/roadmap.md) | Top ideas, what is next, plans |
+
+## Roadmap
+
+Top ideas, in order:
+
+1. **Skills.** Install an Agent Skill once and use it from every AI app, reviewed and pinned like tools.
+2. **Catalog.** Find and add servers in one click, with presets.
+3. **Cloud AI apps.** Use your gateway from ChatGPT, claude.ai and Gemini.
+4. **Private files.** Give the AI a file without uploading it to the chat.
+5. **Menu bar app and signed installers.**
+
+Status and plans: [Roadmap](docs/roadmap.md). Tell us what you need in [GitHub Issues](https://github.com/baobab-tech/pMCPg/issues).
 
 ## Contributing
 
