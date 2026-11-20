@@ -1,6 +1,6 @@
 # Plan: vault drop (private files)
 
-Status: proposed. Not in the [roadmap](../roadmap.md) yet.
+Status: exploring. Tracked in the [roadmap](../roadmap.md).
 
 ## Goal
 
