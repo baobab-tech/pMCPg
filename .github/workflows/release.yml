@@ -366,10 +366,10 @@ jobs:
           # npm provenance needs a public repository.
           prov=--provenance; [ "$PRIVATE_REPO" = true ] && prov=
           # Platform packages first, so the launcher never points at a missing version.
-          for dir in npm-out/pmcpg-*; do
+          for dir in ./npm-out/pmcpg-*; do
             npm publish "$dir" --access public $prov --tag "$tag"
           done
-          npm publish npm-out/private-mcp-gateway --access public $prov --tag "$tag"
+          npm publish ./npm-out/private-mcp-gateway --access public $prov --tag "$tag"
 
   homebrew:
     needs: [meta, release]
