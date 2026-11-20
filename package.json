@@ -1,0 +1,37 @@
+{
+  "name": "private-mcp-gateway",
+  "version": "0.1.0",
+  "description": "Privacy-first local MCP gateway",
+  "license": "Apache-2.0",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "pmcpg": "src/cli/main.ts"
+  },
+  "engines": {
+    "bun": ">=1.4.4"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/hono": "2.0.2",
+    "@modelcontextprotocol/server": "2.4.0",
+    "hono": "4.13.17",
+    "minisearch": "7.2.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6",
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
+  },
+  "scripts": {
+    "dev": "bun src/cli/main.ts serve",
+    "check": "biome check . && tsc --noEmit",
+    "fix": "biome check --write .",
+    "test": "bun test",
+    "build:ui": "bun install --cwd ui --frozen-lockfile --ignore-scripts && bun run --cwd ui build && bun scripts/embed-ui.ts",
+    "build": "bun run build:ui && bun build --compile --minify src/cli/main.ts --outfile dist/pmcpg",
+    "dev:ui": "bun scripts/dev-ui.ts",
+    "ci": "bun install --frozen-lockfile --ignore-scripts && bun run check && bun test && bun run build && ./dist/pmcpg version"
+  }
+}

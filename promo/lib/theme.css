@@ -1,0 +1,76 @@
+/* pMCPg promo theme: the web UI's dark palette (ui/app/globals.css) and its Oxanium font. */
+
+@font-face {
+  font-family: "Oxanium";
+  font-weight: 400;
+  src: url("../node_modules/@fontsource/oxanium/files/oxanium-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Oxanium";
+  font-weight: 600;
+  src: url("../node_modules/@fontsource/oxanium/files/oxanium-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Oxanium";
+  font-weight: 700;
+  src: url("../node_modules/@fontsource/oxanium/files/oxanium-latin-700-normal.woff2") format("woff2");
+}
+
+:root {
+  --bg: #0a0a0a; /* oklch(0.145 0 0) */
+  --card: #171717; /* oklch(0.205 0 0) */
+  --muted: #262626; /* oklch(0.269 0 0) */
+  --fg: #fafafa; /* oklch(0.985 0 0) */
+  --muted-fg: #a1a1a1; /* oklch(0.708 0 0) */
+  --border: rgb(255 255 255 / 0.12);
+  --brand: #3db8d8; /* dark-mode --brand, oklch(0.715 0.143 215) */
+  --brand-soft: rgb(61 184 216 / 0.16);
+  --claude: #d97757;
+  --chatgpt: #10a37f;
+  --mask: #f0a35e; /* raw personal data before masking */
+  --font: "Oxanium", system-ui, sans-serif;
+  --mono: "SF Mono", Menlo, ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body {
+  width: var(--W);
+  height: var(--H);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: relative;
+  width: var(--W);
+  height: var(--H);
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgb(61 184 216 / 0.14), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgb(61 184 216 / 0.06), transparent 70%),
+    var(--bg);
+}
+
+/* Safe area: LinkedIn draws UI near the edges of feed video, so content stays inside this box. */
+.safe {
+  position: absolute;
+  inset: 96px 72px 112px;
+}
+[data-format="square"] .safe {
+  inset: 72px 68px 88px;
+}
+[data-format="landscape"] .safe {
+  inset: 84px 120px 96px;
+}
+
+.brand {
+  color: var(--brand);
+}

@@ -1,0 +1,31 @@
+# pMCPg with Docker Compose.
+# Create the master key first, outside the data volume:
+#   openssl rand -base64 32 > pmcpg_master_key && chmod 600 pmcpg_master_key
+# Losing the key means losing the stored credentials.
+services:
+  pmcpg:
+    image: ghcr.io/baobab-tech/pmcpg:full    # or :slim for remote servers only
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7431:7431"                               # reachable from this host only
+    volumes:
+      - pmcpg-data:/data
+      - pmcpg-cache:/cache                                  # npx and uvx downloads (full only)
+    environment:
+      PMCPG_MASTER_KEY_FILE: /run/secrets/pmcpg_master_key
+    secrets:
+      - pmcpg_master_key
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+secrets:
+  pmcpg_master_key:
+    file: ./pmcpg_master_key
+
+volumes:
+  pmcpg-data:
+  pmcpg-cache:

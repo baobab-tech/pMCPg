@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="Private MCP Gateway logo">
+<title>Private MCP Gateway</title>
+<path d="M6,56 C24,56 30,80 50,80" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M6,80 C24,80 30,80 50,80" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M6,104 C24,104 30,80 50,80" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M110,80 C130,80 136,34 154,34" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M110,80 C130,80 136,57 154,57" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M110,80 C130,80 136,80 154,80" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M110,80 C130,80 136,103 154,103" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<path d="M110,80 C130,80 136,126 154,126" fill="none" stroke="#1f6feb" stroke-width="5" stroke-linecap="round"/>
+<rect x="44" y="44" width="72" height="72" rx="18" fill="#1f6feb"/>
+<path d="M68,78 v-9 a12,12 0 0 1 24,0 v9" fill="none" stroke="#fff" stroke-width="6"/>
+<rect x="62" y="77" width="36" height="26" rx="5" fill="#fff"/>
+<circle cx="80" cy="88" r="4" fill="#1f6feb"/><rect x="78" y="88" width="4" height="8" rx="1" fill="#1f6feb"/>
+</svg>

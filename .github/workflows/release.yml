@@ -1,0 +1,406 @@
+# Release on a v* tag: test, build the web UI, compile 8 binaries, install scripts, checksums, attestations,
+# GitHub release, GHCR images, npm packages, Homebrew formula.
+# Signing and publishing steps are gated on secrets and skip when those are absent.
+# Jobs that hold release secrets run in the `release` environment. Setup: docs/releasing.md.
+# Actions are pinned by commit SHA; the comment names the release.
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      - id: v
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::tag $GITHUB_REF_NAME is not vMAJOR.MINOR.PATCH[-pre]"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [[ "$version" == *-* ]]; then echo "prerelease=true"; else echo "prerelease=false"; fi >> "$GITHUB_OUTPUT"
+
+  # The only gate on a tag: there is no other CI.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun run check
+      - run: bun test
+
+  # Static export of the web UI, built once with no secrets and no install scripts.
+  ui:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.4
+      - run: bun install --cwd ui --frozen-lockfile --ignore-scripts
+      - run: bun run --cwd ui build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ui-out
+          path: ui/out/
+          if-no-files-found: error
+          retention-days: 7
+
+  build:
+    needs: [meta, test, ui]
+    environment: release
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { target: darwin-arm64, runner: macos-latest, smoke: true }
+          - { target: darwin-x64, runner: macos-latest, smoke: false }
+          - { target: windows-x64, runner: windows-latest, smoke: true }
+          - { target: windows-arm64, runner: windows-latest, smoke: false }
+          - { target: linux-x64, runner: ubuntu-latest, smoke: true }
+          - { target: linux-arm64, runner: ubuntu-24.04-arm, smoke: true }
+          - { target: linux-x64-musl, runner: ubuntu-latest, smoke: false }
+          - { target: linux-arm64-musl, runner: ubuntu-24.04-arm, smoke: false }
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+      TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Set version from tag
+        run: npm pkg set "version=$VERSION"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ui-out
+          path: ui/out
+      - name: Embed the web UI (static export from the ui job)
+        run: bun scripts/embed-ui.ts
+      - name: Compile
+        run: |
+          exe=pmcpg; [[ "$TARGET" == windows-* ]] && exe=pmcpg.exe
+          bun build --compile --minify --target="bun-$TARGET" src/cli/main.ts --outfile "out/$exe"
+          ls -l out
+
+      - name: Smoke test
+        if: matrix.smoke
+        run: |
+          exe=pmcpg; [[ "$TARGET" == windows-* ]] && exe=pmcpg.exe
+          test "$("./out/$exe" version | tr -d '\r')" = "$VERSION"
+
+      # ---- macOS signing and notarization (skipped until APPLE_* secrets exist) ----
+      - id: apple
+        if: startsWith(matrix.target, 'darwin-')
+        env:
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+        run: if [ -n "$APPLE_CERTIFICATE_P12" ]; then echo "sign=true" >> "$GITHUB_OUTPUT"; else echo "::notice::macOS signing skipped (no APPLE_CERTIFICATE_P12)"; fi
+      - name: Sign and notarize (macOS)
+        if: steps.apple.outputs.sign == 'true'
+        env:
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          keychain="$RUNNER_TEMP/sign.keychain-db"
+          kc_pass="$(openssl rand -hex 24)"
+          printf '%s' "$APPLE_CERTIFICATE_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$kc_pass" "$keychain"
+          security set-keychain-settings -lut 3600 "$keychain"
+          security unlock-keychain -p "$kc_pass" "$keychain"
+          security import "$RUNNER_TEMP/cert.p12" -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -f pkcs12 -k "$keychain"
+          security set-key-partition-list -S apple-tool:,apple: -k "$kc_pass" "$keychain" > /dev/null
+          security list-keychains -d user -s "$keychain"
+          rm -f "$RUNNER_TEMP/cert.p12"
+          # Hardened runtime with the JIT entitlements JavaScriptCore needs. No dyld or library-validation exceptions.
+          cat > "$RUNNER_TEMP/entitlements.plist" <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>com.apple.security.cs.allow-jit</key><true/>
+            <key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/>
+            <key>com.apple.security.cs.disable-executable-page-protection</key><true/>
+          </dict></plist>
+          EOF
+          codesign --force --sign "$APPLE_SIGNING_IDENTITY" --options runtime --timestamp \
+            --entitlements "$RUNNER_TEMP/entitlements.plist" out/pmcpg
+          codesign --verify --strict --verbose=2 out/pmcpg
+          ditto -c -k out/pmcpg "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --wait \
+            --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD"
+          security delete-keychain "$keychain"
+
+      # ---- Windows signing with Azure Artifact Signing (skipped until AZURE_* secrets exist) ----
+      - id: azure
+        if: startsWith(matrix.target, 'windows-')
+        env:
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        run: if [ -n "$AZURE_SIGNING_ENDPOINT" ]; then echo "sign=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Windows signing skipped (no AZURE_SIGNING_ENDPOINT)"; fi
+      - name: Sign (Windows)
+        if: steps.azure.outputs.sign == 'true'
+        uses: azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2.0.0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.AZURE_CERTIFICATE_PROFILE }}
+          files: ${{ github.workspace }}\out\pmcpg.exe
+          file-digest: SHA256
+          timestamp-digest: SHA256
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pmcpg-${{ matrix.target }}
+          path: out/
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: [meta, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+      PRERELEASE: ${{ needs.meta.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: pmcpg-*
+          path: bin
+      - name: Archive
+        run: |
+          mkdir -p release
+          for dir in bin/pmcpg-*; do
+            target="${dir#bin/pmcpg-}"
+            name="pmcpg-$VERSION-$target"
+            cp LICENSE "$dir/"
+            if [[ "$target" == windows-* ]]; then
+              (cd "$dir" && zip -q -X "../../release/$name.zip" pmcpg.exe LICENSE)
+            else
+              chmod 755 "$dir/pmcpg"
+              tar -C "$dir" --owner=0 --group=0 -czf "release/$name.tar.gz" pmcpg LICENSE
+            fi
+          done
+          # One-line installers, served at releases/latest/download/install.{sh,ps1}.
+          cp packaging/install/install.sh packaging/install/install.ps1 release/
+          (cd release && sha256sum -- * > SHA256SUMS)
+          cat release/SHA256SUMS
+      # Rendered here so every asset is in place before the release is published (immutable releases).
+      - name: Render Homebrew formula
+        run: |
+          packaging/homebrew/render.sh "$VERSION" release/SHA256SUMS > release/pmcpg.rb
+          ruby -c release/pmcpg.rb
+      # Attestations need a public repository on GitHub's free plans.
+      - if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            release/*.tar.gz
+            release/*.zip
+            release/install.sh
+            release/install.ps1
+            bin/pmcpg-*/pmcpg
+            bin/pmcpg-*/pmcpg.exe
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" release/* --clobber
+          else
+            flags=(--verify-tag --generate-notes --title "pMCPg $VERSION")
+            [ "$PRERELEASE" = true ] && flags+=(--prerelease)
+            gh release create "$GITHUB_REF_NAME" release/* "${flags[@]}"
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: formula
+          path: release/pmcpg.rb
+          retention-days: 7
+
+  docker:
+    needs: [meta, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+      PRERELEASE: ${{ needs.meta.outputs.prerelease }}
+      IMAGE: ghcr.io/baobab-tech/pmcpg
+    strategy:
+      matrix:
+        flavor: [slim, full]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pmcpg-linux-x64
+          path: packaging/docker/bin/amd64
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pmcpg-linux-arm64
+          path: packaging/docker/bin/arm64
+      - id: tags
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+        run: |
+          tags="$IMAGE:$VERSION-$FLAVOR"
+          [ "$PRERELEASE" = false ] && tags="$tags,$IMAGE:$FLAVOR"
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: packaging/docker
+          file: packaging/docker/Dockerfile.${{ matrix.flavor }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: org.opencontainers.image.version=${{ needs.meta.outputs.version }}
+      - if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  npm:
+    needs: [meta, release]
+    environment: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+      PRERELEASE: ${{ needs.meta.outputs.prerelease }}
+    steps:
+      # Trusted publishing (OIDC) once vars.NPM_TRUSTED_PUBLISHING is true; NPM_TOKEN only for the first publish.
+      - id: gate
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TRUSTED: ${{ vars.NPM_TRUSTED_PUBLISHING }}
+        run: |
+          if [ "$NPM_TRUSTED" = true ] || [ -n "$NPM_TOKEN" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::npm publish skipped (no NPM_TRUSTED_PUBLISHING variable or NPM_TOKEN)"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.gate.outputs.publish == 'true'
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        if: steps.gate.outputs.publish == 'true'
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.gate.outputs.publish == 'true'
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        if: steps.gate.outputs.publish == 'true'
+        with:
+          pattern: pmcpg-*
+          path: bin
+      - name: Build packages
+        if: steps.gate.outputs.publish == 'true'
+        run: bun packaging/npm/build-packages.ts --version "$VERSION" --bin-dir bin --out npm-out
+      - name: Publish
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          # npm tries OIDC first. The token is only read when trusted publishing is off.
+          NODE_AUTH_TOKEN: ${{ vars.NPM_TRUSTED_PUBLISHING != 'true' && secrets.NPM_TOKEN || '' }}
+          PRIVATE_REPO: ${{ github.event.repository.private }}
+        run: |
+          npm --version
+          tag=latest; [ "$PRERELEASE" = true ] && tag=next
+          # npm provenance needs a public repository.
+          prov=--provenance; [ "$PRIVATE_REPO" = true ] && prov=
+          # Platform packages first, so the launcher never points at a missing version.
+          for dir in npm-out/pmcpg-*; do
+            npm publish "$dir" --access public $prov --tag "$tag"
+          done
+          npm publish npm-out/private-mcp-gateway --access public $prov --tag "$tag"
+
+  homebrew:
+    needs: [meta, release]
+    environment: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+      PRERELEASE: ${{ needs.meta.outputs.prerelease }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: formula
+      - id: gate
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          if [ -n "$HOMEBREW_TAP_TOKEN" ] && [ "$PRERELEASE" = false ]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Homebrew tap update skipped (no HOMEBREW_TAP_TOKEN or prerelease)"
+          fi
+      - name: Push to baobab-tech/homebrew-tap
+        if: steps.gate.outputs.push == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          path=Formula/pmcpg.rb
+          sha="$(gh api "repos/baobab-tech/homebrew-tap/contents/$path" --jq .sha 2>/dev/null || true)"
+          args=(-X PUT "repos/baobab-tech/homebrew-tap/contents/$path"
+            -f "message=pmcpg $VERSION" -f "content=$(base64 -w0 pmcpg.rb)")
+          [ -n "$sha" ] && args+=(-f "sha=$sha")
+          gh api "${args[@]}" > /dev/null

@@ -1,0 +1,21 @@
+{
+  "name": "private-mcp-gateway",
+  "version": "0.0.0",
+  "description": "pMCPg: local-first, privacy-first gateway between AI clients and MCP servers",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/baobab-tech/pMCPg",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baobab-tech/pMCPg.git"
+  },
+  "keywords": ["mcp", "model-context-protocol", "gateway", "privacy"],
+  "bin": {
+    "pmcpg": "bin/pmcpg.js",
+    "private-mcp-gateway": "bin/pmcpg.js"
+  },
+  "files": ["bin/pmcpg.js"],
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {}
+}

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="444" viewBox="0 0 1000 444" role="img" aria-labelledby="title desc">
+<title id="title">Before and after Private MCP Gateway</title>
+<desc id="desc">Left: three AI apps each connect to five MCP servers, fifteen connections with keys copied into each app, and your MCP setup depends on Claude. Right: each app connects once to Private MCP Gateway, which connects to the five servers and keeps the keys in the OS keychain.</desc>
+<style>
+  .t { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; fill: #1f2328; }
+  .m { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #1f2328; }
+  .mu { fill: #59636e; }
+  .b { font-weight: 600; }
+  .w { fill: #ffffff; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#afb8c1"/>
+  </marker>
+</defs>
+<rect x="0.5" y="0.5" width="999" height="443" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+<line x1="500" y1="24" x2="500" y2="420" stroke="#d0d7de"/>
+<text class="t b" x="40" y="48" font-size="16">Without a gateway</text>
+<text class="t b" x="532" y="48" font-size="16">With Private MCP Gateway</text>
+<path id="l00" d="M150,130 L350,100" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-0.0s" repeatCount="indefinite"><mpath href="#l00"/></animateMotion></circle>
+<path id="l01" d="M150,130 L350,150" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-0.37s" repeatCount="indefinite"><mpath href="#l01"/></animateMotion></circle>
+<path id="l02" d="M150,130 L350,200" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-0.74s" repeatCount="indefinite"><mpath href="#l02"/></animateMotion></circle>
+<path id="l03" d="M150,130 L350,250" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.1099999999999999s" repeatCount="indefinite"><mpath href="#l03"/></animateMotion></circle>
+<path id="l04" d="M150,130 L350,300" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.48s" repeatCount="indefinite"><mpath href="#l04"/></animateMotion></circle>
+<path id="l10" d="M150,205 L350,100" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.85s" repeatCount="indefinite"><mpath href="#l10"/></animateMotion></circle>
+<path id="l11" d="M150,205 L350,150" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-2.2199999999999998s" repeatCount="indefinite"><mpath href="#l11"/></animateMotion></circle>
+<path id="l12" d="M150,205 L350,200" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-2.59s" repeatCount="indefinite"><mpath href="#l12"/></animateMotion></circle>
+<path id="l13" d="M150,205 L350,250" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-2.96s" repeatCount="indefinite"><mpath href="#l13"/></animateMotion></circle>
+<path id="l14" d="M150,205 L350,300" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-0.33000000000000007s" repeatCount="indefinite"><mpath href="#l14"/></animateMotion></circle>
+<path id="l20" d="M150,280 L350,100" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-0.7000000000000002s" repeatCount="indefinite"><mpath href="#l20"/></animateMotion></circle>
+<path id="l21" d="M150,280 L350,150" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.0700000000000003s" repeatCount="indefinite"><mpath href="#l21"/></animateMotion></circle>
+<path id="l22" d="M150,280 L350,200" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.4399999999999995s" repeatCount="indefinite"><mpath href="#l22"/></animateMotion></circle>
+<path id="l23" d="M150,280 L350,250" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-1.8099999999999996s" repeatCount="indefinite"><mpath href="#l23"/></animateMotion></circle>
+<path id="l24" d="M150,280 L350,300" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#bc4c00"><animateMotion dur="3s" begin="-2.1799999999999997s" repeatCount="indefinite"><mpath href="#l24"/></animateMotion></circle>
+<rect x="40" y="112" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="95.0" y="134.5" font-size="13" text-anchor="middle">Claude app</text>
+<rect x="40" y="187" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="95.0" y="209.5" font-size="13" text-anchor="middle">Coding agent</text>
+<rect x="40" y="262" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="95.0" y="284.5" font-size="13" text-anchor="middle">Local AI app</text>
+<rect x="350" y="84" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="410.0" y="104.5" font-size="13" text-anchor="middle">Email</text>
+<rect x="350" y="134" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="410.0" y="154.5" font-size="13" text-anchor="middle">Calendar</text>
+<rect x="350" y="184" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="410.0" y="204.5" font-size="13" text-anchor="middle">Files</text>
+<rect x="350" y="234" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="410.0" y="254.5" font-size="13" text-anchor="middle">CRM</text>
+<rect x="350" y="284" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="410.0" y="304.5" font-size="13" text-anchor="middle">Web search</text>
+<path id="r0" d="M642,130 L690,205" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="0.0s" repeatCount="indefinite"><mpath href="#r0"/></animateMotion></circle>
+<path id="r1" d="M642,205 L690,205" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-0.9s" repeatCount="indefinite"><mpath href="#r1"/></animateMotion></circle>
+<path id="r2" d="M642,280 L690,205" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-1.8s" repeatCount="indefinite"><mpath href="#r2"/></animateMotion></circle>
+<path id="s0" d="M790,205 L856,100" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="0.0s" repeatCount="indefinite"><mpath href="#s0"/></animateMotion></circle>
+<path id="s1" d="M790,205 L856,150" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-0.55s" repeatCount="indefinite"><mpath href="#s1"/></animateMotion></circle>
+<path id="s2" d="M790,205 L856,200" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-1.1s" repeatCount="indefinite"><mpath href="#s2"/></animateMotion></circle>
+<path id="s3" d="M790,205 L856,250" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-1.6500000000000001s" repeatCount="indefinite"><mpath href="#s3"/></animateMotion></circle>
+<path id="s4" d="M790,205 L856,300" fill="none" stroke="#afb8c1" stroke-width="1.3"/>
+<circle r="3.5" fill="#0969da"><animateMotion dur="3s" begin="-2.2s" repeatCount="indefinite"><mpath href="#s4"/></animateMotion></circle>
+<rect x="532" y="112" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="587.0" y="134.5" font-size="13" text-anchor="middle">Claude app</text>
+<rect x="532" y="187" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="587.0" y="209.5" font-size="13" text-anchor="middle">Coding agent</text>
+<rect x="532" y="262" width="110" height="36" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="587.0" y="284.5" font-size="13" text-anchor="middle">Local AI app</text>
+<rect x="856" y="84" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="916.0" y="104.5" font-size="13" text-anchor="middle">Email</text>
+<rect x="856" y="134" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="916.0" y="154.5" font-size="13" text-anchor="middle">Calendar</text>
+<rect x="856" y="184" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="916.0" y="204.5" font-size="13" text-anchor="middle">Files</text>
+<rect x="856" y="234" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="916.0" y="254.5" font-size="13" text-anchor="middle">CRM</text>
+<rect x="856" y="284" width="120" height="32" rx="8" fill="#f6f8fa" stroke="#d0d7de"/><text class="t" x="916.0" y="304.5" font-size="13" text-anchor="middle">Web search</text>
+<rect x="690" y="92" width="100" height="226" rx="12" fill="#eef5ff" stroke="#0969da" stroke-width="2"/>
+<path d="M731,150 v-7 a9,9 0 0 1 18,0 v7" fill="none" stroke="#0969da" stroke-width="2.5"/><rect x="727" y="150" width="26" height="20" rx="4" fill="#0969da"/>
+<text class="t b" x="740" y="205" font-size="13" text-anchor="middle">Private</text>
+<text class="t b" x="740" y="223" font-size="13" text-anchor="middle">MCP</text>
+<text class="t b" x="740" y="241" font-size="13" text-anchor="middle">Gateway</text>
+<text class="t" x="40" y="350" font-size="13"><tspan fill="#cf222e">✕</tspan>  15 connections to set up and keep in sync</text>
+<text class="t" x="40" y="372" font-size="13"><tspan fill="#cf222e">✕</tspan>  Keys copied into each app's config file</text>
+<text class="t" x="40" y="394" font-size="13"><tspan fill="#cf222e">✕</tspan>  Every tool loaded into the AI's context</text>
+<text class="t" x="40" y="416" font-size="13"><tspan fill="#cf222e">✕</tspan>  Dependency on Claude for managing your MCPs</text>
+<text class="t" x="532" y="350" font-size="13"><tspan fill="#1a7f37">✓</tspan>  One connection per app</text>
+<text class="t" x="532" y="372" font-size="13"><tspan fill="#1a7f37">✓</tspan>  Keys kept in your OS keychain</text>
+<text class="t" x="532" y="394" font-size="13"><tspan fill="#1a7f37">✓</tspan>  Two tools in context: search_tools, call_tool</text>
+</svg>

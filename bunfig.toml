@@ -1,0 +1,3 @@
+[test]
+# Every test runs against a temporary PMCPG_HOME and the db vault, never the user's real data or keychain.
+preload = ["./test/setup.ts"]

@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+# pmcpg on node:24-slim plus uv: remote servers and stdio servers launched with npx or uvx.
+# Build context: packaging/docker/, with the linux glibc binaries at bin/amd64/pmcpg and bin/arm64/pmcpg.
+# No RUN on the target platform, so multi-arch builds need no emulation.
+# Base images are pinned by digest (SUP-4). To bump one, update the tag and its multi-arch index digest together.
+
+FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b981e1334471a90c4a1d93bb490 AS uv
+
+FROM --platform=$BUILDPLATFORM busybox:1.37@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec AS dirs
+RUN mkdir -p /out/data /out/cache/npm /out/cache/uv
+
+FROM node:24-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54
+ARG TARGETARCH
+LABEL org.opencontainers.image.title="pMCPg (full)" \
+      org.opencontainers.image.description="Private MCP Gateway with Node and uv for stdio servers" \
+      org.opencontainers.image.source="https://github.com/baobab-tech/pMCPg" \
+      org.opencontainers.image.licenses="Apache-2.0"
+COPY --from=uv /uv /uvx /usr/local/bin/
+COPY --chmod=0755 bin/${TARGETARCH}/pmcpg /usr/local/bin/pmcpg
+COPY --from=dirs --chown=node:node /out/data /data
+COPY --from=dirs --chown=node:node /out/cache /cache
+# npx and uvx downloads go to the /cache volume, so restarts do not refetch them.
+ENV PMCPG_HOME=/data \
+    npm_config_cache=/cache/npm \
+    npm_config_update_notifier=false \
+    UV_CACHE_DIR=/cache/uv/cache \
+    UV_PYTHON_INSTALL_DIR=/cache/uv/python \
+    UV_TOOL_DIR=/cache/uv/tools
+VOLUME ["/data", "/cache"]
+EXPOSE 7431
+USER node
+ENTRYPOINT ["/usr/local/bin/pmcpg"]
+# Inside the container the gateway binds all interfaces; publish the port on 127.0.0.1 on the host.
+CMD ["serve", "--host", "0.0.0.0"]

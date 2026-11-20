@@ -1,0 +1,271 @@
+// MCP front door: one Streamable HTTP endpoint per profile, two tools.
+import { createHash, timingSafeEqual } from "node:crypto";
+import { hostHeaderValidation, originValidation } from "@modelcontextprotocol/hono";
+import {
+  type CallToolResult,
+  createMcpHandler,
+  localhostAllowedHostnames,
+  localhostAllowedOrigins,
+  type McpHttpHandler,
+  McpServer,
+} from "@modelcontextprotocol/server";
+import { Hono } from "hono";
+import { z } from "zod";
+import type { Connector } from "../connectors/connector.ts";
+import { ALL_PROFILE, type ProfileDef, Slug } from "../core/config.ts";
+import { GatewayError, type ToolRef, type ToolResult } from "../core/types.ts";
+import { catchDownstreamErrors } from "../pipeline/downstream.ts";
+import { resolveStep, resolveTool } from "../pipeline/resolve.ts";
+import { type CallContext, runPipeline, type Step } from "../pipeline/step.ts";
+import { type ResetCounts, SessionStore } from "../privacy/sessions.ts";
+import { clampLimit, MAX_LIMIT } from "../search/minisearch-index.ts";
+import type { ToolIndex } from "../search/search.ts";
+import type { EventSink } from "../store/events.ts";
+
+export const VERSION = "0.0.0";
+/** Longer descriptions are cut in search results. */
+export const MAX_DESCRIPTION = 1000;
+
+export interface FrontDoorDeps {
+  index: ToolIndex;
+  /** Profile definition; undefined when the profile does not exist. "all" must resolve too. */
+  getProfile: (profileId: string) => ProfileDef | undefined;
+  /** Client token for the profile; undefined when none is set (requests are then refused). */
+  getClientToken: (profileId: string) => Promise<string | undefined> | string | undefined;
+  /** Profile ids to try for the universal /mcp endpoint, where the token picks the profile. Default: ["all"]. */
+  listProfiles?: () => string[];
+  getConnector: (accountId: string) => Connector | undefined;
+  /** Pipeline steps after resolve, in order. */
+  steps: Step[];
+  events: EventSink;
+  /** Hostnames accepted in Host. Default: localhost names. */
+  allowedHosts?: string[];
+  /** Hostnames accepted in Origin (requests without Origin pass). Default: localhost names. */
+  allowedOrigins?: string[];
+  /** A privacy session unused this long starts over: new placeholders, no taint. Default SESSION_IDLE_MS. */
+  sessionIdleMs?: number;
+}
+
+export interface FrontDoor {
+  app: Hono;
+  /** Forgets the masked values of one profile, or of every profile. Emits a privacy-reset event. */
+  resetPrivacy(profileId?: string): ResetCounts;
+  close(): Promise<void>;
+}
+
+/**
+ * Sent by the stdio bridge with a random id per process, so each app it serves gets its own privacy session.
+ * The 2026-07-28 protocol has no connection and the front door issues no `Mcp-Session-Id`, so a client
+ * without this header shares one session per profile.
+ */
+export const CLIENT_SESSION_HEADER = "x-pmcpg-session";
+const CLIENT_SESSION_RE = /^[A-Za-z0-9_-]{8,128}$/;
+
+/** The client session id from a request, if it sent a well-formed one. */
+export function clientSessionId(req: Request | undefined): string | undefined {
+  const id = req?.headers.get(CLIENT_SESSION_HEADER) ?? undefined;
+  return id && CLIENT_SESSION_RE.test(id) ? id : undefined;
+}
+
+function digest(s: string): Buffer {
+  return createHash("sha256").update(s).digest();
+}
+
+/** Constant-time compare; hashing first makes the lengths equal. */
+export function tokensMatch(given: string, expected: string): boolean {
+  return timingSafeEqual(digest(given), digest(expected));
+}
+
+function bearer(header: string | undefined): string | undefined {
+  const m = header?.match(/^Bearer\s+(\S+)\s*$/i);
+  return m?.[1];
+}
+
+function toolView(t: ToolRef) {
+  const cut = t.description.length > MAX_DESCRIPTION;
+  return {
+    name: t.qualifiedName,
+    ...(t.title ? { title: t.title } : {}),
+    description: cut ? `${t.description.slice(0, MAX_DESCRIPTION)} […description cut]` : t.description,
+    inputSchema: t.inputSchema,
+    ...(t.annotations ? { annotations: t.annotations } : {}),
+  };
+}
+
+function errorResult(code: string, message: string): CallToolResult {
+  return {
+    isError: true,
+    content: [{ type: "text", text: `${code}: ${message}` }],
+    structuredContent: { error: { code, message } },
+  };
+}
+
+const OUTCOME: Record<string, "denied" | "approval-required"> = {
+  denied: "denied",
+  "approval-required": "approval-required",
+};
+
+export function createFrontDoor(deps: FrontDoorDeps): FrontDoor {
+  const sessions = new SessionStore(deps.sessionIdleMs);
+  const handlers = new Map<string, McpHttpHandler>();
+  const session = (profileId: string, clientId: string | undefined) => sessions.get(profileId, clientId);
+
+  async function searchTools(profileId: string, query: string, limit?: number): Promise<CallToolResult> {
+    const started = performance.now();
+    const hits = deps.index.search(profileId, query, clampLimit(limit));
+    deps.events.emit({
+      type: "search",
+      profileId,
+      query,
+      results: hits.length,
+      ms: Math.round(performance.now() - started),
+    });
+    return { content: [{ type: "text", text: JSON.stringify(hits.map(toolView)) }] };
+  }
+
+  async function callTool(
+    profileId: string,
+    clientId: string | undefined,
+    name: string,
+    args: Record<string, unknown>,
+    signal: AbortSignal,
+  ): Promise<CallToolResult> {
+    const started = Date.now();
+    let toolName = name.slice(0, 200);
+    let masked = 0;
+    try {
+      const profile = deps.getProfile(profileId);
+      if (!profile) throw new GatewayError("not-in-profile", `Profile ${profileId} no longer exists`);
+      const tool = resolveTool(deps.index, profileId, profile, toolName);
+      toolName = tool.qualifiedName;
+      const ctx: CallContext = {
+        requestId: crypto.randomUUID(),
+        profileId,
+        profile,
+        session: session(profileId, clientId),
+        tool,
+        modelArgs: args,
+        args: { ...args },
+        decisions: [],
+        masks: [],
+        startedAt: started,
+        signal,
+      };
+      const result = await runPipeline(ctx, [resolveStep, ...deps.steps], catchDownstreamErrors(forward));
+      masked = ctx.masks.length;
+      deps.events.emit({
+        type: "call",
+        profileId,
+        tool: toolName,
+        outcome: result.isError ? "error" : "ok",
+        masked,
+        ms: Date.now() - started,
+      });
+      return result as CallToolResult;
+    } catch (e) {
+      // Only GatewayError messages reach the client; others may carry downstream details.
+      const ge = e instanceof GatewayError ? e : new GatewayError("downstream-error", "The tool call failed");
+      deps.events.emit({
+        type: "call",
+        profileId,
+        tool: toolName,
+        outcome: OUTCOME[ge.code] ?? "error",
+        masked,
+        ms: Date.now() - started,
+        errorCode: ge.code,
+      });
+      return errorResult(ge.code, ge.message);
+    }
+  }
+
+  async function forward(ctx: CallContext): Promise<ToolResult> {
+    const c = deps.getConnector(ctx.tool.accountId);
+    if (!c) throw new GatewayError("unreachable", `Account ${ctx.tool.accountId} is not connected`);
+    return c.callTool(ctx.tool.toolName, ctx.args, ctx.signal);
+  }
+
+  function mcpServer(profileId: string, clientId: string | undefined): McpServer {
+    const s = new McpServer({ name: "pmcpg", version: VERSION });
+    s.registerTool(
+      "search_tools",
+      {
+        description: "Find tools for a task. Returns names, descriptions and input schemas.",
+        inputSchema: z.object({
+          query: z.string().describe("What you want to do, in plain words"),
+          limit: z.number().int().min(1).max(MAX_LIMIT).optional().describe("Default 5, max 10"),
+        }),
+        annotations: { readOnlyHint: true },
+      },
+      ({ query, limit }) => searchTools(profileId, query, limit),
+    );
+    s.registerTool(
+      "call_tool",
+      {
+        description: "Call a tool found with search_tools.",
+        inputSchema: z.object({
+          name: z.string().describe("Tool name from search_tools"),
+          arguments: z.record(z.string(), z.unknown()).default({}).describe("Arguments for the tool"),
+        }),
+      },
+      ({ name, arguments: args }, ctx) => callTool(profileId, clientId, name, args, ctx.mcpReq.signal),
+    );
+    return s;
+  }
+
+  function handler(profileId: string): McpHttpHandler {
+    const found = handlers.get(profileId);
+    if (found) return found;
+    // One server per request; the request's session header picks the privacy session.
+    const h = createMcpHandler((rc) => mcpServer(profileId, clientSessionId(rc.requestInfo)));
+    handlers.set(profileId, h);
+    return h;
+  }
+
+  const app = new Hono();
+  app.use("*", hostHeaderValidation(deps.allowedHosts ?? localhostAllowedHostnames()));
+  app.use("*", originValidation(deps.allowedOrigins ?? localhostAllowedOrigins()));
+
+  const serve = (profileId: string) => async (req: Request) => {
+    const unauthorized = () =>
+      new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { "content-type": "application/json", "www-authenticate": "Bearer" },
+      });
+    if (!Slug.safeParse(profileId).success || !deps.getProfile(profileId)) return unauthorized();
+    const expected = await deps.getClientToken(profileId);
+    const given = bearer(req.headers.get("authorization") ?? undefined);
+    if (!expected || !given || !tokensMatch(given, expected)) return unauthorized();
+    return handler(profileId).fetch(req);
+  };
+
+  app.all("/p/:profile/mcp", (c) => serve(c.req.param("profile"))(c.req.raw));
+  // Universal URL: the client's token decides the profile (each profile has its own token).
+  app.all("/mcp", async (c) => {
+    const given = bearer(c.req.header("authorization"));
+    if (given) {
+      for (const id of deps.listProfiles?.() ?? [ALL_PROFILE]) {
+        const expected = await deps.getClientToken(id);
+        if (expected && tokensMatch(given, expected)) return serve(id)(c.req.raw);
+      }
+    }
+    return serve(ALL_PROFILE)(c.req.raw);
+  });
+
+  return {
+    app,
+    resetPrivacy(profileId) {
+      const counts = sessions.reset(profileId);
+      deps.events.emit({
+        type: "privacy-reset",
+        ...(profileId !== undefined ? { profileId } : {}),
+        ...counts,
+      });
+      return counts;
+    },
+    async close() {
+      await Promise.all([...handlers.values()].map((h) => h.close()));
+      handlers.clear();
+      sessions.clear();
+    },
+  };
+}

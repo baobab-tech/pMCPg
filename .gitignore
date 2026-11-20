@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.exe
+.DS_Store
+coverage/
+.env*
+.claude/worktrees/
+src/api/ui-assets.gen.ts
+.claude/launch.json
+
+# Full security review reports stay private; docs/security-registry.md is the public record
+docs/security-review-*.md

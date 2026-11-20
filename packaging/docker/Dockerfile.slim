@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+# pmcpg on distroless: remote MCP servers only, no shell, non-root.
+# Build context: packaging/docker/, with the linux glibc binaries at bin/amd64/pmcpg and bin/arm64/pmcpg.
+# No RUN on the target platform, so multi-arch builds need no emulation.
+# Base images are pinned by digest (SUP-4). To bump one, update the tag and its multi-arch index digest together.
+
+FROM --platform=$BUILDPLATFORM busybox:1.37@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec AS dirs
+RUN mkdir -p /out/data
+
+FROM gcr.io/distroless/cc-debian12:nonroot@sha256:9dac0a79194e45a7da0158a9c6da57b217585af0786db3845d1f0ec1a0dd182f
+ARG TARGETARCH
+LABEL org.opencontainers.image.title="pMCPg (slim)" \
+      org.opencontainers.image.description="Private MCP Gateway: remote MCP servers only" \
+      org.opencontainers.image.source="https://github.com/baobab-tech/pMCPg" \
+      org.opencontainers.image.licenses="Apache-2.0"
+COPY --chmod=0755 bin/${TARGETARCH}/pmcpg /usr/local/bin/pmcpg
+COPY --from=dirs --chown=65532:65532 /out/data /data
+ENV PMCPG_HOME=/data
+VOLUME ["/data"]
+EXPOSE 7431
+USER 65532:65532
+ENTRYPOINT ["/usr/local/bin/pmcpg"]
+# Inside the container the gateway binds all interfaces; publish the port on 127.0.0.1 on the host.
+CMD ["serve", "--host", "0.0.0.0"]

@@ -1,0 +1,67 @@
+# Security registry
+
+One row per known security finding, open or closed. Details, exploit scenarios and proposed fixes are in the review that found them. Update the row in the same pull request that fixes the finding.
+
+Status values:
+
+| Status | Meaning |
+|---|---|
+| `open` | Not fixed |
+| `in progress` | Fix started or partly done |
+| `fixed` | Fixed on `main`; a test covers it where possible |
+| `accepted` | Kept on purpose; the reason is in the Notes column |
+| `docs` | A docs change only |
+
+Severity follows the review: Critical, High, Medium, Low, Info.
+
+Reviews:
+- 2026-11: first full review. The full report is kept outside the public repo; this registry is the public record.
+
+## Findings
+
+| ID | Title | Severity | Status | Fix / tests | Notes |
+|---|---|---|---|---|---|
+| PRV-1 | Re-hydration restores any placeholder into any server's call | High | fixed | `src/privacy/mask.ts`, `src/privacy/steps.ts`; `test/security/exfiltration.test.ts` | Values go back only to the source account. `privacyOptions.shareAcrossAccounts` opts an account in. |
+| POL-1 | New servers get `trust: []`; data-flow rule never fires | High | fixed | `src/policy/decide.ts`, `src/policy/step.ts`; `test/security/exfiltration.test.ts` | Unlabelled = unknown. Read-only tools of unlabelled servers are not treated as `can-send`. Trust can be set via `PATCH /api/ui/servers/:id`. Still needed: UI and onboarding controls to set trust, catalog trust suggestions. |
+| PIN-1 | Pin hash leaves out annotations and title | High | fixed | `src/pinning/store.ts`, `src/gateway/catalog.ts`, `src/pinning/diff.ts`; `test/security/exfiltration.test.ts`, `test/pinning/store.test.ts` | Old pins upgrade silently when the stored definition matches. |
+| WEB-1 | Any local process gets a UI session when no password is set | High | fixed | `src/api/auth.ts`, `src/api/routes.ts`, `src/cli/commands-ui.ts`; `test/api/ui-api.test.ts` | One-time launch link (`pmcpg open`, printed by `pmcpg serve`). The first password also needs that session. A same-user process that can write `state.db` can still mint a link. |
+| SUP-1 | npm names not registered | High | fixed | `packaging/npm/build-packages.ts` | `private-mcp-gateway` is registered and owned by the `baobabtech` npm org. Platform packages use the `@baobabtech` scope, which Baobab Tech owns. npm refuses the unscoped `pmcpg` as too similar to an existing name, so nobody else can register it either; the `pmcpg` command ships inside `private-mcp-gateway`. |
+| PRV-2 | Downstream errors skip masking, secret redaction and taint | Medium | fixed | `src/pipeline/downstream.ts`, `src/frontdoor/server.ts`; `test/security/exfiltration.test.ts` | Downstream errors become error results, so the after steps mask, redact and taint them. |
+| IMP-1 | Import runs unapproved project `.mcp.json` servers | Medium | fixed | `src/onboarding/importers.ts`, `src/cli/commands-onboarding.ts`; `test/onboarding/importers.test.ts` | Only servers approved in Claude Code. `pmcpg import --all` skips command-line servers. |
+| IMP-2 | Secrets in args, URL paths and userinfo copied to `config.yaml` | Medium | fixed | `src/core/config-store.ts`, `src/onboarding/importers.ts`, `src/onboarding/apply.ts`, `src/onboarding/paste.ts`, `src/connectors/stdio-env.ts`; `test/security/import-secrets.test.ts` | Arg secrets become vault references; URL passwords become an `Authorization` header; a key in the URL path is not imported. Config validation covers URLs, URL parameters and args. Existing configs with such secrets now fail validation with a message saying where. |
+| POL-2 | Approvals not bound to arguments; any local process can approve | Medium | fixed | `src/store/approvals.ts`, `src/policy/approvals.ts`, `src/policy/step.ts`, `src/gateway/runtime.ts`, `src/cli/commands-policy.ts`, `ui/app/(main)/approvals/page.tsx`; `test/security/exfiltration.test.ts`, `test/policy/cli.test.ts`, `test/e2e/serve.test.ts` | The Approvals page shows the call's arguments (placeholders, secrets redacted; memory only). The gateway ignores decisions written to `state.db`; the CLI decides through the admin API, only at a terminal after a yes. The approved call is the one that waited, so the decision is bound to its arguments. A same-user process can still read the admin token. |
+| PRV-3 | Unmasked parts of tool results (link fields, `_meta`, keys) | Medium | fixed | `src/privacy/steps.ts`, `src/privacy/mask.ts`; `test/security/exfiltration.test.ts` | Every block field except `type`, `mimeType`, `data` and `blob` is masked and secret-scanned, as are top-level result fields and object keys. Keys in arguments are re-hydrated and secret-scanned too. |
+| CON-1 | Bearer token for `all` written into other apps' configs | Medium | fixed | `src/onboarding/clients.ts`, `src/api/connect.ts`; `test/onboarding/clients.test.ts`, `test/security/connect-env.test.ts` | Claude Code, Claude Desktop, Cursor, VS Code and LM Studio get the stdio bridge with the absolute `pmcpg` path. HTTP plus token only with `pmcpg connect-app --http` (not Claude Code or Claude Desktop); the plan marks it as a fallback. Not done: defaulting new connections to a narrower profile than `all`. |
+| VLT-1 | Stdio servers can read the master key and `state.db` | Medium | docs | | Stated in `security.md`. Sandboxing later. |
+| SUP-2 | Actions pinned by tag; no release gate | Medium | in progress | `.github/workflows/release.yml`, `docs/releasing.md` | Actions pinned by SHA. Secret-holding jobs run in the `release` environment; a `test` job gates the tag. Formula attached before publish, so immutable releases work. Still needed: create the environment with reviewers, the `v*` tag ruleset, immutable releases (`docs/releasing.md`), Dependabot for actions, Azure OIDC. |
+| SUP-3 | Install scripts run in the signing job | Medium | fixed | `.github/workflows/release.yml`, `package.json`, `ui/package.json` | The UI builds in its own `ui` job with `--ignore-scripts` and no secrets; `build` embeds the artifact. Unused `ignoreScripts` field removed. |
+| OAU-1 | Revocation over `http:` and across redirects | Low | fixed | `src/connectors/oauth.ts`, `src/connectors/guarded-fetch.ts`; `test/connectors/guarded-fetch.test.ts` | The revocation endpoint must be `https:`, loopback, or the server's own origin when it is `allowInsecure`. A redirect is followed only as a same-origin 307/308. Not done: requiring the endpoint to share the issuer's origin (some providers host revocation on another host). |
+| OAU-2 | Manual client secret not bound to an issuer | Low | fixed | `src/connectors/oauth.ts`, `src/api/routes.ts`, `ui/components/onboarding/add-by-url.tsx`; `test/connectors/guarded-fetch.test.ts`, `test/api/onboarding.test.ts` | Stored in the vault with its issuer and `entered: true`. Issuer from `clientIssuer`, else from probing the server; the add-by-URL card sends the provider it shows. Any other issuer, or a secret saved without one, stops sign-in with an error and sends nothing. Sign-out keeps entered credentials. Not done: an issuer field in the other client-secret forms (they use the probe result). |
+| NET-1 | Discovery fetches server-named URLs without checks or timeouts | Low | fixed | `src/connectors/guarded-fetch.ts`, `src/onboarding/probe.ts`, `src/connectors/oauth.ts`, `src/connectors/remote.ts`; `test/connectors/guarded-fetch.test.ts` | Probe, discovery, registration, token and revocation requests: 10 s timeout, 1 MB body cap, `https:` or loopback (or the server's own `allowInsecure` origin), manual redirects, at most 3 hops, each hop checked. Non-GET requests follow only same-origin 307/308. `https:` URLs to private addresses are still allowed. |
+| CON-2 | Server setting changes do not reach the running connector | Low | fixed | `src/gateway/runtime.ts`; `test/gateway/reload.test.ts`, `test/e2e/serve.test.ts` | `reload()` compares account and server definitions, restarts changed connectors and lists their tools again. A new URL origin deletes the account's OAuth tokens, client and discovery. Covers the UI, the CLI (`/api/reload`) and hand edits followed by reload. |
+| ENV-1 | Master key reaches browser launcher and `claude`; token in argv | Low | fixed | `src/gateway/browser.ts`, `src/onboarding/clients.ts`, `src/vault/db.ts`, `src/vault/select.ts`; `test/security/connect-env.test.ts` | Launchers run by absolute path with an allow-listed env. `openVault` deletes `PMCPG_MASTER_KEY(_FILE)` from `process.env` after reading. `claude mcp` gets no token and names sit after `--`. |
+| WEB-2 | Login throttle race and global lockout | Low | fixed | `src/api/auth.ts`, `src/api/routes.ts`, `src/api/onboarding.ts`; `test/api/login-throttle.test.ts`, `test/api/ui-api.test.ts` | Each attempt counts as a failure before verification; verifications run one at a time. Backoff per client address (5 free, then 1 s doubling to 60 s) and globally (50 free). A wait never exceeds 60 s after the last failure. On a loopback bind all callers share one address. |
+| WEB-3 | No body size limit; session rows grow | Low | fixed | `src/gateway/runtime.ts`, `src/api/routes.ts`, `src/api/auth.ts`; `test/api/ui-api.test.ts`, `test/e2e/serve.test.ts` | 8 MB on `/mcp`, `/p/*`, `/api/*` and in `Bun.serve`; 1 MB on `/api/ui/*`. Content-Length is checked before reading. Creating a session prunes expired rows and keeps at most 50. |
+| PRV-4 | Session state is per profile; unbounded placeholder map | Low | fixed | `src/frontdoor/server.ts`, `src/frontdoor/bridge.ts`, `src/privacy/mask.ts`; `test/frontdoor/server.test.ts`, `test/privacy/steps.test.ts` | The stdio bridge sends `X-Pmcpg-Session` per process; HTTP clients without it share one session per profile. 8 h idle reset, 256 sessions and 10,000 placeholders per session, LRU. Still needed: a reset action in the UI and CLI. |
+| PRV-6 | Placeholders survive a restart and restore a different value; approval previews show placeholders | Medium | fixed | `src/privacy/mask.ts`, `src/privacy/steps.ts`, `src/gateway/runtime.ts`, `src/policy/step.ts`; `test/privacy/steps.test.ts`, `test/security/exfiltration.test.ts` | Placeholders carry a per-session tag (`[EMAIL_1_k7qx]`); an unknown one stops the call with `invalid-arguments`. Policy now runs after re-hydration and the argument secret scan, so the approval preview shows real values, secrets redacted. This replaces "placeholders" in the POL-2 note. |
+| VLT-2 | `state.db` and WAL/SHM created 0644 | Low | fixed | `src/core/file-mode.ts`, `src/store/db.ts`, `src/core/config-store.ts`; `test/store/file-mode.test.ts` | `state.db` is created 0600 before SQLite opens it, so `-wal` and `-shm` get 0600 too. Every start chmods the data dir to 0700 and `config.yaml`, `state.db`, `-wal`, `-shm` and `-journal` to 0600. Files owned by another user (a mounted volume) keep their mode. POSIX only; still needed: an owner-only ACL on Windows when `PMCPG_HOME` is outside `%APPDATA%`. |
+| VLT-3 | No client or admin token rotation | Low | fixed | `src/gateway/tokens.ts`, `src/gateway/runtime.ts`, `src/frontdoor/bridge.ts`, `src/cli/commands-token.ts`, `src/onboarding/clients.ts`, `src/api/routes.ts`, `ui/components/connect-panel.tsx`, `src/store/events.ts`; `test/gateway/tokens.test.ts`, `test/cli/token.test.ts`, `test/onboarding/clients.test.ts`, `test/api/ui-api.test.ts` | `pmcpg token rotate --profile <name> \| --admin`, and "New token" on the Connect panel (password-confirmed). The front door and the admin API read the vault per request, so the old token fails at once. The stdio bridge reads the token before every request: bridged apps need nothing. App files holding the old token (HTTP fallback) are rewritten with a backup. A `token-rotated` event names the target only. No UI button for the admin token: the UI never shows it. |
+| PRV-5 | Encoded PII and secrets bypass detectors | Low | open | | |
+| CON-3 | Backups, temp file and FIFO handling for other apps' files | Low | open | | |
+| LOG-1 | `search.query` event stores model free text | Low | open | | |
+| STD-1 | Process-tree kill uses a stale PID list | Low | open | | |
+| VLT-4 | Two first runs can write different master keys | Low | open | | |
+| CLI-1 | CLI secret prompts echo | Low | fixed | `src/cli/secret-input.ts`, `src/cli/actions.ts`; `test/cli/secret-input.test.ts` | On a TTY, `pmcpg account add` reads `--header`/`--env` values in raw mode with no echo; Ctrl-C cancels and every exit path restores the terminal mode. Piped stdin is read one line per value. Not run on Windows yet. |
+| SUP-4 | Docker base images pinned by tag | Low | fixed | `packaging/docker/Dockerfile.slim`, `packaging/docker/Dockerfile.full` | Every `FROM` pins tag plus multi-arch index digest. Refresh by hand when bumping a base. |
+| INF-1 | Smaller items (see review) | Info | open | | |
+
+## Fix history
+
+Findings fixed before v0.1.0 shipped in the v0.1.0 release. Each fixed row above lists its files and tests.
+
+## Adding a finding
+
+1. Give it the next ID in its area: `PRV` privacy, `POL` policy, `PIN` pinning, `WEB` web UI and API, `IMP` import, `CON` connect and connectors, `OAU` OAuth, `NET` outbound requests, `VLT` vault and state, `ENV` process environment, `STD` stdio, `LOG` events and logs, `CLI` command line, `SUP` supply chain, `INF` info.
+2. Add a row here with status `open`.
+3. Add a test under `test/security/` that asserts the secure behaviour, marked `test.todo` until the fix lands.
+4. Never put secrets, tokens or personal data in the row or the test.
