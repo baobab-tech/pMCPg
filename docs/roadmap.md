@@ -16,6 +16,7 @@ Status words: **planned** (designed, will be built), **exploring** (plan drafted
 | 6 | **Update check.** A banner when a new version exists, with no tracking | Planned | [plans/update-check](plans/update-check.md) |
 | 7 | **Better masking.** Names and addresses caught by local PII models (light CPU or accelerated tier), and PII hidden in encoded text (PRV-5) | Exploring | [DESIGN: Privacy layer](design.md#privacy-layer) |
 | 8 | **Fewer approval prompts.** "Always allow this tool" on an approval | Idea | [policy](policy.md) |
+| 9 | **Organisations.** Run pMCPg on your own network or roll it out to your team's machines, with settings the org controls. Self-hosted only: we run no service and hold no data | Idea | [DESIGN: Distribution](design.md#distribution) |
 
 ## Done
 
@@ -59,3 +60,13 @@ Add new ideas here with one line each; give them a plan file in `docs/plans/` on
 - Direct tool listing for small profiles instead of `search_tools` ([DESIGN: Open questions](design.md#open-questions))
 - Verified self-update for direct downloads ([plans/update-check](plans/update-check.md))
 - Skills from downstream MCP servers, passed through with digest checks ([plans/skills](plans/skills.md))
+
+Organisations (self-hosted; see top idea 9):
+
+- Managed setup: deploy `config.yaml` and policy through MDM (Jamf, Intune) or a script; locked settings users cannot change
+- Org policy packs: one signed file with privacy level, allowed and blocked servers, and approval rules
+- Private org catalog: the org's approved servers and skills, as a static file the org hosts
+- Shared skills: skills the org pins and pushes to every gateway ([plans/skills](plans/skills.md))
+- Team gateway on a server: the Docker image with one profile per person and sign-in on the front door
+- Audit export: activity-log summaries (names, counts, outcomes, never values) sent to the org's own log system
+- Keys from the org's secret manager (1Password, HashiCorp Vault, cloud secret stores) instead of each person's keychain
