@@ -340,7 +340,7 @@ Out of scope: a compromised host machine, a compromised OS keychain, and attacks
 ## Non-goals
 
 - Hosting MCP servers or user credentials.
-- A hosted team or enterprise service (accounts, SSO, billing run by us). Organisations self-host pMCPg on their own machines and network.
+- A hosted team or enterprise service run by us. Organisations self-host pMCPg on their own machines and network.
 - Replacing a client's own tool search. The gateway works alongside it and adds portability, profiles and privacy controls.
 - Guaranteed anonymisation. Masking lowers exposure and says so plainly.
 
