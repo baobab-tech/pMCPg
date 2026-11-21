@@ -138,7 +138,7 @@ $("end").innerHTML = `
 function fit() {
   const r = $("dwrap").getBoundingClientRect();
   diagram.style.scale = String(Math.min(r.width / 1160, r.height / 640));
-  $("silos").style.scale = String(Math.min(1, r.width / 940, r.height / 560));
+  $("silos").style.scale = String(0.92 * Math.min(1, r.width / 940, r.height / 560)); // breathing room under the headline
 }
 fit();
 
@@ -153,12 +153,11 @@ const capOut = (i, at) => [`#cap${i}`, { opacity: [1, 0], y: [0, -30] }, { at, d
 
 function build() {
   return animate([
-    // B1: your connections live inside one AI app
-    ["#eyebrow", { opacity: [0, 1], y: [20, 0] }, { at: 0.1, duration: 0.5, ease: out }],
-    headIn(0, 0.2),
-    ["#silo0", { opacity: [0, 1], y: [40, 0] }, { at: 0.7, duration: 0.5, ease: out }],
-    [".m0", { opacity: [0, 1], scale: [0.6, 1] }, { at: 1.2, duration: 0.4, delay: stagger(0.15), ease: pop }],
-    [["#silo1", "#silo2"], { opacity: [0, 0.3], y: [40, 0] }, { at: 0.9, duration: 0.5, delay: stagger(0.12), ease: out }],
+    // B1: your connections live inside one AI app.
+    // Frame 0 is already complete: LinkedIn shows it as the preview before play. Motion starts after it.
+    [".m0 .k", { scale: [1, 1.5, 1] }, { at: 0.8, duration: 0.5, delay: stagger(0.2), ease: "easeInOut" }],
+    ["#silo0", { scale: [1, 1.03, 1] }, { at: 0.7, duration: 0.8, ease: "easeInOut" }],
+    [["#silo1", "#silo2"], { opacity: [0.3, 0.3] }, { at: 0, duration: 0.1 }],
 
     // B2: switch apps, start over
     headOut(0, 3.3),
@@ -222,7 +221,9 @@ function onFrame(t) {
 }
 
 // Hidden until their beat (Motion holds first keyframes before each segment starts).
-for (const sel of ["#end", "#boundary", "#lockbadge", "#hd1", "#hd2", ".mini", ".again", ".pill", ".hub", ".keychip", ".silo"])
+// The opening state (eyebrow, first headline, Claude's card) stays visible from frame 0.
+for (const sel of ["#end", "#boundary", "#lockbadge", "#hd1", "#hd2", ".m1", ".m2", ".again", ".pill", ".hub", ".keychip"])
   for (const n of document.querySelectorAll(sel)) n.style.opacity = "0";
+for (const n of document.querySelectorAll("#silo1, #silo2")) n.style.opacity = "0.3";
 
 stage({ duration: DURATION, build, onFrame });
