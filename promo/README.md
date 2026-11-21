@@ -20,6 +20,7 @@ node render.mjs gateway-short --format square       # 1080×1080
 node render.mjs gateway-short --format landscape    # 1920×1080
 node render.mjs gateway-short --format all --stills 4.5,7.6,10.9,13.5
 node render.mjs keys-short                          # "Your AI tools, your control" cut
+node render.mjs lockin-short --format all           # board variation B: connections that stay with you
 ```
 
 Output goes to `out/` (gitignored): `out/<comp>-<format>.mp4`, plus `out/<comp>-<format>-<t>s.png` for each `--stills` time.

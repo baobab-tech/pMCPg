@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>pMCPg: Connections that stay with you</title>
+<link rel="stylesheet" href="../../lib/theme.css" />
+<style>
+  .layout {
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto 1fr 150px;
+    grid-template-areas: "head" "diagram" "caption";
+    row-gap: 40px;
+  }
+  [data-format="square"] .layout { grid-template-rows: auto 1fr 120px; row-gap: 28px; }
+  [data-format="landscape"] .layout {
+    grid-template-columns: 640px 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "head diagram" "caption diagram";
+    column-gap: 60px;
+  }
+
+  /* Headline */
+  .head { grid-area: head; }
+  [data-format="landscape"] .head { align-self: end; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 30px; font-weight: 600; color: var(--brand);
+    padding: 8px 20px 8px 14px; border: 1px solid rgb(61 184 216 / 0.4);
+    border-radius: 999px; background: var(--brand-soft); margin-bottom: 24px;
+  }
+  h1 { font-size: 92px; line-height: 1.04; font-weight: 700; letter-spacing: -1px; }
+  [data-format="square"] h1 { font-size: 80px; }
+  [data-format="landscape"] h1 { font-size: 96px; }
+  h1 span { display: block; }
+
+  /* Diagram, drawn at 1160×640 and scaled to fit (see fit() in main.js) */
+  .dwrap { grid-area: diagram; position: relative; }
+  .diagram {
+    position: absolute; left: 50%; top: 50%;
+    width: 1160px; height: 640px; margin: -320px 0 0 -580px;
+  }
+  .diagram svg.wires { position: absolute; inset: 0; overflow: visible; }
+  .pill {
+    position: absolute; display: flex; align-items: center; gap: 16px;
+    width: 320px; height: 84px; padding: 0 18px 0 14px;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 20px;
+    font-size: 31px; font-weight: 600; white-space: nowrap;
+  }
+  .pill.svc { height: 76px; font-weight: 400; color: #e5e5e5; }
+  .tile {
+    flex: none; display: grid; place-items: center;
+    width: 56px; height: 56px; border-radius: 14px; color: #fff;
+    font-size: 26px; font-weight: 700;
+  }
+  .svc .tile { width: 48px; height: 48px; background: var(--muted); color: var(--muted-fg); border-radius: 12px; }
+  .hub {
+    position: absolute; left: 445px; top: 245px; width: 270px; height: 150px;
+    border-radius: 28px; background: var(--brand); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    font-size: 50px; font-weight: 700;
+    box-shadow: 0 0 80px rgb(61 184 216 / 0.45);
+  }
+  .lockbadge {
+    position: absolute; right: -18px; top: -18px; width: 58px; height: 58px; border-radius: 50%;
+    background: var(--bg); border: 3px solid var(--brand); color: var(--brand);
+    display: grid; place-items: center;
+  }
+  .boundary {
+    position: absolute; left: 405px; top: 150px; width: 350px; height: 340px;
+    border: 3px dashed rgb(61 184 216 / 0.7); border-radius: 36px;
+  }
+  .boundary .label {
+    position: absolute; left: 0; right: 0; top: 22px; text-align: center;
+    font-size: 27px; font-weight: 600; color: var(--brand);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .keychip {
+    position: absolute; width: 60px; height: 60px; border-radius: 16px;
+    background: var(--bg); border: 2px solid var(--brand); color: var(--brand);
+    display: grid; place-items: center;
+  }
+
+  /* Captions: one at a time, same spot */
+  .caption { grid-area: caption; position: relative; }
+  [data-format="landscape"] .caption { align-self: start; height: 200px; }
+  .cap {
+    position: absolute; inset: 0; display: flex; align-items: center; gap: 22px;
+    font-size: 50px; font-weight: 600; line-height: 1.15;
+  }
+  [data-format="square"] .cap { font-size: 44px; }
+  [data-format="landscape"] .cap { align-items: flex-start; }
+  .cap .ic {
+    flex: none; width: 84px; height: 84px; border-radius: 22px;
+    background: var(--brand-soft); color: var(--brand); display: grid; place-items: center;
+  }
+
+  /* Stacked headlines: one per beat, same spot */
+  .heads { display: grid; }
+  .heads h1 { grid-area: 1 / 1; }
+  h1 em { font-style: normal; }
+  .warn { color: var(--warn); }
+  [data-format="landscape"] h1 { font-size: 84px; }
+  .cap .ic.w { background: rgb(240 163 94 / 0.16); color: var(--warn); }
+
+  /* Vendor silos, drawn at 940×560 and scaled like the diagram */
+  .silos { position: absolute; left: 50%; top: 50%; width: 940px; height: 560px; margin: -280px 0 0 -470px;
+    display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  .silo { position: relative; background: var(--card); border: 1.5px solid var(--border); border-radius: 24px; padding: 22px 26px; }
+  .silo-app { display: flex; align-items: center; gap: 18px; font-size: 34px; font-weight: 600; }
+  .silo-app small { display: block; font-size: 26px; font-weight: 400; color: var(--muted-fg); margin-top: 2px; }
+  .silo-lock { margin-left: auto; color: var(--warn); }
+  .silo-svcs { display: flex; gap: 14px; margin-top: 18px; height: 52px; }
+  .mini { display: inline-flex; align-items: center; gap: 10px; font-size: 28px; color: #e5e5e5; background: var(--muted); border-radius: 12px; padding: 8px 16px; }
+  .mini .k { color: var(--warn); display: inline-flex; }
+  .again { position: absolute; right: 26px; bottom: 26px; font-size: 26px; font-weight: 600; color: var(--warn);
+    border: 2.5px solid var(--warn); border-radius: 10px; padding: 4px 14px; rotate: -4deg; }
+
+  /* End card */
+  .end {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; gap: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 38%, rgb(61 184 216 / 0.18), transparent 70%),
+      var(--bg);
+  }
+  .end .logo {
+    width: 150px; height: 150px; border-radius: 40px; background: var(--brand); color: var(--bg);
+    display: grid; place-items: center; box-shadow: 0 0 90px rgb(61 184 216 / 0.5); margin-bottom: 36px;
+  }
+  .end .name { font-size: 132px; font-weight: 700; line-height: 1; letter-spacing: -2px; }
+  .end .full { font-size: 50px; color: var(--muted-fg); margin-top: 14px; }
+  .end .tag { font-size: 46px; font-weight: 600; color: var(--brand); margin-top: 44px; }
+  .end .free { font-size: 38px; color: var(--fg); margin-top: 18px; }
+  .end .cmd {
+    margin-top: 44px; font-family: var(--mono); font-size: 36px;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 18px;
+    padding: 22px 32px; white-space: nowrap;
+  }
+  .end .cmd .p { color: var(--muted-fg); }
+  .end .os { font-size: 30px; color: var(--muted-fg); margin-top: 24px; }
+  [data-format="square"] .end .logo { width: 120px; height: 120px; margin-bottom: 26px; }
+  [data-format="square"] .end .name { font-size: 112px; }
+  [data-format="square"] .end .tag, [data-format="square"] .end .cmd { margin-top: 30px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="safe">
+    <div class="layout">
+      <header class="head">
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="heads">
+          <h1 id="hd0"><span>Your connections</span><span>live inside <em class="warn">one AI app.</em></span></h1>
+          <h1 id="hd1"><span>Switch apps?</span><span><em class="warn">Start over.</em></span></h1>
+          <h1 id="hd2"><span>With <em class="brand">pMCPg</em>,</span><span>they live with you.</span></h1>
+        </div>
+      </header>
+
+      <div class="dwrap" id="dwrap">
+        <div class="diagram" id="diagram">
+          <svg class="wires" id="wires" viewBox="0 0 1160 640"></svg>
+          <div class="boundary" id="boundary"><div class="label" id="boundaryLabel"></div></div>
+          <!-- apps, services, hub, key chips are added by main.js -->
+        </div>
+        <div class="silos" id="silos"></div>
+      </div>
+
+      <div class="caption" id="caption"></div>
+    </div>
+  </div>
+
+  <div class="end" id="end"></div>
+</div>
+
+<script src="../../node_modules/motion/dist/motion.js"></script>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

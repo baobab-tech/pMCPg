@@ -28,6 +28,7 @@
   --claude: #d97757;
   --chatgpt: #10a37f;
   --mask: #f0a35e; /* raw personal data before masking */
+  --warn: #f0a35e; /* the problem side of a before/after */
   --font: "Oxanium", system-ui, sans-serif;
   --mono: "SF Mono", Menlo, ui-monospace, monospace;
 }
