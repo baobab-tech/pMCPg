@@ -20,7 +20,7 @@ The script:
 
 - Downloads the build for your OS and CPU from GitHub Releases and checks it against `SHA256SUMS`. A mismatch stops the install.
 - Puts `pmcpg` in `~/.local/bin` (Windows: `%LOCALAPPDATA%\pmcpg\bin`) without admin rights, and adds that folder to your PATH.
-- Runs `pmcpg service install`, so the gateway starts at login, then `pmcpg open` to open the web UI.
+- Runs `pmcpg service install`, so the gateway starts at login and a **pMCPg** launcher appears with your apps, then `pmcpg open` to open the web UI.
 - Upgrades in place when run again.
 
 Options, as environment variables:
@@ -70,6 +70,16 @@ gh attestation verify <downloaded-file> --repo baobab-tech/pMCPg
 pmcpg service install     # launchd (macOS), Task Scheduler (Windows), systemd user unit (Linux)
 pmcpg service uninstall
 ```
+
+`service install` also adds a **pMCPg** launcher; `service uninstall` removes it. Clicking it starts the gateway if it is not running, waits up to 20 seconds, then opens the web UI. If the gateway does not start, a dialog says so.
+
+| OS | Launcher | Find it in |
+|---|---|---|
+| macOS | `~/Applications/pMCPg.app` | Spotlight, Launchpad; drag it to the Dock |
+| Windows | `pMCPg.lnk` in the Start menu's Programs folder | Start menu; pin it to the taskbar |
+| Linux | `~/.local/share/applications/pmcpg.desktop` | The desktop's app menu |
+
+The launcher is skipped on macOS when running from source (`bun src/cli/main.ts`), and on Windows when `PMCPG_HOME` is set, since a shortcut cannot carry it.
 
 Open the web UI with `pmcpg open`. Until you set a password, the UI opens only through the one-time link this command creates, so other users of the computer cannot open it.
 

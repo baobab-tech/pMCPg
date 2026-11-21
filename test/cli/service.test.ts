@@ -85,7 +85,7 @@ describe("launchd", () => {
     );
     installService(env);
     expect(calls.filter((c) => c[1] === "bootstrap")).toHaveLength(3);
-    expect(lines.at(-1)).toContain("Installed");
+    expect(lines).toContainEqual(expect.stringContaining("Installed"));
   });
 
   test("install does not retry other bootstrap errors", () => {
@@ -105,7 +105,11 @@ describe("launchd", () => {
     installService(fakeEnv("darwin"));
     uninstallService(fakeEnv("darwin"));
     expect(existsSync(plistPath(fakeEnv("darwin")))).toBe(false);
-    expect(calls.at(-1)).toEqual(["/bin/launchctl", "bootout", `gui/501/${LAUNCHD_LABEL}`]);
+    expect(calls.filter((c) => c[0] === "/bin/launchctl").at(-1)).toEqual([
+      "/bin/launchctl",
+      "bootout",
+      `gui/501/${LAUNCHD_LABEL}`,
+    ]);
   });
 
   test("status reads launchctl print", () => {

@@ -171,14 +171,14 @@ Each should install to the user folder, add it to PATH, start the service and op
 2. Extract and run `./pmcpg version`: Gatekeeper blocks it.
 3. `xattr -d com.apple.quarantine pmcpg`, then `./pmcpg version` prints `$V`.
 4. `./pmcpg open`: the web UI loads.
-5. `./pmcpg service install`, log out and in, the UI is still reachable; `./pmcpg service uninstall`.
+5. `./pmcpg service install`, log out and in, the UI is still reachable. Open **pMCPg** from Spotlight: the UI opens. `./pmcpg service uninstall` removes `~/Applications/pMCPg.app`.
 
 **Windows** (x64; arm64 if available):
 
 1. Download the `.zip` in Edge and extract.
 2. Run `pmcpg.exe version` from PowerShell. Note whether SmartScreen appears and that **More info → Run anyway** works.
 3. `Unblock-File .\pmcpg.exe` clears it.
-4. `pmcpg.exe open`, then `service install` and `service uninstall`.
+4. `pmcpg.exe open`, then `service install`. Open **pMCPg** from the Start menu: the UI opens. `service uninstall` removes the shortcut.
 
 **Linux** (x64 glibc, plus one musl target in Alpine):
 

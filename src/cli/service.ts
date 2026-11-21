@@ -1,8 +1,10 @@
 // Start-at-login registration: launchd LaunchAgent (macOS), Task Scheduler logon task (Windows),
 // systemd user unit (Linux). Each runs `<binary> serve` as the current user.
+// Install also adds the app launcher (launcher.ts); uninstall removes it.
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { installLauncher, uninstallLauncher } from "./launcher.ts";
 
 export const LAUNCHD_LABEL = "io.github.baobab-tech.pmcpg";
 export const SYSTEMD_UNIT = "pmcpg.service";
@@ -13,7 +15,8 @@ export interface RunResult {
   stdout: string;
   stderr: string;
 }
-export type Runner = (cmd: string[]) => RunResult;
+/** `extraEnv` adds variables on top of the passed-through ones. */
+export type Runner = (cmd: string[], extraEnv?: Record<string, string>) => RunResult;
 
 export interface ServiceEnv {
   platform: NodeJS.Platform;
@@ -59,9 +62,14 @@ export function defaultRunner(env: Record<string, string | undefined>): Runner {
     const v = env[k];
     if (v !== undefined) childEnv[k] = v;
   }
-  return (cmd) => {
+  return (cmd, extraEnv) => {
     try {
-      const p = Bun.spawnSync(cmd, { env: childEnv, stdin: "ignore", stdout: "pipe", stderr: "pipe" });
+      const p = Bun.spawnSync(cmd, {
+        env: { ...childEnv, ...extraEnv },
+        stdin: "ignore",
+        stdout: "pipe",
+        stderr: "pipe",
+      });
       return { code: p.exitCode ?? 1, stdout: p.stdout.toString(), stderr: p.stderr.toString() };
     } catch (e) {
       return { code: 127, stdout: "", stderr: e instanceof Error ? e.message : String(e) };
@@ -350,10 +358,17 @@ export function installService(s: ServiceEnv, task = WINDOWS_TASK): void {
   if (/[\\/]_npx[\\/]/.test(s.program[0] ?? ""))
     s.out("Warning: running from the npx cache. Install pmcpg permanently so this path stays valid.");
   i.install();
+  installLauncher(s);
+}
+
+/** Registers and starts the login service, without touching the launcher. Used by a launcher click. */
+export function startService(s: ServiceEnv, task = WINDOWS_TASK): void {
+  impl(s, task).install();
 }
 
 export function uninstallService(s: ServiceEnv, task = WINDOWS_TASK): void {
   impl(s, task).uninstall();
+  uninstallLauncher(s);
 }
 
 export function serviceStatus(s: ServiceEnv, task = WINDOWS_TASK): ServiceStatus {

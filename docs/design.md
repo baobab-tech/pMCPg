@@ -13,7 +13,7 @@ Technical design for the first releases. The why is in [Concept](concept.md); th
 | Targets | macOS arm64/x64, Windows x64/arm64, Linux x64/arm64 (glibc and musl) | Every desktop and server people run |
 | Distribution | Direct download, npm (`npx`), Homebrew, Docker | One build, four doors (see *Distribution*) |
 | Docker | Two tags: `slim` (remote servers only) and `full` (adds Node and uv for stdio servers) | Small and safe by default; full when needed. No docker socket |
-| Desktop shell | None for now. Autostart at login plus web UI in the browser | No extra framework. A tiny native shell can come later per OS |
+| Desktop shell | None. Autostart at login, a per-OS launcher that starts the gateway if needed and opens the UI, and the web UI in the browser | No extra framework. A tray icon can come later per OS |
 | Web UI | Next.js + shadcn/ui, static export (`output: "export"`) in `ui/`, embedded in the binary and served by the gateway; talks to a JSON API in `src/api/` | Familiar, polished components; still one binary, no Node server. React and Next are build-time only |
 | UI password | First-run screen offers to set one (skippable). Required in Docker and on any non-localhost bind | Easy start, safe when exposed |
 | Search | MiniSearch BM25; `search_tools` returns the top 5 with full schemas | One round trip, small library |
@@ -260,7 +260,7 @@ Applying from the UI asks for the UI password when one is set.
 | Homebrew | Mac and Linux developers | Tap formula pointing at the release binaries |
 | Docker (GHCR) | Servers, teams, enterprise self-hosting | `slim`: binary on `distroless/cc`, remote servers only. `full`: binary on `node:24-slim` plus uv, with a cache volume for npx/uvx downloads |
 
-**Autostart.** `pmcpg service install` registers a launchd agent (macOS), a Run key or Task Scheduler entry (Windows), or a systemd user unit (Linux). `pmcpg service uninstall` removes it.
+**Autostart.** `pmcpg service install` registers a launchd agent (macOS), a Run key or Task Scheduler entry (Windows), or a systemd user unit (Linux). It also adds a launcher: `~/Applications/pMCPg.app` (its executable is a symlink to the binary; `LSEnvironment` sets `PMCPG_LAUNCHER=1`, which marks a bare launch as a click), or a Start-menu shortcut or `.desktop` file running `pmcpg --launcher`. A click re-registers and starts the service when nothing answers on the gateway port, waits up to 20 s, then opens the UI link with its launch code. Failures show a native dialog (osascript, a PowerShell message box, zenity). `pmcpg service uninstall` removes both.
 
 **Signing.**
 
