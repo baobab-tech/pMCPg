@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="pMCPg">
+  <title>pMCPg</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6eef2"/>
+    </linearGradient>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  <rect x="100.5" y="100.5" width="823" height="823" rx="184.5" fill="none" stroke="#000" stroke-opacity=".08"/>
+  <g transform="translate(192 192) scale(10)">
+    <path d="M8 32h48M8 16h6l9 12M8 48h6l9-12" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#141414"><circle cx="7" cy="16" r="4.5"/><circle cx="7" cy="32" r="4.5"/><circle cx="7" cy="48" r="4.5"/><circle cx="57" cy="32" r="4.5"/></g>
+    <path d="M34 18l11 4v8.5c0 8-4.5 12.5-11 15.5c-6.5-3-11-7.5-11-15.5V22z" fill="#1f7393" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+</svg>

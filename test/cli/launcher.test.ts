@@ -19,9 +19,11 @@ import {
   desktopWord,
   installLauncher,
   launchedFromApp,
+  linuxIconPath,
   SHORTCUT_SCRIPT,
   shortcutPath,
   uninstallLauncher,
+  windowsIconPath,
 } from "../../src/cli/launcher.ts";
 import { installService, type RunResult, type ServiceEnv, uninstallService } from "../../src/cli/service.ts";
 
@@ -83,6 +85,12 @@ describe("macOS app", () => {
     expect(readlinkSync(exe)).toBe("/opt/pmcpg/bin/pmcpg");
     const plist = readFileSync(join(app, "Contents", "Info.plist"), "utf8");
     expect(plist).toContain("<key>PMCPG_LAUNCHER</key>\n    <string>1</string>");
+    expect(plist).toContain("<key>CFBundleIconFile</key>\n  <string>pmcpg</string>");
+    expect(
+      readFileSync(join(app, "Contents", "Resources", "pmcpg.icns"))
+        .subarray(0, 4)
+        .toString(),
+    ).toBe("icns");
     expect(calls.map((c) => c.cmd.at(-2))).toEqual(["-f"]);
   });
   test("reinstall replaces the bundle", () => {
@@ -123,6 +131,9 @@ describe("Linux .desktop", () => {
     const body = readFileSync(file, "utf8");
     expect(body).toContain('Exec="/opt/pmcpg/bin/pmcpg" "--launcher"');
     expect(body).toContain("Terminal=false");
+    const icon = linuxIconPath(s);
+    expect(body).toContain(`Icon=${icon}`);
+    expect(readFileSync(icon).subarray(1, 4).toString()).toBe("PNG");
   });
   test("honours XDG_DATA_HOME and PMCPG_HOME", () => {
     const s = fakeEnv("linux", { env: { XDG_DATA_HOME: join(home, "data"), PMCPG_HOME: "/srv/p" } });
@@ -139,13 +150,16 @@ describe("Linux .desktop", () => {
     expect(() => desktopWord("/a\nb")).toThrow();
   });
   test("entry runs --launcher after the program", () => {
-    expect(desktopEntry(["/x/bun", "/r/main.ts"], {})).toContain('Exec="/x/bun" "/r/main.ts" "--launcher"');
+    expect(desktopEntry(["/x/bun", "/r/main.ts"], {}, "/i.png")).toContain(
+      'Exec="/x/bun" "/r/main.ts" "--launcher"',
+    );
   });
   test("uninstall removes the entry", () => {
     const s = fakeEnv("linux");
     installLauncher(s);
     uninstallLauncher(s);
     expect(existsSync(desktopPath(s))).toBe(false);
+    expect(existsSync(linuxIconPath(s))).toBe(false);
   });
 });
 
@@ -166,7 +180,10 @@ describe("Windows shortcut", () => {
       PMCPG_LNK: shortcutPath(s),
       PMCPG_LNK_TARGET: "C:\\Users\\u\\AppData\\Local\\pmcpg\\bin\\pmcpg.exe",
       PMCPG_LNK_ARGS: "--launcher",
+      PMCPG_LNK_ICON: windowsIconPath(s),
     });
+    expect(readFileSync(windowsIconPath(s)).subarray(0, 4)).toEqual(Buffer.from([0, 0, 1, 0]));
+    expect(SHORTCUT_SCRIPT).toContain("$l.IconLocation=$env:PMCPG_LNK_ICON");
     expect(shortcutPath(s)).toEndWith(join("Start Menu", "Programs", "pMCPg.lnk"));
   });
   test("skipped with PMCPG_HOME, which a shortcut cannot carry", () => {
