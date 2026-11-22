@@ -22,7 +22,7 @@ export const AUDIENCES: Audience[] = [
     label: "New to connectors",
     headline: "Let your AI app use your tools, safely.",
     body: "Connectors (MCPs) let Claude and other AI apps search information, read files or query data from other servers. pMCPg {hl}runs on your computer{/hl}, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",
-    cta: { label: "How it works", href: "#how" },
+    cta: { label: "Getting started", href: "#how" },
     steps: [
       { title: "Install pMCPg", body: "One line in a terminal. It starts at login and opens its web UI." },
       { title: "Add a connector", body: "Paste its URL. If it needs a sign-in, you sign in once in your browser." },

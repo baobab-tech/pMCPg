@@ -1,13 +1,16 @@
 "use client";
 
-import { ArrowLeftRightIcon, ArrowRightIcon, CheckIcon, CopyIcon, ShieldCheckIcon } from "lucide-react";
+import { ArrowLeftRightIcon, ArrowRightIcon, CheckIcon, ShieldCheckIcon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAudience } from "@/components/audience";
+import { CopyLine } from "@/components/copy-line";
+import { Download } from "@/components/download";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FORK, INSTALL, ISSUES, LICENSE, PRIVACY, RELEASE, ROADMAP, SECURITY, VERIFY } from "@/lib/site";
+import { FORK, INSTALL, ISSUES, LICENSE, PRIVACY, ROADMAP, SECURITY, VERIFY } from "@/lib/site";
+import type { Release } from "@/lib/release";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
@@ -272,27 +275,6 @@ export function Teams() {
   );
 }
 
-export function CopyLine({ text, className }: { text: string; className?: string }) {
-  const [done, setDone] = useState(false);
-  return (
-    <div className={cn("flex items-center gap-2 rounded-xl border bg-card py-1.5 pr-1.5 pl-4", className)}>
-      <code className="min-w-0 flex-1 overflow-x-auto py-1 font-mono text-[13px] whitespace-nowrap">{text}</code>
-      <button
-        type="button"
-        onClick={async () => {
-          await navigator.clipboard.writeText(text);
-          setDone(true);
-          setTimeout(() => setDone(false), 1500);
-        }}
-        className="grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label="Copy command"
-      >
-        {done ? <CheckIcon className="size-4 text-ok" /> : <CopyIcon className="size-4" />}
-      </button>
-    </div>
-  );
-}
-
 export function InstallTabs({ compact = false }: { compact?: boolean }) {
   const tabs = compact
     ? [
@@ -324,35 +306,16 @@ export function InstallTabs({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function Install() {
+export function Install({ release }: { release: Release }) {
   return (
     <Section
-      id="install"
-      eyebrow="Install"
+      id="download"
+      eyebrow="Download"
       title="One binary for macOS, Windows and Linux"
-      lead="The script checks the download against its SHA-256 sum, sets pMCPg to start at login, and opens the web UI. Run it again to upgrade."
+      lead="Works with Claude Desktop, Claude Code, VS Code, LM Studio, and other apps that can run an MCP command. claude.ai, ChatGPT and Gemini in the browser can't reach pMCPg yet: it's on the roadmap."
     >
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-        <InstallTabs />
-        <div className="grid content-start gap-3 text-sm text-muted-foreground">
-          <p>
-            <b className="text-foreground">Works with</b> Claude Desktop, Claude Code, VS Code, LM Studio, and other
-            apps that can run an MCP command.
-          </p>
-          <p>
-            claude.ai, ChatGPT and Gemini in the browser can't reach pMCPg yet: they call connectors from their own
-            cloud. It's on the roadmap.
-          </p>
-          <p>
-            Version 0.1 binaries are not code-signed. The one-line installer handles this.{" "}
-            <a href={RELEASE} className="text-brand underline underline-offset-3">
-              All downloads
-            </a>
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-10 grid gap-4 rounded-2xl border border-dashed border-brand/50 bg-card p-6 sm:grid-cols-[44px_1fr]">
+      <Download release={release} />
+      <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-4 rounded-2xl border border-dashed border-brand/50 bg-card p-6 sm:grid-cols-[44px_minmax(0,1fr)]">
         <span className="hidden size-11 place-items-center rounded-xl bg-brand-soft text-brand sm:grid">
           <ShieldCheckIcon className="size-5" />
         </span>
