@@ -149,6 +149,8 @@ export function LiveExample() {
       );
       pk.textContent = (opts.key ? "🔑 " : "") + opts.label;
       Object.assign(pk.style, { offsetPath: `path('${W[wire]}')`, offsetAnchor: "50% 50%", offsetRotate: "0deg" });
+      // The gateway card sits at translateZ(40px) in the tilted scene; keep packets in front of it.
+      pk.style.transform = "translateZ(80px)";
       plane.appendChild(pk);
       const a = pk.animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], {
         duration: 1100,
@@ -373,7 +375,7 @@ export function LiveExample() {
 
   return (
     <div ref={root}>
-      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 min-[900px]:mb-14">
         <b className="text-xs tracking-[0.08em] text-muted-foreground uppercase">Partnerships profile</b>
         <span className="text-xs text-muted-foreground/70">Illustrative example</span>
       </div>

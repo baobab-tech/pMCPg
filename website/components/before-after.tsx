@@ -28,7 +28,7 @@ const CARDS = [
   {
     before: {
       title: "Tied to a vendor",
-      body: "claude.ai and ChatGPT connectors live in the vendor's cloud, under your vendor account.",
+      body: "Claude and ChatGPT connectors live in the vendor's cloud, under your vendor account.",
     },
     after: {
       title: "Yours",
