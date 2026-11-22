@@ -1,0 +1,209 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Theme tokens follow the gateway's web UI (ui/app/globals.css), plus a few for the site. */
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-warn: var(--warn);
+  --color-ok: var(--ok);
+  --color-panel: var(--panel);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-display);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --radius: 0.625rem;
+  --brand: oklch(0.52 0.105 223.128);
+  --brand-soft: oklch(0.52 0.105 223.128 / 12%);
+  --warn: oklch(0.6 0.15 55);
+  --ok: oklch(0.6 0.15 150);
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.145 0 0);
+  --panel: oklch(0.965 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.52 0.105 223.128);
+  --primary-foreground: oklch(0.984 0.019 200.873);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.5 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.708 0 0);
+  --shadow: 0 30px 60px -30px oklch(0.2 0 0 / 25%);
+}
+
+.dark {
+  --brand: oklch(0.715 0.143 215.221);
+  --brand-soft: oklch(0.715 0.143 215.221 / 14%);
+  --warn: oklch(0.78 0.13 65);
+  --ok: oklch(0.8 0.17 150);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --panel: oklch(0.235 0 0);
+  --card: oklch(0.19 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.715 0.143 215.221);
+  --primary-foreground: oklch(0.18 0.03 225);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --shadow: 0 30px 60px -20px oklch(0 0 0 / 80%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans scroll-smooth;
+    scroll-padding-top: 72px;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading;
+  }
+}
+
+/* Yellow highlighter: sweeps in once. */
+.hl {
+  color: #111;
+  background: linear-gradient(104deg, #fde04700 0.9%, #fde047 2.4%, #facc15 50%, #fde047d9 96%, #fde04700 99%);
+  background-repeat: no-repeat;
+  border-radius: 0.35em 0.2em 0.4em 0.25em;
+  padding: 0.02em 0.3em;
+  margin: 0 -0.05em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-weight: 600;
+  animation: hl 0.9s 0.35s cubic-bezier(0.6, 0, 0.2, 1) both;
+}
+@keyframes hl {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+/* Window chrome shared by the hero pictures. */
+.win {
+  @apply rounded-2xl border bg-card;
+  box-shadow: var(--shadow);
+}
+.dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 10%, transparent) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+/* Help article body (Markdown from help/). */
+.prose-help {
+  @apply text-[15px] leading-7;
+}
+.prose-help h2 {
+  @apply mt-10 mb-3 text-xl font-semibold;
+}
+.prose-help p,
+.prose-help ul,
+.prose-help ol {
+  @apply my-3;
+}
+.prose-help ul {
+  @apply list-disc pl-6;
+}
+.prose-help ol {
+  @apply list-decimal pl-6;
+}
+.prose-help li {
+  @apply my-1.5;
+}
+.prose-help a {
+  @apply text-brand underline underline-offset-3;
+}
+.prose-help code {
+  @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.88em];
+}
+.prose-help pre {
+  @apply my-4 overflow-x-auto rounded-lg border bg-muted/50 p-3 text-sm;
+}
+.prose-help pre code {
+  @apply bg-transparent p-0;
+}
+.prose-help strong {
+  @apply font-semibold text-foreground;
+}
+.prose-help .app-link {
+  @apply font-medium text-foreground;
+}
+.prose-help .help-table {
+  @apply my-4 overflow-x-auto;
+}
+.prose-help table {
+  @apply w-full text-sm;
+}
+.prose-help th,
+.prose-help td {
+  @apply border-b px-3 py-2 text-left align-top;
+}
+.prose-help th {
+  @apply font-medium text-muted-foreground;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
