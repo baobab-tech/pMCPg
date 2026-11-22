@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pMCPg mockup</title>
+<style>
+:root{--bg:#0a0a0a;--card:#141414;--card2:#1b1b1b;--fg:#fafafa;--mut:#a1a1a1;--dim:#6b6b6b;--bd:rgb(255 255 255/.1);--bd2:rgb(255 255 255/.18);
+ --brand:#3db8d8;--soft:rgb(61 184 216/.14);--warn:#f0a35e;--wsoft:rgb(240 163 94/.14);--claude:#d97757;--ok:#4ade80}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,sans-serif;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgb(10 10 10/.7);border-bottom:1px solid var(--bd)}
+header .wrap{display:flex;gap:20px;align-items:center;height:56px}
+header nav{display:flex;gap:16px;color:var(--mut);font-size:14px;margin-left:auto}
+.badge{border:1px solid var(--bd2);border-radius:99px;padding:2px 10px;font-size:12px;color:var(--brand)}
+section{padding:96px 0;border-bottom:1px dashed var(--bd);position:relative}
+.tag{position:absolute;top:12px;left:16px;right:16px;font:11px monospace;color:var(--warn)}
+.ph{border:1px dashed var(--warn);border-radius:12px;color:var(--warn);font:12px monospace;padding:10px;text-align:center}
+h1{font-size:clamp(34px,5.4vw,60px);line-height:1.04;letter-spacing:-.025em}
+h2{font-size:clamp(24px,3.5vw,36px);margin-bottom:24px}
+.mut{color:var(--mut)}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media(max-width:900px){header nav{display:none}}
+
+/* hero */
+.hero{overflow-x:clip;text-align:center;padding-top:72px;padding-bottom:40px;
+ background:radial-gradient(ellipse 50% 40% at 50% 10%,var(--soft),transparent 70%)}
+.seg{display:inline-flex;position:relative;border:1px solid var(--bd2);border-radius:99px;padding:4px;margin-bottom:28px;background:var(--card);max-width:100%}
+.seg button{position:relative;z-index:1;background:none;border:0;color:var(--mut);padding:8px 16px;border-radius:99px;cursor:pointer;font:inherit;font-size:14px;white-space:nowrap}
+@media(max-width:480px){.seg button{padding:8px 9px;font-size:12.5px}}
+.seg button.on{color:#000;font-weight:600}
+.seg .pill{position:absolute;top:4px;bottom:4px;border-radius:99px;background:var(--brand);transition:all .35s cubic-bezier(.3,1.4,.5,1)}
+.fade{transition:opacity .25s,transform .25s}.fade.out{opacity:0;transform:translateY(8px)}
+#copy{max-width:760px;margin:0 auto}
+#p{margin:18px auto 0;font-size:18px;max-width:640px}
+.cta{display:flex;gap:12px;margin:28px 0 0;flex-wrap:wrap;justify-content:center}
+.btn{padding:11px 20px;border-radius:10px;border:1px solid var(--bd2);text-decoration:none;font-size:14px}
+.btn.p{background:var(--brand);color:#000;border:0;font-weight:600}
+.code{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:nowrap;font:13px ui-monospace,Menlo,monospace}
+
+/* ---------- the live example ---------- */
+.ex{margin-top:56px;text-align:left}
+.ex-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ex-head b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.ex-head span{font-size:12px;color:var(--dim)}
+.stage{perspective:1600px}
+.plane{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,.9fr);gap:72px;align-items:center;
+ transform-style:preserve-3d;transform:rotateX(var(--rx,9deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out;padding:28px 0}
+.plane::before{content:"";position:absolute;inset:-40px -60px;transform:translateZ(-80px);
+ background-image:radial-gradient(rgb(255 255 255/.09) 1px,transparent 1.2px);background-size:22px 22px;
+ -webkit-mask:radial-gradient(ellipse 60% 60% at 50% 50%,#000,transparent 75%);mask:radial-gradient(ellipse 60% 60% at 50% 50%,#000,transparent 75%)}
+svg.wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;transform:translateZ(-10px)}
+.wire{fill:none;stroke:var(--bd2);stroke-width:1.5}
+.wire.live{stroke:var(--brand);filter:drop-shadow(0 0 6px var(--brand))}
+.wire.off{stroke-dasharray:4 6;opacity:.5}
+.win{background:var(--card);border:1px solid var(--bd2);border-radius:14px;box-shadow:0 30px 60px -20px rgb(0 0 0/.8)}
+.bar{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--bd);font-size:12px;color:var(--mut)}
+.bar i{width:9px;height:9px;border-radius:50%;background:#333;display:inline-block}
+.bar em{margin-left:auto;font-style:normal;font-size:11px;color:var(--dim)}
+
+/* app column: Claude window with two ghost apps behind */
+.apps{position:relative;transform-style:preserve-3d}
+.ghost{position:absolute;inset:0;border-radius:14px;border:1px solid var(--bd);background:var(--card2);padding:9px 12px;font-size:11px;color:var(--dim)}
+.ghost.g1{transform:translate3d(-18px,-22px,-60px)}.ghost.g2{transform:translate3d(-36px,-44px,-120px);opacity:.6}
+.chat{position:relative;transform:translateZ(0);min-height:300px;display:flex;flex-direction:column}
+.chat .body{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1;font-size:13.5px}
+.u{align-self:flex-end;background:var(--card2);border:1px solid var(--bd);border-radius:12px 12px 2px 12px;padding:9px 12px;max-width:92%;min-height:20px}
+.a{display:flex;flex-direction:column;gap:6px}
+.tu{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);border:1px solid var(--bd);border-radius:7px;padding:3px 8px;
+ opacity:0;transform:translateY(4px);transition:all .3s}
+.tu.show{opacity:1;transform:none}.tu::before{content:"⚙";color:var(--claude)}
+.tu.done::after{content:"✓";color:var(--ok)}
+.ans{color:var(--fg);opacity:0;transition:opacity .5s;line-height:1.55}.ans.show{opacity:1}
+.ph-mask{font:12.5px ui-monospace,Menlo,monospace;background:var(--soft);color:var(--brand);padding:1px 5px;border-radius:4px}
+.caret::after{content:"▍";color:var(--claude);animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+.also{font-size:11.5px;color:var(--dim);margin-top:10px;text-align:center}
+
+/* gateway */
+.gw{transform:translateZ(40px);border-color:rgb(61 184 216/.55);box-shadow:0 0 0 1px rgb(61 184 216/.15),0 0 80px -10px rgb(61 184 216/.35),0 30px 60px -20px rgb(0 0 0/.8)}
+.gw .bar{color:var(--fg)}.gw .bar b{color:var(--brand)}
+.prof{font-size:11px;border:1px solid rgb(61 184 216/.4);color:var(--brand);border-radius:99px;padding:1px 8px;margin-left:auto}
+.rows{padding:6px 0}
+.row{display:grid;grid-template-columns:22px 74px 1fr;align-items:center;gap:6px;padding:7px 14px;font-size:13px;transition:background .3s}
+.row .ic{color:var(--dim);transition:color .3s;text-align:center}
+.row .nm{color:var(--mut)}
+.row .st{font:11.5px ui-monospace,Menlo,monospace;color:var(--dim);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.on{background:var(--soft)}.row.on .ic,.row.on .nm{color:var(--brand)}.row.on .st{color:var(--fg)}
+.row.did .ic{color:var(--brand)}.row.did .st{color:var(--mut)}
+.sees{border-top:1px solid var(--bd);padding:9px 14px;font-size:11.5px;color:var(--mut)}
+.sees code{color:var(--fg);background:rgb(255 255 255/.06);padding:1px 5px;border-radius:4px}
+
+/* servers */
+.srv{display:flex;flex-direction:column;gap:14px}
+.s{padding:11px 13px;transition:all .3s;transform:translateZ(0)}
+.s .t{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.s .t .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:all .3s}
+.s .d{font-size:12px;color:var(--mut)}
+.s .r{font:11.5px ui-monospace,Menlo,monospace;color:var(--dim);margin-top:6px;min-height:17px}
+.s.on{border-color:var(--brand);box-shadow:0 0 30px -6px var(--brand)}.s.on .dot{background:var(--brand);box-shadow:0 0 8px var(--brand)}
+.s.did .dot{background:var(--ok)}.s.did .r{color:var(--fg)}
+.s.hid{opacity:.45;border-style:dashed}.s.hid .r{color:var(--warn)}
+
+/* packets */
+.pk{position:absolute;left:0;top:0;offset-anchor:50% 50%;offset-rotate:0deg;z-index:5;transform:translateZ(60px);
+ font:11.5px ui-monospace,Menlo,monospace;white-space:nowrap;padding:4px 9px;border-radius:99px;background:#0d2730;color:var(--brand);
+ border:1px solid var(--brand);box-shadow:0 0 18px -2px var(--brand);pointer-events:none}
+.pk.raw{background:#2d1f12;color:var(--warn);border-color:var(--warn);box-shadow:0 0 18px -2px var(--warn)}
+.pk.key::before{content:"🔑 "}
+
+.ex-foot{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:22px}
+.ctl{width:34px;height:34px;border-radius:50%;border:1px solid var(--bd2);background:var(--card);color:var(--fg);cursor:pointer;font-size:12px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stp{font-size:12px;color:var(--dim);border-top:2px solid var(--bd);padding-top:8px;transition:all .3s;cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;font-family:inherit}
+.stp b{display:block;font-weight:600;color:inherit}
+.stp.on{color:var(--fg);border-color:var(--brand)}.stp.did{color:var(--mut);border-color:rgb(61 184 216/.4)}
+.cap{font-size:14px;color:var(--mut);margin-top:14px;min-height:44px;max-width:820px}
+.cap b{color:var(--fg);font-weight:600}
+
+@media(max-width:860px){
+ .plane{grid-template-columns:minmax(0,1fr);gap:56px;--rx:0deg!important;--ry:0deg!important}
+ .srv{flex-direction:row}.s{flex:1;min-width:0;padding:9px 10px}.s .d{display:none}.s .t{font-size:12.5px}.s .r{font-size:10.5px}
+ .ghost{display:none}.chat{min-height:0}
+ .steps{grid-template-columns:repeat(5,1fr)}.stp b{display:none}.stp{font-size:11px}
+}
+
+
+/* ---------- hero 1: before / after ---------- */
+.h1x{padding:64px 0 88px;overflow-x:clip;background:radial-gradient(ellipse 45% 45% at 75% 35%,var(--soft),transparent 70%)}
+.hgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:56px;align-items:center}
+.hcopy #copy{margin:0}.hcopy #p{margin:18px 0 0}.hcopy .cta{justify-content:flex-start}
+@media(max-width:900px){.hgrid{grid-template-columns:minmax(0,1fr);gap:40px}}
+.sw{position:relative;display:inline-flex;border:1px solid var(--bd2);border-radius:10px;padding:3px;background:var(--card);margin-bottom:22px}
+.sw button{position:relative;z-index:1;border:0;background:none;color:var(--mut);font:inherit;font-size:13px;padding:6px 14px;border-radius:7px;cursor:pointer}
+.sw button.on{color:var(--fg)}
+.sw .knob{position:absolute;top:3px;bottom:3px;border-radius:7px;background:#2a2a2a;border:1px solid var(--bd2);transition:all .35s cubic-bezier(.3,1.3,.5,1)}
+.ba.after .sw .knob{background:#0d2730;border-color:var(--brand)}
+.bastage{position:relative;padding:52px 0 0 30px}
+@media(min-width:901px){.ba{min-height:670px}.hgrid{align-items:start}.hcopy{padding-top:40px}}
+.gwin{position:absolute;left:0;right:30px;top:0;height:70px;border:1px solid var(--bd);background:var(--card2);border-radius:12px;padding:8px 12px;font-size:11.5px;display:flex;justify-content:space-between;gap:8px;color:var(--dim)}
+.gwin.gw1{left:15px;right:15px;top:26px}
+.gv{color:var(--warn);transition:color .3s}.ba.after .gv{color:var(--brand)}
+.cw{position:relative;overflow:hidden}
+.cw .bar em{transition:color .3s;color:var(--warn)}.ba.after .cw .bar em{color:var(--ok)}
+.list{max-height:330px;transition:max-height .5s .35s cubic-bezier(.6,0,.3,1)}
+.cn{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;height:46px;padding:0 14px;border-bottom:1px solid var(--bd);font-size:14px;
+ transition:transform .55s cubic-bezier(.6,0,.3,1),opacity .4s;transition-delay:calc(var(--i)*45ms)}
+.cn .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:10.5px;font-weight:700;color:#fff;background:color-mix(in oklab,var(--c) 70%,#000)}
+.stt{font-size:12px}.stt.ok{color:var(--mut)}.stt.bad{color:var(--warn)}.stt.bad::before{content:"⚠ "}
+.ba.after .list{max-height:0}
+.ba.after .cn{transform:translateY(calc(var(--i) * -46px)) scale(.94);opacity:0}
+.one{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s .45s cubic-bezier(.6,0,.3,1),opacity .4s .45s}
+.ba.after .one{max-height:200px;opacity:1}
+.oh{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:16px 14px 10px}
+.lg{width:34px;height:34px;border-radius:9px;background:var(--brand);color:#000;display:grid;place-items:center;font-size:16px;box-shadow:0 0 24px -4px var(--brand)}
+.okp{font-size:12px;color:var(--ok)}
+.behind{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 16px 62px}
+.behind span{font-size:11.5px;border:1px solid var(--bd2);border-radius:6px;padding:2px 7px;color:var(--mut);opacity:0;transform:translateY(-6px);transition:all .3s}
+.ba.after .behind span{opacity:1;transform:none}
+.ba.after .behind span:nth-child(1){transition-delay:.75s}.ba.after .behind span:nth-child(2){transition-delay:.8s}.ba.after .behind span:nth-child(3){transition-delay:.85s}
+.ba.after .behind span:nth-child(4){transition-delay:.9s}.ba.after .behind span:nth-child(5){transition-delay:.95s}.ba.after .behind span:nth-child(6){transition-delay:1s}.ba.after .behind span:nth-child(7){transition-delay:1.05s}
+.cfoot{padding:10px 14px;font-size:12px;color:var(--warn);border-top:1px solid var(--bd)}.ba.after .cfoot{color:var(--brand)}
+.gains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+@media(max-width:560px){.gains{grid-template-columns:minmax(0,1fr)}}
+.gn{border:1px solid var(--bd);border-radius:12px;padding:12px 14px;background:var(--card);transition:border-color .3s}
+.gn b{display:block;font-size:13.5px;color:var(--warn);margin-bottom:3px;transition:color .3s}
+.gn p{font-size:12.5px;color:var(--mut)}
+.ba.after .gn{border-color:rgb(61 184 216/.35)}.ba.after .gn b{color:var(--brand)}
+
+@media(max-width:560px){
+ .bastage{padding:48px 0 0 16px}.gwin{right:16px;height:60px}.gwin.gw1{left:8px;right:8px;top:24px}.gv{display:none}
+ .cw .bar{flex-wrap:wrap}.cw .bar em{margin-left:0;width:100%}
+ .cn{font-size:13px;gap:8px;padding:0 10px}.stt{font-size:11px;text-align:right}
+ .oh{grid-template-columns:34px 1fr}.okp{grid-column:2}.behind{padding-left:14px}
+}
+.swap{transition:opacity .2s}.swap.out{opacity:0}
+
+/* yellow highlighter */
+mark.hl{color:#111;background:linear-gradient(104deg,rgb(253 224 71/0) .9%,#fde047 2.4%,#facc15 50%,rgb(253 224 71/.85) 96%,rgb(253 224 71/0) 99%);
+ background-repeat:no-repeat;background-size:100% 100%;border-radius:.35em .2em .4em .25em;padding:.02em .3em;margin:0 -.05em;
+ -webkit-box-decoration-break:clone;box-decoration-break:clone;font-weight:600;animation:hl .9s .35s cubic-bezier(.6,0,.2,1) both}
+mark.hl.sm{font-weight:600;padding:0 .3em}
+@keyframes hl{from{background-size:0% 100%}to{background-size:100% 100%}}
+.move{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:center;margin-top:20px;padding:18px 20px;border-radius:14px;text-decoration:none;color:var(--mut);font-size:14px;
+ border:1px solid rgb(61 184 216/.4);background:linear-gradient(100deg,var(--soft),transparent 70%);transition:border-color .2s,transform .2s}
+.move:hover{border-color:var(--brand);transform:translateY(-1px)}
+.move b{display:block;color:var(--fg);font-size:16px;margin-bottom:2px}
+.mv-ic{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:var(--brand);color:#000;font-size:20px}
+.mv-go{color:var(--brand);font-weight:600;white-space:nowrap}
+@media(max-width:560px){.move{grid-template-columns:minmax(0,1fr)}.mv-ic{display:none}}
+/* rest of page */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.card h3{font-size:16px;margin-bottom:6px}
+.card .n{font:12px monospace;color:var(--brand);margin-bottom:8px}
+.spot:hover{border-color:var(--brand)}
+.spot::before{content:"";position:absolute;inset:0;background:radial-gradient(240px circle at var(--x,50%) var(--y,50%),var(--soft),transparent 60%);opacity:0;transition:opacity .3s}
+.spot:hover::before{opacity:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.two{grid-template-columns:1fr}}
+.odo{font-size:72px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid var(--bd);padding:10px;text-align:left}th{color:var(--mut);font-weight:500}
+.tw{overflow-x:auto}
+.chips{display:flex;gap:10px;flex-wrap:wrap}.chips span{border:1px solid var(--bd);border-radius:99px;padding:6px 14px}
+footer{padding:40px 0;color:var(--mut);font-size:13px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><strong>◆ pMCPg</strong><span class="badge">v0.1.3</span>
+<nav><a href="#how">How it works</a><a href="#privacy">Privacy</a><a href="#teams">Teams</a><a href="#install">Install</a><a href="https://github.com/baobab-tech/pMCPg">GitHub ★</a></nav></div></header>
+
+<section class="h1x"><span class="tag">1 · HERO 1 — audience toggle · before/after flips on its own (click to control) · rows fold into one pMCPg row · cards swap pain → gain</span>
+<div class="wrap hgrid">
+ <div class="hcopy">
+  <div class="seg" id="seg"><span class="pill"></span>
+   <button data-a="0" class="on">New to connectors</button><button data-a="1">I use connectors</button><button data-a="2">IT teams</button></div>
+  <div class="fade" id="copy"><h1 id="h"></h1><p class="mut" id="p"></p></div>
+  <div class="cta"><a class="btn p" href="#install">Install</a><a class="btn" href="#how" id="c2"></a></div>
+  <div class="code" style="margin-top:22px">curl -fsSL https://github.com/baobab-tech/pMCPg/releases/latest/download/install.sh | sh</div>
+  <p class="mut" style="font-size:12px;margin-top:8px">[OS tabs: macOS/Linux · Windows · copy button]</p>
+ </div>
+
+ <div class="ba" id="ba">
+  <div class="sw" id="sw"><span class="knob"></span><button data-s="0" class="on">Without pMCPg</button><button data-s="1">With pMCPg</button></div>
+  <div class="bastage" id="bastage">
+   <div class="gwin gw2"><span class="gt">VS Code · mcp.json</span><span class="gv" data-b="6 servers, keys copied in" data-a="1 entry: pMCPg">6 servers, keys copied in</span></div>
+   <div class="gwin gw1"><span class="gt">LM Studio · mcp.json</span><span class="gv" data-b="5 servers, keys copied in" data-a="1 entry: pMCPg">5 servers, keys copied in</span></div>
+   <div class="win cw">
+    <div class="bar"><i></i><i></i><i></i>&nbsp;Claude Desktop · Connectors<em id="cnt">6 connectors · 3 need attention</em></div>
+    <div class="one" id="one">
+     <div class="oh"><span class="lg">◆</span><div><b>pMCPg</b><div class="mut" style="font-size:12px">Private MCP Gateway · on this computer</div></div><span class="okp">● all healthy</span></div>
+     <div class="behind"><span>Figma</span><span>Linear</span><span>Slack</span><span>Notion</span><span>Research MCP</span><span>OpenAlex</span></div>
+    </div>
+    <div class="list" id="list">
+     <div class="cn" style="--i:0"><span class="ic" style="--c:#a259ff">F</span>Figma<span class="stt ok">Signed in</span></div>
+     <div class="cn" style="--i:1"><span class="ic" style="--c:#5e6ad2">L</span>Linear<span class="stt bad">Sign-in expired</span></div>
+     <div class="cn" style="--i:2"><span class="ic" style="--c:#7a4fd0">S</span>Slack<span class="stt ok">Signed in</span></div>
+     <div class="cn" style="--i:3"><span class="ic" style="--c:#888">N</span>Notion<span class="stt bad">API key in config file</span></div>
+     <div class="cn" style="--i:4"><span class="ic" style="--c:#2f8f6f">R</span>Research MCP<span class="stt bad">Token in config file</span></div>
+     <div class="cn" style="--i:5"><span class="ic" style="--c:#e8a33d">OA</span>OpenAlex<span class="stt ok">No sign-in</span></div>
+    </div>
+    <div class="cfoot" id="cfoot" data-b="The AI loads every tool from every connector." data-a="The AI sees 2 tools and searches for the rest.">The AI loads every tool from every connector.</div>
+   </div>
+  </div>
+  <div class="gains" id="gains">
+   <div class="gn"><b data-b="Set up in every app" data-a="Control">Set up in every app</b><p data-b="Each app keeps its own list, keys and sign-ins." data-a="Rules, approvals and profiles decide what each AI can call.">Each app keeps its own list, keys and sign-ins.</p></div>
+   <div class="gn"><b data-b="No record" data-a="Visibility">No record</b><p data-b="Nothing shows what the AI read or sent." data-a="An activity log of every search and call, on your computer.">Nothing shows what the AI read or sent.</p></div>
+   <div class="gn"><b data-b="Tied to a vendor" data-a="Yours">Tied to a vendor</b><p data-b="claude.ai and ChatGPT connectors live in the vendor's cloud, under your vendor account." data-a="Connectors and sign-ins stay on your computer, in your keychain. Any MCP app can use them.">claude.ai and ChatGPT connectors live in the vendor's cloud, under your vendor account.</p></div>
+  </div>
+ </div>
+</div></section>
+
+<section class="hero"><span class="tag">2 · HERO 2 — live example plays when scrolled into view (pause / click a step) · subtle tilt, flattens on scroll</span>
+<div class="wrap">
+ <h2 style="text-align:center;margin-bottom:8px">One question, two connectors</h2>
+ <p class="mut" style="text-align:center;max-width:620px;margin:0 auto">Follow one request from Claude, through pMCPg, to DevExplorer and your CRM and back.</p>
+ <!-- live example -->
+ <div class="ex">
+  <div class="ex-head"><b>Partnerships profile</b><span>Illustrative example</span></div>
+  <div class="stage" id="stage"><div class="plane" id="plane">
+   <svg class="wires" id="wires"></svg>
+
+   <div class="apps" id="apps">
+    <div class="ghost g2">LM Studio</div><div class="ghost g1">VS Code</div>
+    <div class="win chat" id="chat">
+     <div class="bar"><i></i><i></i><i></i>&nbsp;Claude Desktop<em>cloud model</em></div>
+     <div class="body">
+      <div class="u" id="q"></div>
+      <div class="a">
+       <span class="tu" id="tu1">search_tools</span>
+       <span class="tu" id="tu2">call_tool · DevExplorer</span>
+       <span class="tu" id="tu3">call_tool · CRM MCP</span>
+       <div class="ans" id="ans">3 health projects in Kenya publish IATI data. Your contact at the lead funder: <span class="ph-mask">[EMAIL_1]</span></div>
+      </div>
+     </div>
+    </div>
+    <div class="also">VS Code and LM Studio connect to the same gateway.</div>
+   </div>
+
+   <div class="win gw" id="gw">
+    <div class="bar"><b>◆ pMCPg</b><span class="prof">Partnerships profile</span></div>
+    <div class="rows">
+     <div class="row" id="r-search"><span class="ic">⌕</span><span class="nm">Search</span><span class="st">—</span></div>
+     <div class="row" id="r-rule"><span class="ic">⛉</span><span class="nm">Rules</span><span class="st">—</span></div>
+     <div class="row" id="r-key"><span class="ic">⚿</span><span class="nm">Sign-in</span><span class="st">—</span></div>
+     <div class="row" id="r-mask"><span class="ic">◐</span><span class="nm">Mask</span><span class="st">—</span></div>
+     <div class="row" id="r-log"><span class="ic">≡</span><span class="nm">Log</span><span class="st">—</span></div>
+    </div>
+    <div class="sees"><mark class="hl sm">Runs on your computer</mark> The AI sees 2 tools: <code>search_tools</code> <code>call_tool</code></div>
+   </div>
+
+   <div class="srv" id="srv">
+    <div class="win s" id="s-dev"><div class="t"><span class="dot"></span>DevExplorer</div><div class="d">IATI aid data</div><div class="r"></div></div>
+    <div class="win s" id="s-oa"><div class="t"><span class="dot"></span>CRM MCP</div><div class="d">Your contacts · custom</div><div class="r"></div></div>
+    <div class="win s" id="s-gm"><div class="t"><span class="dot"></span>OpenAlex</div><div class="d">Research papers</div><div class="r"></div></div>
+   </div>
+  </div></div>
+
+  <div class="ex-foot">
+   <button class="ctl" id="pp" aria-label="Pause">❚❚</button>
+   <div class="steps" id="steps"></div>
+  </div>
+  <p class="cap" id="cap"></p>
+ </div>
+</div></section>
+
+<section id="how"><span class="tag">3 · HOW IT WORKS — 4 steps follow the toggle</span>
+<div class="wrap"><h2>How it works</h2><div class="grid" id="how4"></div>
+ <a class="move" href="guide-mockup.html"><span class="mv-ic">⇄</span><span><b>Move over your Claude connectors</b>
+ Claude keeps the connectors you add in Anthropic's cloud, so no app can import them. Bring them over once: about a minute each.</span><span class="mv-go">Guide →</span></a>
+</div></section>
+
+<section><span class="tag">4 · FEATURES — bento, React Bits SpotlightCard (hover the cards)</span>
+<div class="wrap"><h2>What it does</h2><div class="grid">
+ <div class="card spot"><h3>One connection</h3><p class="mut">Two tools, any number of servers.</p></div>
+ <div class="card spot"><h3>Keys in your keychain</h3><p class="mut">OAuth sign-in and refresh. The AI never sees a key.</p></div>
+ <div class="card spot"><h3>Personal data masking <span class="badge">Beta</span></h3><p class="mut">Masks emails, phone numbers and IDs in tool results before a cloud model reads them. It doesn't touch what you type into the chat. Catches common patterns; it can miss things.</p></div>
+ <div class="card spot"><h3>Profiles</h3><p class="mut">One URL per purpose. An agent sees only its profile.</p></div>
+ <div class="card spot"><h3>Approvals</h3><p class="mut">Allow, ask or block, with one sentence saying why.</p></div>
+ <div class="card spot"><h3>Tool pinning</h3><p class="mut">A changed tool is quarantined until you review it.</p></div>
+ <div class="card spot"><h3>Secret scanning</h3><p class="mut">Keys in results or arguments are redacted.</p></div>
+ <div class="card spot"><h3>Activity log</h3><p class="mut">Encrypted. Values excluded. 30 days by default.</p></div>
+</div></div></section>
+
+<section id="privacy"><span class="tag">5 · WHAT LEAVES YOUR MACHINE — 2×2 grid</span>
+<div class="wrap"><h2>What leaves your machine</h2><div class="tw">
+<table><tr><th>AI model</th><th>MCP servers</th><th>What leaves</th><th>Suggested</th></tr>
+<tr><td>Local</td><td>Local</td><td style="color:var(--brand)">Nothing</td><td>Masking off</td></tr>
+<tr><td>Local</td><td>Some remote</td><td>What the AI sends to those servers</td><td>Rules + approvals</td></tr>
+<tr><td>Cloud</td><td>Local</td><td>Tool results, inside the prompt</td><td>Masking standard/strict</td></tr>
+<tr><td>Cloud</td><td>Some remote</td><td>Results to the provider + what goes to servers</td><td>Masking + rules + approvals</td></tr></table></div></div></section>
+
+<section id="teams"><span class="tag">6 · TEAMS / IT — works today vs coming</span>
+<div class="wrap"><h2>For teams and IT</h2><div class="two">
+ <div class="card"><div class="n">Works today</div><ul class="mut" style="padding-left:18px"><li>Profiles with separate URLs and tokens</li><li>Policy presets: open, balanced, careful</li><li>Approvals and privacy levels per profile</li><li>Tool pinning, secret scanning</li><li>Encrypted activity log, JSON-lines export</li><li>Docker images: slim, full</li></ul></div>
+ <div class="card" style="opacity:.7"><div class="n" style="color:var(--mut)">Coming · self-hosted only</div><ul class="mut" style="padding-left:18px"><li>Managed setup through MDM</li><li>Org policy packs</li><li>Private org catalog</li><li>Team gateway on a server</li><li>Audit export to your log system</li><li>Keys from your secret manager</li></ul></div>
+</div></div></section>
+
+<section id="install"><span class="tag">7 · WORKS WITH + INSTALL</span>
+<div class="wrap"><h2>Install</h2><div class="chips" style="margin-bottom:20px"><span>Claude Desktop</span><span>Claude Code</span><span>VS Code</span><span>LM Studio</span></div>
+<div class="ph">[tabs: One line · npm · Homebrew · Docker]</div></div></section>
+
+<footer><div class="wrap">Apache 2.0 · GitHub · Docs · Security · Roadmap · Built by Baobab Tech</div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+/* ---------- audience toggle ---------- */
+const A=[
+ {h:"Let your AI app use your tools, safely.",p:"Connectors (MCP servers) let Claude and other AI apps search papers, read files or query data. pMCPg <mark class=\"hl\">runs on your computer</mark>, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",c:"How it works",
+  s:["Install pMCPg","Add a connector: paste its URL, sign in","Connect your AI app in one click","Ask your AI"]},
+ {h:"Set up each connector once. Use it in every AI app.",p:"Import the connectors you already added to Claude Desktop, Claude Code, VS Code or LM Studio, or paste their URLs from claude.ai and ChatGPT. Each app then connects once, to pMCPg. Keys live in your keychain, not in config files.",c:"Import your connectors",
+  s:["Install pMCPg","Import from your desktop apps","Move your Claude connectors: copy each URL","Swap each app's list for one pMCPg entry"]},
+ {h:"Decide which connectors your team's AI can use, and what it can do with them.",p:"Profiles, approval rules, personal data masking and an encrypted activity log, on each machine or in Docker. No cloud service, no account. Org-wide management is coming.",c:"Read the security model",
+  s:["Run on each machine or in Docker","Create a profile per purpose","Pick a policy preset and privacy level","Review approvals and the activity log"]}];
+const seg=$('seg'),pill=seg.querySelector('.pill'),copy=$('copy');
+function aud(i,first){const a=A[i];
+ seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.a==i));
+ const b=seg.querySelector(`[data-a="${i}"]`);pill.style.left=b.offsetLeft+'px';pill.style.width=b.offsetWidth+'px';
+ copy.classList.add('out');setTimeout(()=>{h.textContent=a.h;p.innerHTML=a.p;c2.textContent=a.c;copy.classList.remove('out')},first?0:220);
+ $('how4').innerHTML=a.s.map((t,k)=>`<div class="card"><div class="n">0${k+1}</div><h3>${t}</h3><div class="ph" style="margin-top:10px">[icon / mini anim]</div></div>`).join('');}
+seg.onclick=e=>{if(e.target.dataset.a)aud(+e.target.dataset.a)};aud(0,true);
+
+/* ---------- live example ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const plane=$('plane'),svg=$('wires');
+const W={}; // wire paths by name
+function box(el){let x=0,y=0,e=el;while(e&&e!==plane){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent}return{x,y,w:el.offsetWidth,h:el.offsetHeight}}
+function curve(a,b,vert){if(vert){const m=(a[1]+b[1])/2;return`M${a[0]},${a[1]} C${a[0]},${m} ${b[0]},${m} ${b[0]},${b[1]}`}
+ const m=(a[0]+b[0])/2;return`M${a[0]},${a[1]} C${m},${a[1]} ${m},${b[1]} ${b[0]},${b[1]}`}
+function layout(){const c=box($('chat')),g=box($('gw'));const vert=g.y>c.y+c.h-4;
+ W.app=vert?curve([c.x+c.w/2,c.y+c.h],[g.x+g.w/2,g.y],1):curve([c.x+c.w,c.y+c.h/2],[g.x,g.y+g.h/2]);
+ for(const k of['dev','oa','gm']){const s=box($('s-'+k));
+  W[k]=vert?curve([g.x+g.w/2,g.y+g.h],[s.x+s.w/2,s.y],1):curve([g.x+g.w,g.y+g.h/2],[s.x,s.y+s.h/2]);}
+ svg.innerHTML=Object.entries(W).map(([k,d])=>`<path id="w-${k}" class="wire${k==='gm'?' off':''}" d="${d}"/>`).join('')}
+addEventListener('resize',layout);
+
+let paused=false,epoch=0;const live=new Set();
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function wait(ms,e){let t=0;while(t<ms){await sleep(50);if(e!==epoch)throw 0;if(!paused)t+=50}}
+async function travel(wire,{back,label,cls='',dur=1100},e){if(e!==epoch)throw 0;
+ const w=$('w-'+wire);w.classList.add('live');
+ const pk=document.createElement('div');pk.className='pk '+cls;pk.textContent=label;pk.style.offsetPath=`path('${W[wire]}')`;plane.appendChild(pk);
+ const a=pk.animate([{offsetDistance:'0%'},{offsetDistance:'100%'}],{duration:dur,easing:'cubic-bezier(.5,0,.3,1)',direction:back?'reverse':'normal',fill:'forwards'});
+ live.add(a);if(paused)a.pause();
+ try{await a.finished}catch{} live.delete(a);pk.remove();w.classList.remove('live');if(e!==epoch)throw 0}
+function row(id,st,state){const r=$('r-'+id);r.classList.remove('on','did');if(state)r.classList.add(state);if(st!==undefined)r.querySelector('.st').textContent=st}
+function srv(id,txt,state){const s=$('s-'+id);s.classList.remove('on','did','hid');if(state)s.classList.add(state);if(txt!==undefined)s.querySelector('.r').textContent=txt}
+async function type(el,txt,e){el.classList.add('caret');for(let i=1;i<=txt.length;i++){el.textContent=txt.slice(0,i);await wait(22,e)}el.classList.remove('caret')}
+
+const Q="Which health projects in Kenya publish IATI data, and who do we know at their funders?";
+const STEPS=[
+ ["You ask","You ask Claude a question that needs <b>two connectors</b>."],
+ ["Search","Claude sees <b>2 tools, not hundreds</b>. It searches; pMCPg returns <b>only the tools that match</b>: DevExplorer and your CRM. OpenAlex doesn't match, so its tools stay out of Claude's context."],
+ ["DevExplorer","pMCPg checks your rules (read-only, so allowed), <b>adds your saved sign-in</b>, and forwards the call. Claude never sees the key."],
+ ["CRM","Your CRM returns the funder contacts. <b>jane@funder.org becomes [EMAIL_1]</b> before the cloud model reads it."],
+ ["Answer","Claude answers. The activity log keeps <b>tool names and outcomes, not the data</b>."]];
+$('steps').innerHTML=STEPS.map((s,i)=>`<button class="stp" data-i="${i}">${i+1}<b>${s[0]}</b></button>`).join('');
+$('steps').onclick=e=>{const b=e.target.closest('.stp');if(b)start(+b.dataset.i)};
+function mark(i){[...$('steps').children].forEach((b,k)=>{b.classList.toggle('on',k===i);b.classList.toggle('did',k<i)});$('cap').innerHTML=STEPS[i][1]}
+
+function reset(){['search','rule','key','mask','log'].forEach(r=>row(r,'—'));['dev','oa'].forEach(s=>srv(s,''));srv('gm','');
+ $('q').textContent='';['tu1','tu2','tu3'].forEach(t=>$(t).className='tu');$('ans').classList.remove('show');
+ plane.querySelectorAll('.pk').forEach(p=>p.remove());live.clear();svg.querySelectorAll('.live').forEach(p=>p.classList.remove('live'))}
+function finalState(){row('search','2 matches','did');row('rule','read-only · allowed','did');row('key','saved sign-in added','did');row('mask','1 email → [EMAIL_1]','did');row('log','1 search · 2 calls','did');
+ srv('dev','3 activities','did');srv('oa','2 contacts','did');srv('gm','no match: left out','hid');$('q').textContent=Q;['tu1','tu2','tu3'].forEach(t=>$(t).className='tu show done');$('ans').classList.add('show')}
+
+// each step brings the scene to the end of that step; earlier steps are applied instantly
+const RUN=[
+ async e=>{await type($('q'),Q,e);await wait(500,e)},
+ async e=>{$('tu1').classList.add('show');await travel('app',{label:'search: IATI projects, contacts'},e);
+  row('search','2 matches','on');srv('gm','no match: left out','hid');await wait(700,e);
+  await travel('app',{back:1,label:'DevExplorer, CRM MCP'},e);row('search',undefined,'did');$('tu1').classList.add('done');await wait(400,e)},
+ async e=>{$('tu2').classList.add('show');await travel('app',{label:'call: DevExplorer'},e);
+  row('rule','read-only · allowed','on');await wait(650,e);row('rule',undefined,'did');row('key','saved sign-in added','on');await wait(650,e);row('key',undefined,'did');
+  await travel('dev',{label:'search activities',cls:'key'},e);srv('dev','3 activities','on');await wait(500,e);
+  await travel('dev',{back:1,label:'3 activities'},e);srv('dev',undefined,'did');await travel('app',{back:1,label:'3 activities'},e);$('tu2').classList.add('done');await wait(300,e)},
+ async e=>{$('tu3').classList.add('show');await travel('app',{label:'call: CRM MCP'},e);row('rule','read-only · allowed','on');await wait(400,e);row('rule',undefined,'did');
+  await travel('oa',{label:'find contacts'},e);srv('oa','2 contacts','on');await wait(500,e);
+  await travel('oa',{back:1,label:'jane@funder.org',cls:'raw'},e);srv('oa',undefined,'did');row('mask','1 email → [EMAIL_1]','on');await wait(900,e);row('mask',undefined,'did');
+  await travel('app',{back:1,label:'[EMAIL_1]'},e);$('tu3').classList.add('done');await wait(300,e)},
+ async e=>{row('log','1 search · 2 calls','on');$('ans').classList.add('show');await wait(3200,e);row('log',undefined,'did')}];
+
+async function start(from=0){const e=++epoch;reset();
+ if(reduce){finalState();mark(4);$('steps').querySelectorAll('.stp').forEach(b=>b.classList.add('did'));return}
+ // fast-forward earlier steps without animation
+ if(from>0){finalState();for(const s of['search','rule','key','mask','log'])row(s,'—');srv('dev','');srv('oa','');$('ans').classList.remove('show');['tu1','tu2','tu3'].forEach(t=>$(t).className='tu');
+  if(from>1){row('search','2 matches','did');$('tu1').className='tu show done'} if(from<2)srv('gm','')
+  if(from>2){row('rule','read-only · allowed','did');row('key','saved sign-in added','did');srv('dev','3 activities','did');$('tu2').className='tu show done'}
+  if(from>3){row('mask','1 email → [EMAIL_1]','did');srv('oa','2 contacts','did');$('tu3').className='tu show done'}}
+ try{for(let i=from;i<RUN.length;i++){mark(i);await RUN[i](e)}await wait(800,e);start(0)}catch{}}
+$('pp').onclick=()=>{paused=!paused;$('pp').textContent=paused?'▶':'❚❚';$('pp').setAttribute('aria-label',paused?'Play':'Pause');live.forEach(a=>paused?a.pause():a.play())};
+layout();
+// start when visible
+new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){start(0);o.disconnect()}},{threshold:.25}).observe(plane);
+
+
+/* ---------- hero 1: before / after ---------- */
+{const ba=$('ba'),sw=$('sw'),knob=sw.querySelector('.knob');let st=0,auto=true,tm;
+ const swapEls=ba.querySelectorAll('[data-b]');
+ function show(n){st=n;ba.classList.toggle('after',!!n);
+  sw.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s==n));
+  const b=sw.querySelector(`[data-s="${n}"]`);knob.style.left=b.offsetLeft+'px';knob.style.width=b.offsetWidth+'px';
+  $('cnt').textContent=n?'1 connector · all healthy':'6 connectors · 3 need attention';
+  swapEls.forEach(el=>{el.classList.add('swap','out');setTimeout(()=>{el.textContent=n?el.dataset.a:el.dataset.b;el.classList.remove('out')},reduce?0:200)})}
+ sw.onclick=e=>{const b=e.target.closest('button');if(!b)return;auto=false;clearTimeout(tm);show(+b.dataset.s)};
+ function cycle(){if(!auto)return;tm=setTimeout(()=>{show(st?0:1);cycle()},st?6000:2600)}
+ show(reduce?1:0);if(!reduce)cycle()}
+
+/* subtle depth: tilt with pointer, flatten as you scroll */
+if(!reduce){const st=$('stage');let px=0,py=0;
+ function tilt(){const t=st.getBoundingClientRect().top,s=Math.min(Math.max((innerHeight*.75-t)/(innerHeight*.6),0),1);plane.style.setProperty('--rx',(9-9*s+py*-4)+'deg');plane.style.setProperty('--ry',(px*5)+'deg')}
+ st.onpointermove=e=>{const r=st.getBoundingClientRect();px=(e.clientX-r.left)/r.width-.5;py=(e.clientY-r.top)/r.height-.5;tilt()};
+ st.onpointerleave=()=>{px=py=0;tilt()};addEventListener('scroll',tilt,{passive:true});tilt()}
+
+document.querySelectorAll('.spot').forEach(c=>c.onpointermove=e=>{const r=c.getBoundingClientRect();c.style.setProperty('--x',e.clientX-r.left+'px');c.style.setProperty('--y',e.clientY-r.top+'px')});
+</script>
+</body>
+</html>

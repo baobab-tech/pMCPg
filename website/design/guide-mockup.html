@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Move your Claude connectors · pMCPg</title>
+<style>
+:root{--bg:#0a0a0a;--card:#141414;--fg:#fafafa;--mut:#a1a1a1;--dim:#6b6b6b;--bd:rgb(255 255 255/.1);--bd2:rgb(255 255 255/.18);
+ --brand:#3db8d8;--soft:rgb(61 184 216/.14);--warn:#f0a35e;
+ /* Claude Desktop look, recreated */
+ --c-bg:#1f1f1e;--c-panel:#2a2a28;--c-panel2:#313130;--c-bd:rgb(255 255 255/.09);--c-fg:#ececea;--c-mut:#a3a29d;--c-blue:#3b7be0}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,sans-serif;overflow-x:hidden}
+a{color:var(--brand)}
+code{font:.88em ui-monospace,Menlo,monospace;background:rgb(255 255 255/.07);padding:1px 6px;border-radius:5px}
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgb(10 10 10/.7);border-bottom:1px solid var(--bd)}
+header .in{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:16px;height:56px}
+header nav{margin-left:auto;display:flex;gap:16px;font-size:14px}header nav a{color:var(--mut);text-decoration:none}
+.page{max-width:1100px;margin:0 auto;padding:48px 16px 96px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:56px}
+@media(max-width:860px){.page{grid-template-columns:minmax(0,1fr);gap:0}.toc{display:none}}
+.toc{position:sticky;top:88px;align-self:start;font-size:14px}
+.toc b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.toc a{display:block;color:var(--mut);text-decoration:none;padding:5px 0 5px 12px;border-left:2px solid var(--bd)}
+.toc a:hover{color:var(--fg);border-color:var(--brand)}
+.crumb{font-size:13px;color:var(--dim);margin-bottom:10px}
+h1{font-size:clamp(30px,4.6vw,44px);line-height:1.1;letter-spacing:-.02em;margin-bottom:14px}
+.lead{font-size:18px;color:var(--mut);max-width:680px}
+h2{font-size:24px;margin:64px 0 6px;letter-spacing:-.01em;scroll-margin-top:80px}
+h2 .pill{font-size:12px;font-weight:600;vertical-align:middle;margin-left:8px;border:1px solid rgb(61 184 216/.5);color:var(--brand);border-radius:99px;padding:2px 9px}
+.sub{color:var(--mut);margin-bottom:24px}
+.why{margin-top:28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.why{grid-template-columns:minmax(0,1fr)}}
+.why div{border:1px solid var(--bd);border-radius:12px;padding:14px 16px;background:var(--card);font-size:14px;color:var(--mut)}
+.why b{display:block;color:var(--fg);margin-bottom:2px}
+.step{display:grid;grid-template-columns:36px minmax(0,1fr);gap:16px;margin-top:36px}
+.num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--soft);color:var(--brand);border:1px solid rgb(61 184 216/.5)}
+.step h3{font-size:17px;margin:3px 0 4px}
+.step p{color:var(--mut)}
+.step .shot{margin-top:16px}
+.note{margin-top:28px;border:1px solid rgb(240 163 94/.35);background:rgb(240 163 94/.06);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--mut)}
+.note b{color:var(--warn)}
+.tip{margin-top:16px;border-left:2px solid var(--brand);padding:2px 0 2px 14px;font-size:14px;color:var(--mut)}
+mark.hl{color:#111;background:#fde047;border-radius:.3em;padding:0 .25em;font-weight:600}
+
+/* ---------- screenshots, recreated in HTML ---------- */
+.shot{position:relative;border-radius:16px;background:var(--c-bg);border:1px solid var(--bd2);padding:22px;overflow:hidden;
+ box-shadow:0 30px 60px -30px rgb(0 0 0/.9);color:var(--c-fg);font-family:-apple-system,system-ui,sans-serif}
+.shot .lbl{position:absolute;top:10px;right:14px;font-size:11px;color:var(--dim)}
+.cpanel{background:var(--c-panel);border:1px solid var(--c-bd);border-radius:16px;box-shadow:0 12px 32px rgb(0 0 0/.45)}
+.mi{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:9px;font-size:15px}
+.mi .g{width:20px;text-align:center;color:var(--c-mut)}
+.mi .r{margin-left:auto;color:var(--c-mut)}
+.mi.on{background:var(--c-panel2)}
+.sep{height:1px;background:var(--c-bd);margin:6px 8px}
+.tile{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+.tg{width:42px;height:24px;border-radius:99px;background:#4a4a48;position:relative;flex:none;margin-left:auto;transition:background .3s}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s}
+.tg.on{background:var(--c-blue)}.tg.on::after{transform:translateX(18px)}
+/* highlight ring + numbered callout on the thing to click */
+.hit{position:relative;outline:2px solid var(--brand);outline-offset:3px;border-radius:9px;animation:ring 1.8s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgb(61 184 216/.55)}70%{box-shadow:0 0 0 12px rgb(61 184 216/0)}100%{box-shadow:0 0 0 0 rgb(61 184 216/0)}}
+.co{position:absolute;z-index:3;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#000;font:700 12px system-ui;display:grid;place-items:center;
+ box-shadow:0 0 0 3px var(--c-bg)}
+/* menu shot */
+.menus{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.m1{width:270px;padding:8px}.m2{width:300px;padding:0 0 8px}
+.m2 .srch{padding:12px 16px;border-bottom:1px solid var(--c-bd);color:var(--c-mut);font-size:15px;margin-bottom:6px}
+.m2 .mi{padding:7px 16px}
+@media(max-width:640px){.m1{width:100%}.m2{width:100%}}
+/* plugins page shot */
+.pp h4{font:400 30px/1.1 Georgia,"Times New Roman",serif;margin-bottom:16px}
+.ppbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ppsearch{flex:1;min-width:160px;background:var(--c-panel);border-radius:10px;padding:8px 12px;color:var(--c-mut);font-size:14px}
+.tabs{display:flex;background:var(--c-panel);border-radius:10px;padding:3px}
+.tabs span{padding:6px 12px;border-radius:8px;font-size:14px;color:var(--c-mut)}
+.tabs span.sel{background:var(--c-panel2);color:var(--c-fg);border:1px solid var(--c-bd)}
+.prow{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--c-bd)}
+.prow .t{font-size:15px}.prow .s{font-size:13px;color:var(--c-mut)}
+.prow .dots{margin-left:auto;color:var(--c-mut);letter-spacing:2px}
+/* connector detail shot */
+.cd{padding:6px 18px 14px}
+.cdh{display:flex;align-items:center;gap:12px;padding:12px 0}
+.cdh .st{margin-left:auto;color:var(--c-mut);font-size:14px}
+.btn-c{background:#3a3a38;border-radius:9px;padding:6px 14px;font-size:14px}
+.kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 20px;padding:4px 0 6px 34px;font-size:14px}
+@media(max-width:560px){.kv{grid-template-columns:minmax(0,1fr);padding-left:0}}
+.kv dt{color:var(--c-mut)}.kv dd{margin:0;word-break:break-word}
+.url{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.copyb{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:#3a3a38;font-size:13px}
+.tipbox{position:absolute;background:#3a3a38;border:1px solid var(--c-bd);border-radius:7px;font-size:12.5px;padding:4px 9px;white-space:nowrap;transform:translate(-50%,-130%);left:50%;top:0}
+/* pMCPg UI shots (light card on dark, like the app) */
+.pm{background:#0f0f0f}
+.pmd{background:#161616;border:1px solid var(--bd2);border-radius:14px;padding:18px;max-width:620px}
+.pmd h5{font-size:16px;margin-bottom:4px}
+.pmd p{font-size:13px;color:var(--mut)}
+.pmd pre{margin-top:10px;background:#0c0c0c;border:1px solid var(--bd);border-radius:9px;padding:10px;font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--mut);white-space:pre-wrap;max-height:120px;overflow:hidden}
+.pmrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.pbtn{border:1px solid var(--bd2);border-radius:8px;padding:5px 11px;font-size:13px;background:#1d1d1d;color:var(--fg)}
+.pbtn.p{background:var(--brand);color:#000;border:0;font-weight:600}
+/* Claude chat shot */
+.chat{max-width:640px}
+.ub{margin-left:auto;max-width:80%;background:var(--c-panel);border-radius:14px;padding:10px 14px;font-size:14px}
+.ab{margin-top:14px;font-size:14px;color:var(--c-fg)}
+.ab pre{margin-top:8px;background:#151514;border:1px solid var(--c-bd);border-radius:10px;padding:12px;font:12px/1.55 ui-monospace,Menlo,monospace;color:#d6d4cd;overflow-x:auto}
+.ph{border:1px dashed var(--warn);border-radius:10px;color:var(--warn);font:12px monospace;padding:8px;margin-top:14px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="in"><strong>◆ pMCPg</strong><nav><a href="mockup.html">Home</a><a href="#">Guides</a><a href="https://github.com/baobab-tech/pMCPg">GitHub</a></nav></div></header>
+
+<div class="page">
+ <aside class="toc"><b>On this page</b>
+  <a href="#why">Why you move them by hand</a><a href="#list">Way 1: let Claude list them</a><a href="#url">Way 2: copy each URL</a><a href="#switch">Switch Claude to pMCPg</a><a href="#builtin">What stays in Claude</a></aside>
+
+ <main>
+  <div class="crumb">Guides › Connectors</div>
+  <h1>Move your Claude connectors to pMCPg</h1>
+  <p class="lead">Claude keeps the connectors you add in <b>Anthropic's cloud</b>, under your Claude account. pMCPg can't read them, so you bring each one over once. It takes about a minute per connector.</p>
+
+  <div class="why" id="why">
+   <div><b>Stored in the cloud</b>Connectors live in your Claude account, not in a file on your computer.</div>
+   <div><b>No export button</b>Claude has no way to export them, so no app can import them for you.</div>
+   <div><b>Once, then done</b>After the move, every AI app on your computer uses them through pMCPg.</div>
+  </div>
+
+  <!-- WAY 1 -->
+  <h2 id="list">Way 1: let Claude list them <span class="pill">Fastest</span></h2>
+  <p class="sub">Claude writes the list of your connectors. You paste it into pMCPg.</p>
+
+  <div class="step"><div class="num">1</div><div>
+   <h3>Copy the message from pMCPg</h3>
+   <p>In pMCPg, open <b>Import</b> and choose <b>Ask your chatbot to list them</b>. Click <b>Copy to clipboard</b>.</p>
+   <div class="shot pm"><span class="lbl">pMCPg</span>
+    <div class="pmd">
+     <h5>Bring over your Claude or ChatGPT connectors</h5>
+     <p>Claude and ChatGPT keep the connectors you add on their websites in their own cloud, not on this computer.</p>
+     <div class="pmrow"><b style="font-size:13.5px">1. Ask your chatbot to list them</b><span class="pbtn hit" style="position:relative">Copy to clipboard<span class="co" style="right:-14px;top:-14px">1</span></span></div>
+     <pre>List every MCP server, connector and app you can use in this account: custom connectors, developer mode connectors, and connectors from the directory.
+
+Answer with one fenced JSON code block and nothing else. …</pre>
+    </div></div>
+  </div></div>
+
+  <div class="step"><div class="num">2</div><div>
+   <h3>Send it to Claude</h3>
+   <p>Start a new chat in Claude with your connectors turned on. Paste the message and send it. Claude answers with a list.</p>
+   <div class="shot chat"><span class="lbl">Claude</span>
+    <div class="ub">List every MCP server, connector and app you can use in this account…</div>
+    <div class="ab">
+<pre>[
+  { "name": "Figma",  "url": "https://mcp.figma.com/mcp", "auth": "oauth", "builtin": false },
+  { "name": "Linear", "url": "https://mcp.linear.app/mcp", "auth": "oauth", "builtin": false },
+  { "name": "Research MCP", "url": null, "auth": "oauth", "builtin": false }
+]</pre></div>
+   </div>
+  </div></div>
+
+  <div class="step"><div class="num">3</div><div>
+   <h3>Paste the answer into pMCPg</h3>
+   <p>Paste the whole answer under <b>2. Paste the answer here</b> and choose <b>Find servers</b>. Tick the ones to add. Then sign in to each one, once.</p>
+   <div class="tip">Only names and web addresses are read from the answer. A row marked <b>URL needed</b>, like Research MCP above, means Claude didn't know the address: get it with Way 2.</div>
+  </div></div>
+
+  <!-- WAY 2 -->
+  <h2 id="url">Way 2: copy each URL</h2>
+  <p class="sub">For one connector at a time, or when Claude didn't know a URL. Shown with Figma.</p>
+
+  <div class="step"><div class="num">1</div><div>
+   <h3>Open Manage plugins</h3>
+   <p>In Claude Desktop, click <b>+</b> under the message box, then <b>Plugins</b>, then <b>Manage plugins</b>.</p>
+   <div class="shot"><span class="lbl">Claude Desktop</span>
+    <div class="menus">
+     <div class="cpanel m1">
+      <div class="mi"><span class="g">⎘</span>Upload or add files<span class="r">⌘U</span></div>
+      <div class="mi"><span class="g">▭</span>Add folder</div>
+      <div class="sep"></div>
+      <div class="mi"><span class="g">◎</span>Design system<span class="r">›</span></div>
+      <div class="mi on hit" style="position:relative"><span class="g">⌁</span>Plugins<span class="r">›</span><span class="co" style="left:-12px;top:-12px">1</span></div>
+      <div class="sep"></div>
+      <div class="mi"><span class="g">⌕</span>Research</div>
+     </div>
+     <div class="cpanel m2">
+      <div class="srch">Search plugins</div>
+      <div class="mi"><span class="tile" style="background:#a259ff">F</span>Figma<span class="tg on"></span></div>
+      <div class="mi"><span class="tile" style="background:#5e6ad2">L</span>Linear<span class="tg on"></span></div>
+      <div class="mi"><span class="tile" style="background:#2f8f6f">R</span>Research MCP<span class="tg on"></span></div>
+      <div class="mi"><span class="tile" style="background:#2a8fb0">DX</span>DevExplorer<span class="tg on"></span></div>
+      <div class="sep"></div>
+      <div class="mi on hit" style="position:relative;margin:0 8px"><span class="g">⌁</span>Manage plugins<span class="r">↗</span><span class="co" style="right:-12px;top:-12px">2</span></div>
+     </div>
+    </div>
+   </div>
+  </div></div>
+
+  <div class="step"><div class="num">2</div><div>
+   <h3>Choose Connectors and open the connector</h3>
+   <p>Choose <b>Connectors</b> at the top, then the connector you want to move.</p>
+   <div class="shot pp"><span class="lbl">Claude Desktop · Plugins</span>
+    <h4>Plugins</h4>
+    <div class="ppbar"><div class="ppsearch">⌕&nbsp; Search</div>
+     <div class="tabs"><span>All</span><span class="sel hit" style="position:relative">Connectors<span class="co" style="right:-12px;top:-14px">1</span></span><span>Skills</span></div></div>
+    <div style="margin-top:14px">
+     <div class="prow"><span class="tile" style="background:#333">GH</span><div><div class="t">GitHub</div><div class="s">Built-in integration · By Anthropic</div></div><span class="dots">···</span></div>
+     <div class="prow hit" style="position:relative;padding-left:8px;padding-right:8px"><span class="tile" style="background:#a259ff">F</span><div><div class="t">Figma</div><div class="s">Connector</div></div><span class="dots">···</span><span class="co" style="left:-12px;top:-12px">2</span></div>
+     <div class="prow"><span class="tile" style="background:#2a8fb0">DX</span><div><div class="t">DevExplorer</div><div class="s">Connector</div></div><span class="dots">···</span></div>
+    </div>
+   </div>
+  </div></div>
+
+  <div class="step"><div class="num">3</div><div>
+   <h3>Copy the server URL</h3>
+   <p>Open the arrow at the end of the connector's row. Next to <b>Connector URL</b>, click <b>Copy server URL</b>.</p>
+   <div class="shot"><span class="lbl">Claude Desktop · Connectors</span>
+    <div style="font-size:18px;margin-bottom:12px">Connectors</div>
+    <div class="cpanel cd">
+     <div class="cdh"><span class="tile" style="background:#a259ff">F</span><span style="font-size:16px">Figma</span><span class="st">Not connected</span><span class="btn-c">Connect</span><span style="color:var(--c-mut)">⌃</span></div>
+     <dl class="kv">
+      <dt>Connector URL</dt><dd><span class="url"><span>https://mcp.figma.com/mcp</span><span class="copyb hit" style="position:relative">⧉<span class="tipbox">Copy server URL</span><span class="co" style="right:-30px;top:-4px">1</span></span></span></dd>
+      <dt>Tools</dt><dd style="color:var(--c-mut)">generate_diagram, get_design_context, get_screenshot, … <span style="color:var(--c-fg)">Show all 9</span></dd>
+      <dt>Sign-in</dt><dd>Required</dd>
+     </dl>
+    </div>
+   </div>
+   <div class="tip">No <b>Connector URL</b> row? It's one of Claude's own integrations. See <a href="#builtin">What stays in Claude</a>.</div>
+  </div></div>
+
+  <div class="step"><div class="num">4</div><div>
+   <h3>Add it in pMCPg</h3>
+   <p>In pMCPg, open <b>Servers</b> → <b>Add a server</b>. Paste the URL and choose <b>Check</b>. If it needs a sign-in, you sign in once in your browser.</p>
+   <div class="shot pm"><span class="lbl">pMCPg</span>
+    <div class="pmd">
+     <h5>Add a server</h5>
+     <div class="pmrow" style="margin-top:10px"><code style="flex:1;padding:8px 10px;background:#0c0c0c;border:1px solid var(--bd2)">https://mcp.figma.com/mcp</code><span class="pbtn p hit" style="position:relative">Check<span class="co" style="right:-14px;top:-14px">1</span></span></div>
+     <p style="margin-top:10px">Needs sign-in</p>
+    </div></div>
+  </div></div>
+
+  <!-- SWITCH -->
+  <h2 id="switch">Switch Claude to pMCPg</h2>
+  <p class="sub">So each tool shows up once.</p>
+  <div class="step"><div class="num">1</div><div>
+   <h3>Connect Claude Desktop</h3>
+   <p>In pMCPg, open <b>Connect</b> and choose <b>Claude Desktop</b>. Restart Claude. <b>pmcpg</b> now appears in <b>+ → Plugins</b>.</p>
+  </div></div>
+  <div class="step"><div class="num">2</div><div>
+   <h3>Turn off the connectors you moved</h3>
+   <p>In <b>+ → Plugins</b>, turn off each connector you moved. Keep <b>pmcpg</b> on.</p>
+   <div class="shot"><span class="lbl">Claude Desktop</span>
+    <div class="cpanel m2" style="width:min(320px,100%)">
+     <div class="srch">Search plugins</div>
+     <div class="mi"><span class="tile" style="background:#a259ff">F</span>Figma<span class="tg" data-flip></span></div>
+     <div class="mi"><span class="tile" style="background:#5e6ad2">L</span>Linear<span class="tg" data-flip></span></div>
+     <div class="mi"><span class="tile" style="background:#2f8f6f">R</span>Research MCP<span class="tg" data-flip></span></div>
+     <div class="mi hit" style="position:relative;margin:0 8px"><span class="tile" style="background:var(--brand);color:#000">◆</span>pmcpg<span class="tg on"></span><span class="co" style="left:-12px;top:-12px">✓</span></div>
+    </div>
+   </div>
+   <div class="tip">You can keep the old connectors in Claude. On claude.ai in the browser they still work, because <a href="#">claude.ai can't reach pMCPg yet</a>.</div>
+  </div></div>
+
+  <!-- BUILT-IN -->
+  <h2 id="builtin">What stays in Claude</h2>
+  <p class="sub">Rows marked <b>Built-in integration · By Anthropic</b>, like GitHub in step 2 of Way 2, are part of Claude. They have no Connector URL, so they can't move. Keep them on in Claude.</p>
+  <div class="note"><b>Mockup note.</b> Claude screens are recreated in HTML from your screenshots, not images. Logos are plain letter tiles. The path to <b>Copy server URL</b> (step 3 of Way 2) is my reading of your third screenshot: please confirm where that screen sits.</div>
+ </main>
+</div>
+
+<script>
+// Way 2 / switch: the moved connectors flip off, one after the other, on a loop.
+const flips=[...document.querySelectorAll('[data-flip]')];
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+ let on=true;setInterval(()=>{on=!on;flips.forEach((t,i)=>setTimeout(()=>t.classList.toggle('on',on),i*250))},2200);
+ flips.forEach(t=>t.classList.add('on'));
+}
+</script>
+</body>
+</html>
