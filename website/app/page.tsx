@@ -1,3 +1,5 @@
+import { HeartIcon } from "lucide-react";
+import Link from "next/link";
 import { AudienceCopy, AudienceProvider, AudienceToggle } from "@/components/audience";
 import { BeforeAfter } from "@/components/before-after";
 import { HeroCta } from "@/components/hero-cta";
@@ -11,8 +13,18 @@ export default function Home() {
         <section className="relative overflow-x-clip">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_45%_45%_at_75%_30%,var(--brand-soft),transparent_70%)]" />
           <div className="relative mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-12 px-4 pt-12 pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:items-start lg:gap-14">
-            <div className="lg:pt-10">
-              <AudienceToggle />
+            <div className="lg:pt-6">
+              <Link
+                href="/why/"
+                className="mb-5 inline-flex items-center gap-1.5 rounded-full border bg-card/70 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand hover:text-foreground"
+              >
+                <HeartIcon className="size-3.5 fill-rose-500 text-rose-500" />
+                Small tech by Baobab Tech<span className="hidden sm:inline">, for social impact</span>
+                <span className="whitespace-nowrap text-brand">Why →</span>
+              </Link>
+              <div>
+                <AudienceToggle />
+              </div>
               <div className="mt-7">
                 <AudienceCopy />
               </div>

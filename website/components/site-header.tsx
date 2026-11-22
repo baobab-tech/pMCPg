@@ -8,6 +8,7 @@ const NAV = [
   { href: "/#privacy", label: "Privacy" },
   { href: "/#teams", label: "Teams" },
   { href: "/help/", label: "Guides" },
+  { href: "/why/", label: "Why" },
 ];
 
 export function SiteHeader() {
@@ -32,6 +33,12 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1 md:ml-2">
+          <Link
+            href="/why/"
+            className="rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground md:hidden"
+          >
+            Why
+          </Link>
           <a
             href={GITHUB}
             className="rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
