@@ -7,7 +7,7 @@ import { diagnose } from "../../ui/components/help/diagnose.ts";
 import type { Account, AccountState } from "../../ui/lib/api.ts";
 import { HELP_GROUPS, type HelpSummary, searchHelp } from "../../ui/lib/help-groups.ts";
 
-const DIR = join(import.meta.dir, "..", "..", "ui", "content", "help");
+const DIR = join(import.meta.dir, "..", "..", "help");
 const files = readdirSync(DIR).filter((f) => f.endsWith(".md"));
 const slugs = new Set(files.map((f) => f.replace(/\.md$/, "")));
 

@@ -10,7 +10,7 @@ order: 5
 
 Connectors you added in claude.ai, ChatGPT or Gemini are saved in your account with that company, not on this computer. pMCPg only reads files on this computer, so it can't see them.
 
-To move one into pMCPg, copy its URL from the app's connector settings and [add it by URL](help:add-server-by-url). You sign in again once, in pMCPg.
+To move them into pMCPg, see [Move your Claude connectors](help:move-claude-connectors). For ChatGPT or Gemini, copy each URL from the app's connector settings and [add it by URL](help:add-server-by-url). You sign in again once, in pMCPg.
 
 ## What works today
 
