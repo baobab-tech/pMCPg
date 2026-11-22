@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangleIcon } from "lucide-react";
+import { AlertTriangleIcon, CircleCheckIcon, CircleXIcon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
@@ -192,7 +192,14 @@ export function BeforeAfter() {
               key={c.after.title}
               className={cn("rounded-xl border bg-card px-3.5 py-3 transition-colors", after && "border-brand/40")}
             >
-              <b className={cn("block text-sm transition-colors", after ? "text-brand" : "text-warn")}>{t.title}</b>
+              <b className={cn("flex items-center gap-1.5 text-sm transition-colors", after ? "text-brand" : "text-warn")}>
+                {after ? (
+                  <CircleCheckIcon className="size-4 shrink-0 text-ok" aria-label="Yes" />
+                ) : (
+                  <CircleXIcon className="size-4 shrink-0 text-red-500" aria-label="No" />
+                )}
+                {t.title}
+              </b>
               <p className="mt-0.5 text-[13px] text-muted-foreground">{t.body}</p>
             </div>
           );

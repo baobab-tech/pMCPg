@@ -3,7 +3,7 @@
 import { ArrowLeftRightIcon, ArrowRightIcon, CheckIcon, CopyIcon, ShieldCheckIcon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAudience } from "@/components/audience";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -101,7 +101,10 @@ const FEATURES = [
 
 export function Features() {
   const { resolvedTheme } = useTheme();
-  const dark = resolvedTheme !== "light";
+  // The theme is only known in the browser; render dark first so server and client HTML match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const dark = !mounted || resolvedTheme !== "light";
   return (
     <Section title="What it does" lead="One local process sits between your AI apps and your connectors. Every call passes through it.">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
