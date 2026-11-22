@@ -5,7 +5,7 @@ A `v*` tag push runs `.github/workflows/release.yml`:
 1. `test`: `bun run check` and `bun test`. The only CI on a tag.
 2. `ui`: builds the web UI static export, with no secrets and no install scripts.
 3. `build`: compiles 8 binaries and signs them when signing secrets exist. Runs in the `release` environment.
-4. `release`: archives, the install scripts (`packaging/install/install.sh` and `install.ps1`), `SHA256SUMS`, the Homebrew formula, attestations, the GitHub release.
+4. `release`: archives, the install scripts (`packaging/install/install.sh` and `install.ps1`), `SHA256SUMS`, the Homebrew formula, attestations, the GitHub release. The release notes start with `packaging/release-notes.sh`: install commands and a table of downloads named by computer ("Mac with Apple silicon"); GitHub appends the changelog.
 5. `docker`: `slim` and `full` images to GHCR.
 6. `npm` and `homebrew`: publish. Both run in the `release` environment.
 

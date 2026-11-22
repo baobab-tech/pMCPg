@@ -245,7 +245,9 @@ jobs:
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" release/* --clobber
           else
-            flags=(--verify-tag --generate-notes --title "pMCPg $VERSION")
+            # Install steps and plain-named downloads first; GitHub appends the changelog.
+            packaging/release-notes.sh "$VERSION" "$PRERELEASE" > "$RUNNER_TEMP/notes.md"
+            flags=(--verify-tag --generate-notes --notes-file "$RUNNER_TEMP/notes.md" --title "pMCPg $VERSION")
             [ "$PRERELEASE" = true ] && flags+=(--prerelease)
             gh release create "$GITHUB_REF_NAME" release/* "${flags[@]}"
           fi
