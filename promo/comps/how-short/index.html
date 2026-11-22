@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>pMCPg: How it works</title>
+<link rel="stylesheet" href="../../lib/theme.css" />
+<link rel="stylesheet" href="../../lib/site.css" />
+<style>
+  /* Portrait and square: eyebrow, scene, caption (the step label sits above the caption).
+     Landscape: eyebrow and tracker on top, scene, caption. */
+  .layout {
+    position: absolute; inset: 0; display: grid;
+    grid-template-rows: auto 1fr 230px; row-gap: 22px;
+  }
+  [data-format="square"] .layout { grid-template-rows: auto 1fr 170px; row-gap: 14px; }
+  [data-format="landscape"] .layout { grid-template-rows: auto auto 1fr 120px; row-gap: 22px; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .top .note { font-size: 24px; color: rgb(161 161 161 / 0.7); }
+
+  /* Step tracker (landscape only), as under the site's live example */
+  .tracker { display: none; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  [data-format="landscape"] .tracker { display: grid; }
+  .tracker div {
+    border-top: 6px solid var(--border); padding-top: 10px;
+    font-size: 25px; color: rgb(161 161 161 / 0.6); white-space: nowrap;
+  }
+  .tracker b { font-weight: 600; font-size: 29px; margin-left: 10px; }
+
+  /* Scene: drawn at a fixed size; a camera scales and moves it to the active part */
+  .swrap { position: relative; overflow: hidden; mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent); }
+  [data-format="landscape"] .swrap { overflow: visible; mask-image: none; }
+  .persp { position: absolute; left: 0; top: 0; perspective: 2400px; transform-origin: 0 0; }
+  .plane { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .wires { position: absolute; inset: 0; overflow: visible; }
+  .scene { font-size: 29px; }
+
+  .chat .body { padding: 18px 22px; display: flex; flex-direction: column; gap: 12px; }
+  .bubble {
+    align-self: flex-end; max-width: 88%; min-height: 54px;
+    background: var(--panel); border: 1.5px solid var(--border);
+    border-radius: 20px 20px 6px 20px; padding: 10px 18px; line-height: 1.3;
+  }
+  .lower { position: relative; min-height: 84px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 4px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: var(--mono); font-size: 24px; color: var(--muted-fg);
+  }
+  .chip .g { color: var(--claude); }
+  .chip .ok { color: var(--ok); }
+  .answer { position: absolute; inset: 0; line-height: 1.32; }
+  .tok {
+    font-family: var(--mono); font-size: 0.9em; color: var(--brand);
+    background: var(--brand-soft); border-radius: 6px; padding: 1px 8px;
+  }
+
+  .gwz { position: absolute; transform: translateZ(40px); transform-style: preserve-3d; }
+  .gw {
+    position: absolute; inset: 0; border-color: rgb(61 184 216 / 0.55);
+    box-shadow: 0 0 0 1px rgb(61 184 216 / 0.15), 0 0 90px -10px rgb(61 184 216 / 0.45);
+  }
+  .gw .head {
+    display: flex; align-items: center; gap: 12px; height: 66px; padding: 0 20px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .gw .head b { font-family: var(--font); font-size: 34px; color: var(--brand); }
+  .gw .head .hl { margin-left: auto; font-size: 24px; }
+  .row {
+    display: grid; grid-template-columns: 38px 130px 1fr; align-items: center; gap: 8px;
+    height: 54px; padding: 0 20px; color: var(--muted-fg);
+  }
+  .row .ic { color: rgb(161 161 161 / 0.6); display: grid; place-items: center; }
+  .row .st { text-align: right; font-family: var(--mono); font-size: 25px; color: rgb(161 161 161 / 0.55); white-space: nowrap; }
+  .row.on { background: var(--brand-soft); color: var(--brand); }
+  .row.on .ic, .row.did .ic { color: var(--brand); }
+  .row.on .st { color: var(--fg); }
+  .row.did .st { color: var(--muted-fg); }
+  .gw .foot { padding: 0 20px; height: 50px; display: flex; align-items: center; gap: 8px; border-top: 1.5px solid var(--border); font-size: 21px; color: var(--muted-fg); white-space: nowrap; }
+  .gw .foot code { font-family: var(--mono); background: var(--muted); color: var(--fg); padding: 1px 7px; border-radius: 6px; font-size: 20px; }
+
+  .srv { padding: 16px 20px; }
+  .srv .n { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 29px; white-space: nowrap; }
+  .srv .n i { width: 13px; height: 13px; border-radius: 50%; background: rgb(161 161 161 / 0.5); flex: none; }
+  .srv .d { font-size: 22px; color: var(--muted-fg); margin-top: 2px; white-space: nowrap; }
+  .srv .r { font-family: var(--mono); font-size: 23px; margin-top: 6px; min-height: 30px; white-space: nowrap; color: var(--fg); }
+  [data-layout="V"] .srv .d { display: none; }
+  .srv.on { border-color: var(--brand); box-shadow: 0 0 34px -6px var(--brand); }
+  .srv.on .n i { background: var(--brand); }
+  .srv.did .n i { background: var(--ok); }
+  .srv.hid { border-style: dashed; opacity: 0.45; }
+  .srv.hid .r { color: var(--warn); }
+
+  .pk { transform: translate(-50%, -50%) translateZ(80px); }
+
+  /* Captions, with the step label above in portrait and square */
+  .caption { position: relative; }
+  .cap {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+    font-family: var(--font); font-size: 54px; font-weight: 600; line-height: 1.12; opacity: 0;
+  }
+  .cap .step { font-family: var(--body); font-size: 26px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
+  [data-format="square"] .cap { font-size: 48px; gap: 6px; }
+  [data-format="square"] .cap .step { font-size: 24px; }
+  [data-format="landscape"] .cap { font-size: 52px; align-items: center; text-align: center; padding: 0 40px; }
+  [data-format="landscape"] .cap .step { display: none; }
+  .cap .tx { text-wrap: balance; }
+  .cap b { color: var(--brand); font-weight: 600; }
+  .cap .w { color: var(--warn); font-family: var(--mono); font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="safe">
+    <div class="layout">
+      <div class="top">
+        <div class="eyebrow" id="eyebrow"></div>
+        <span class="note" id="note">Illustrative example</span>
+      </div>
+      <div class="tracker" id="tracker"></div>
+      <div class="swrap" id="swrap">
+        <div class="persp scene" id="persp">
+          <div class="plane" id="plane">
+            <div class="dots"></div>
+            <svg class="wires" id="wires"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="caption" id="caption"></div>
+    </div>
+  </div>
+  <div class="end" id="end"></div>
+</div>
+
+<script src="../../node_modules/motion/dist/motion.js"></script>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

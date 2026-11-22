@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Renders an HTML composition to MP4, frame by frame.
 //
-//   node render.mjs <comp> [--format portrait|square|landscape|all] [--fps 30] [--stills 2,6.5,12]
+//   node render.mjs <comp>[,<comp>…] [--format portrait|square|landscape|all] [--fps 30] [--stills 2,6.5,12]
+//   Every comp × format runs at the same time, each in its own headless browser.
 //   node render.mjs serve            # preview server: open the printed URL, Space pauses, the bar scrubs
 //
 // Each frame: window.__seek(t) in headless Chromium, PNG screenshot, piped to ffmpeg.
@@ -107,12 +108,12 @@ async function render(base, comp, format, fps, stills) {
     const png = await capture(i / fps);
     if (stillFrames.has(i)) writeFileSync(join(OUT, `${comp}-${format}-${stillFrames.get(i)}s.png`), png);
     if (!ffmpeg.stdin.write(png)) await new Promise((r) => ffmpeg.stdin.once("drain", r));
-    if (i % fps === 0) process.stdout.write(`\r${format}: ${i}/${frames} frames`);
+    if (i % (fps * 5) === 0) console.log(`${comp} ${format}: ${i}/${frames} frames`);
   }
   ffmpeg.stdin.end();
   await done;
   await browser.close();
-  console.log(`\r${format}: ${frames} frames, ${duration}s, ${((Date.now() - t0) / 1000).toFixed(1)}s → ${mp4}`);
+  console.log(`${comp} ${format}: ${frames} frames, ${duration}s, ${((Date.now() - t0) / 1000).toFixed(1)}s → ${mp4}`);
 }
 
 const comp = process.argv[2];
@@ -121,7 +122,7 @@ if (comp === "serve") {
   const { port } = server.address();
   console.log(`Preview: http://127.0.0.1:${port}/comps/<comp>/?w=1080&h=1350  (Ctrl+C to stop)`);
 } else if (!comp || comp.startsWith("--")) {
-  console.error("usage: node render.mjs <comp> [--format portrait|square|landscape|all] [--fps 30] [--stills 2,6.5]");
+  console.error("usage: node render.mjs <comp>[,<comp>…] [--format portrait|square|landscape|all] [--fps 30] [--stills 2,6.5]");
   process.exit(1);
 } else {
   const format = arg("format", "portrait");
@@ -131,6 +132,9 @@ if (comp === "serve") {
   if (formats.some((f) => !FORMATS[f])) throw new Error(`unknown format: ${format}`);
   const server = await serve();
   const base = `http://127.0.0.1:${server.address().port}`;
-  for (const f of formats) await render(base, comp, f, fps, stills);
+  const jobs = comp.split(",").flatMap((c) => formats.map((f) => render(base, c, f, fps, stills)));
+  const results = await Promise.allSettled(jobs);
+  for (const r of results) if (r.status === "rejected") console.error(`failed: ${r.reason?.message ?? r.reason}`);
+  if (results.some((r) => r.status === "rejected")) process.exitCode = 1;
   server.close();
 }

@@ -6,6 +6,8 @@
 // A composition calls stage({ duration, build, onFrame }):
 //   build()      returns Motion animation controls (or an array of them); they are paused and seeked.
 //   onFrame(t)   draws anything Motion does not own (dots on paths, line drawing). Must be a pure function of t.
+//   slow         optional, default 1: plays the whole timeline this many times slower. Times inside the
+//                composition stay as written; the video gets duration × slow seconds long.
 
 const params = new URLSearchParams(location.search);
 export const W = Number(params.get("w") ?? 1080);
@@ -23,24 +25,25 @@ const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
 export const prog = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
 export const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
 
-export async function stage({ duration, build, onFrame = () => {} }) {
+export async function stage({ duration, build, onFrame = () => {}, slow = 1 }) {
   await document.fonts.ready;
   const list = [build()].flat();
   for (const c of list) c.pause();
 
   const seek = async (t) => {
-    for (const c of list) c.time = t;
-    onFrame(t);
+    const ct = t / slow;
+    for (const c of list) c.time = ct;
+    onFrame(ct);
     await nextFrame();
     await nextFrame();
   };
 
-  window.__duration = duration;
+  window.__duration = duration * slow;
   window.__seek = seek;
   await seek(0);
   window.__ready = true;
 
-  if (!RENDER) preview(duration, seek);
+  if (!RENDER) preview(duration * slow, seek);
 }
 
 /** Real-time playback with a scrubber, for authoring in a normal browser. */

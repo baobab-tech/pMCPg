@@ -1,0 +1,215 @@
+/* Website look for compositions that echo pmcpg.io (website/app/globals.css, dark theme).
+   Load after theme.css. Adds the site's body font (Inter), window chrome, dot grid, highlighter,
+   packets and a shared end card. Older comps don't load this file. */
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 400;
+  src: url("../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 500;
+  src: url("../node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 600;
+  src: url("../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 700;
+  src: url("../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2") format("woff2");
+}
+
+:root {
+  --card: #141414; /* site dark --card, oklch(0.19 0 0) */
+  --panel: #1f1f1f; /* oklch(0.235 0 0) */
+  --ok: #4fd88a; /* oklch(0.8 0.17 150) */
+  --warn: #f0a35e; /* oklch(0.78 0.13 65) */
+  --body: "Inter", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--body);
+}
+.display {
+  font-family: var(--font);
+}
+.mono {
+  font-family: var(--mono);
+}
+
+/* Dot grid behind scenes, faded at the edges like the site's live example. */
+.dots {
+  position: absolute;
+  inset: -60px;
+  background-image: radial-gradient(rgb(255 255 255 / 0.1) 1.4px, transparent 1.8px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000, transparent 75%);
+  pointer-events: none;
+}
+
+/* Window chrome shared by the site's hero pictures. */
+.win {
+  position: absolute;
+  border-radius: 22px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.85);
+  overflow: hidden;
+}
+.win.ghost {
+  background: var(--panel);
+  box-shadow: none;
+}
+.win-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 60px;
+  padding: 0 22px;
+  border-bottom: 1.5px solid var(--border);
+  color: var(--muted-fg);
+  font-size: 25px;
+  white-space: nowrap;
+}
+.win-bar i {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.win-bar i:last-of-type {
+  margin-right: 8px;
+}
+.win-bar .r {
+  margin-left: auto;
+  font-size: 22px;
+  color: rgb(161 161 161 / 0.75);
+}
+.ghost .win-bar {
+  border: 0;
+  height: 50px;
+  font-size: 22px;
+}
+
+/* Yellow highlighter. --hl (0–100%) is the sweep, set per frame. */
+.hl {
+  color: #111;
+  background: linear-gradient(104deg, #fde04700 0.9%, #fde047 2.4%, #facc15 50%, #fde047d9 96%, #fde04700 99%);
+  background-repeat: no-repeat;
+  background-size: var(--hl, 100%) 100%;
+  border-radius: 0.35em 0.2em 0.4em 0.25em;
+  padding: 0.02em 0.3em;
+  margin: 0 -0.05em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-weight: 600;
+}
+
+/* Packets travelling along wires. */
+.pk {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 2.5px solid var(--brand);
+  background: var(--bg);
+  color: var(--brand);
+  font-family: var(--mono);
+  font-size: 27px;
+  white-space: nowrap;
+  box-shadow: 0 0 26px -2px var(--brand);
+  opacity: 0;
+  pointer-events: none;
+}
+.pk.raw {
+  border-color: var(--warn);
+  color: var(--warn);
+  box-shadow: 0 0 26px -2px var(--warn);
+}
+
+/* Pill above the headline. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--brand);
+  padding: 7px 20px 7px 12px;
+  border: 1.5px solid rgb(61 184 216 / 0.4);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  white-space: nowrap;
+}
+
+/* End card, the same in every site-style comp. */
+.end {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 38%, rgb(61 184 216 / 0.18), transparent 70%),
+    var(--bg);
+}
+.end .logo {
+  filter: drop-shadow(0 0 40px rgb(61 184 216 / 0.55));
+  margin-bottom: 30px;
+}
+.end .name {
+  font-family: var(--font);
+  font-size: 132px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.end .full {
+  font-family: var(--font);
+  font-size: 48px;
+  color: var(--muted-fg);
+  margin-top: 14px;
+}
+.end .line {
+  font-size: 40px;
+  font-weight: 600;
+  margin-top: 44px;
+  max-width: 900px;
+  line-height: 1.25;
+}
+.end .url {
+  margin-top: 40px;
+  font-family: var(--font);
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--brand);
+  border-radius: 999px;
+  padding: 12px 40px;
+  box-shadow: 0 0 60px -10px var(--brand);
+}
+.end .small {
+  font-size: 28px;
+  color: var(--muted-fg);
+  margin-top: 24px;
+}
+[data-format="square"] .end .name {
+  font-size: 112px;
+}
+[data-format="square"] .end .line {
+  margin-top: 32px;
+  font-size: 36px;
+}
+[data-format="square"] .end .url {
+  margin-top: 30px;
+}
