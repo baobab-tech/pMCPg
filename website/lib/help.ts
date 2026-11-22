@@ -44,6 +44,8 @@ export interface HelpSummary {
 }
 export interface HelpArticle extends HelpSummary {
   blocks: HelpBlock[];
+  /** Distinct lowercase words of the body, space-separated. Feeds the Guides search. */
+  words: string;
 }
 
 export const helpHref = (slug: string) => `/help/${slug}/`;
@@ -91,6 +93,15 @@ function makeMarked(file: string, slugs: Set<string>) {
   return marked;
 }
 
+// Plain words of a Markdown body: drops markers, link targets and punctuation, keeps each word once.
+function bodyWords(body: string) {
+  const text = body
+    .replace(/^\{\{.*\}\}$/gm, " ")
+    .replace(/\]\([^)]*\)/g, " ")
+    .toLowerCase();
+  return [...new Set(text.match(/[\p{L}\p{N}][\p{L}\p{N}.+_-]*[\p{L}\p{N}]|[\p{L}\p{N}]/gu) ?? [])].join(" ");
+}
+
 let cache: HelpArticle[] | undefined;
 
 export function loadHelp(): HelpArticle[] {
@@ -132,7 +143,8 @@ export function loadHelp(): HelpArticle[] {
       }
     }
     flush();
-    return { slug: file.replace(/\.md$/, ""), title, summary, group: group as GroupId, order: Number(order), blocks };
+    const slug = file.replace(/\.md$/, "");
+    return { slug, title, summary, group: group as GroupId, order: Number(order), blocks, words: bodyWords(body) };
   });
   const gi = (g: string) => HELP_GROUPS.findIndex((x) => x.id === g);
   articles.sort((a, b) => gi(a.group) - gi(b.group) || a.order - b.order);

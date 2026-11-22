@@ -1,6 +1,7 @@
-import { ChevronRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GuideCard } from "@/components/help/guide-card";
+import { GuideSearch } from "@/components/help/guide-search";
 import { HELP_GROUPS, helpHref, loadHelp } from "@/lib/help";
 
 export const metadata: Metadata = {
@@ -10,6 +11,14 @@ export const metadata: Metadata = {
 
 export default function HelpIndex() {
   const all = loadHelp();
+  const groupTitle = (id: string) => HELP_GROUPS.find((g) => g.id === id)?.title ?? "";
+  const entries = all.map((a) => ({
+    href: helpHref(a.slug),
+    title: a.title,
+    summary: a.summary,
+    group: groupTitle(a.group),
+    words: a.words,
+  }));
   return (
     <main className="mx-auto max-w-4xl px-4 py-14">
       <h1 className="text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-tight">Guides</h1>
@@ -20,33 +29,26 @@ export default function HelpIndex() {
         </Link>{" "}
         if you already use Claude.
       </p>
-      <div className="mt-10 grid gap-8 md:grid-cols-2">
-        {HELP_GROUPS.map((g) => {
-          const items = all.filter((a) => a.group === g.id);
-          if (!items.length) return null;
-          return (
-            <section key={g.id}>
-              <h2 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{g.title}</h2>
-              <ul className="grid gap-1">
-                {items.map((a) => (
-                  <li key={a.slug}>
-                    <Link
-                      href={helpHref(a.slug)}
-                      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/60"
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-medium">{a.title}</span>
-                        <span className="mt-0.5 block text-sm text-muted-foreground">{a.summary}</span>
-                      </span>
-                      <ChevronRightIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
+      <GuideSearch entries={entries}>
+        <div className="grid gap-8 md:grid-cols-2">
+          {HELP_GROUPS.map((g) => {
+            const items = all.filter((a) => a.group === g.id);
+            if (!items.length) return null;
+            return (
+              <section key={g.id}>
+                <h2 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{g.title}</h2>
+                <ul className="grid gap-1">
+                  {items.map((a) => (
+                    <li key={a.slug}>
+                      <GuideCard href={helpHref(a.slug)} title={a.title} summary={a.summary} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
+      </GuideSearch>
     </main>
   );
 }
