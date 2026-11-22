@@ -47,7 +47,11 @@ export const commands: Command[] = [
     summary: "Add a server by URL or command",
     args: "<name> (--url <url> | --command <cmd>)",
     options: { url: { type: "string" }, command: { type: "string" } },
-    optionHelp: { url: "Remote server URL", command: "Command line for a stdio server" },
+    optionHelp: {
+      url: "Remote server URL",
+      command:
+        'Command to start a server on this computer, e.g. "npx -y some-server" (needs Node.js or uv; secrets are asked for after)',
+    },
     minArgs: 1,
     maxArgs: 1,
   }),

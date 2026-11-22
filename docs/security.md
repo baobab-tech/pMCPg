@@ -22,7 +22,7 @@ Every credential and every tool result passes through one local process. These a
 - The environment is reduced to an allow list of system variables plus the server's own configured ones.
 - Secrets are injected from the vault at spawn time.
 - Stopping a server stops its process tree: the gateway walks child PIDs on Unix and runs `taskkill /T` on Windows. A process that detaches from its parent can survive.
-- Sandboxing is not built.
+- Sandboxing is not built. Windows is not yet tested for stdio servers: `.cmd` shim resolution and `taskkill /T` are implemented but unverified there.
 
 ## Threat model, short version
 

@@ -29,6 +29,20 @@ pmcpg ui reset-password                    # works when the service is stopped
 
 Most CLI commands open `state.db` directly; a few use the running service's local API. The web UI and the CLI cover the same actions.
 
+## Servers that run on this computer
+
+`--command` (or `command:` in `config.yaml`) starts a stdio server such as `npx` or `uvx`.
+
+- Started on first use, stopped after 10 minutes idle. The first start can be slow while npx or uvx download the server.
+- Spawned without a shell, with an allow-listed environment plus the server's and account's `env`. Secrets go in as `{{vault:name}}` references.
+- `PATH` comes from your login shell on macOS and Linux, so nvm, pyenv, uv and Homebrew tools resolve as in a terminal.
+- Changing the command, args or env restarts the server.
+- `pmcpg import` brings these in from other apps; `--all` skips them, pick by number. Secret values are asked for again.
+- A server already running on `localhost` over HTTP is added with `--url`, not `--command`.
+- Docker needs the `full` image. See [Install](install.md#docker).
+- Windows: not yet tested.
+- No sandbox: see [Security](security.md#stdio-servers).
+
 ## config.yaml
 
 Servers, accounts, profiles and policies live in one file. You can edit it by hand; the web UI writes to it too. It holds references to secrets, never the secrets.

@@ -19,7 +19,7 @@ New servers join the **All** profile. Add them to other profiles from [Profiles]
 
 ## Tools that run on this computer
 
-Some servers are a command instead of a URL, such as `npx -y some-server` or `uvx some-server`. Choose **Add by command instead** and paste it. These need Node.js or uv installed: see [“npx” or “uvx” not found](help:npx-uvx-not-found).
+Some servers are a command instead of a URL, such as `npx -y some-server` or `uvx some-server`. Choose **Add by command instead** and paste it. These need Node.js or uv installed: see [Add a server that runs on this computer](help:add-local-server) and [“npx” or “uvx” not found](help:npx-uvx-not-found).
 
 ## Already set up somewhere else?
 

@@ -223,7 +223,7 @@ export function ServerForm({
           />
         </Field>
       ) : (
-        <Field label="Command" htmlFor="server-command" hint="Copy it from the server's instructions.">
+        <Field label="Command" htmlFor="server-command" hint="Copy it from the server's instructions. It runs on this computer as you, so add only servers you trust. Needs Node.js (npx) or uv (uvx).">
           <Input
             id="server-command"
             value={command}
