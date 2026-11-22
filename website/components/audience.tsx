@@ -21,7 +21,7 @@ export const AUDIENCES: Audience[] = [
     id: "new",
     label: "New to connectors",
     headline: "Let your AI app use your tools, safely.",
-    body: "Connectors (MCP servers) let Claude and other AI apps search papers, read files or query data. pMCPg {hl}runs on your computer{/hl}, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",
+    body: "Connectors (MCPs) let Claude and other AI apps search information, read files or query data. pMCPg {hl}runs on your computer{/hl}, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",
     cta: { label: "How it works", href: "#how" },
     steps: [
       { title: "Install pMCPg", body: "One line in a terminal. It starts at login and opens its web UI." },
