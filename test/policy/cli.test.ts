@@ -213,10 +213,10 @@ describe("pmcpg approvals", () => {
     const db = openDb(paths().db);
     const store = new SqliteApprovalStore(db, { trustTable: false });
     const a = store.create({ profileId: "all", tool: "gmail-work__send_email", reason: "r" });
-    // Tests run without a TTY, like an AI client's shell.
-    const r = await cli("approvals", "approve", a.id);
-    expect(r.code).toBe(1);
-    expect(r.err).toContain("need a person");
+    // No person at a terminal, like an AI client's shell. Set explicitly: `bun test` in a terminal has a TTY.
+    const shell = io();
+    expect(await decideApproval(a.id, "approved", shell.io, { ...person(store), interactive: false })).toBe(1);
+    expect(shell.err.join("")).toContain("need a person");
     const no = io();
     expect(await decideApproval(a.id, "approved", no.io, person(store, false))).toBe(0);
     expect(no.out).toEqual(["Nothing changed."]);
