@@ -19,10 +19,10 @@ export function AskAi() {
           setDone(true);
           setTimeout(() => setDone(false), 1500);
         }}
-        className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-foreground hover:bg-muted"
+        className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-[11px] text-foreground sm:text-xs hover:bg-muted"
         aria-label="Copy prompt"
       >
-        <span className="text-left whitespace-normal">{PROMPT}</span>
+        <span className="truncate">{PROMPT}</span>
         {done ? <CheckIcon className="size-3.5 shrink-0 text-ok" /> : <CopyIcon className="size-3.5 shrink-0" />}
       </button>
     </div>
