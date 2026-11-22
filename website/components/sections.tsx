@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowLeftRightIcon, ArrowRightIcon, CheckIcon, CopyIcon } from "lucide-react";
+import { ArrowLeftRightIcon, ArrowRightIcon, CheckIcon, CopyIcon, ShieldCheckIcon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useAudience } from "@/components/audience";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { INSTALL, ISSUES, PRIVACY, RELEASE, ROADMAP, SECURITY } from "@/lib/site";
+import { FORK, INSTALL, ISSUES, LICENSE, PRIVACY, RELEASE, ROADMAP, SECURITY, VERIFY } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
@@ -221,7 +221,7 @@ export function Teams() {
       id="teams"
       eyebrow="Teams and IT"
       title="Control for small teams today"
-      lead="pMCPg has no enterprise edition yet. This is what works now, and what the roadmap lists. Everything stays self-hosted: Baobab Tech runs no service and holds no data."
+      lead="We are working on an entreprise self-hosted edition. We run no service and holds no data."
     >
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-brand/40 bg-card p-6">
@@ -335,6 +335,34 @@ export function Install() {
               All downloads
             </a>
           </p>
+        </div>
+      </div>
+
+      <div className="mt-10 grid gap-4 rounded-2xl border border-dashed border-brand/50 bg-card p-6 sm:grid-cols-[44px_1fr]">
+        <span className="hidden size-11 place-items-center rounded-xl bg-brand-soft text-brand sm:grid">
+          <ShieldCheckIcon className="size-5" />
+        </span>
+        <div>
+          <h3 className="text-lg font-semibold">Don't trust our code? You shouldn't!</h3>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Run your own security checks, or fork this code and build your own. It's{" "}
+            <a href={LICENSE} className="text-brand underline underline-offset-3">
+              Apache 2.0
+            </a>
+            . Every release ships SHA-256 sums and GitHub build provenance you can check yourself.
+          </p>
+          <CopyLine text="gh attestation verify <downloaded-file> --repo baobab-tech/pMCPg" className="mt-4" />
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
+            <a href={FORK} className="text-brand hover:underline">
+              Fork on GitHub
+            </a>
+            <a href={SECURITY} className="text-brand hover:underline">
+              Security model
+            </a>
+            <a href={VERIFY} className="text-brand hover:underline">
+              Verify a download
+            </a>
+          </div>
         </div>
       </div>
     </Section>

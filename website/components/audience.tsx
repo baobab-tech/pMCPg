@@ -21,7 +21,7 @@ export const AUDIENCES: Audience[] = [
     id: "new",
     label: "New to connectors",
     headline: "Let your AI app use your tools, safely.",
-    body: "Connectors (MCPs) let Claude and other AI apps search information, read files or query data. pMCPg {hl}runs on your computer{/hl}, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",
+    body: "Connectors (MCPs) let Claude and other AI apps search information, read files or query data from other servers. pMCPg {hl}runs on your computer{/hl}, holds the sign-ins, and masks personal data in what your connectors send back to the AI.",
     cta: { label: "How it works", href: "#how" },
     steps: [
       { title: "Install pMCPg", body: "One line in a terminal. It starts at login and opens its web UI." },
@@ -33,8 +33,8 @@ export const AUDIENCES: Audience[] = [
   {
     id: "connectors",
     label: "I use connectors",
-    headline: "Set up each connector once. Use it in every AI app.",
-    body: "Import the connectors you already added to Claude Desktop, Claude Code, VS Code or LM Studio, and move over the ones Claude keeps in its cloud. Each app then connects once, to pMCPg. Keys live in your keychain, not in config files.",
+    headline: "One connector that you control",
+    body: "Import the connectors you already added to Claude Desktop, Claude Code, VS Code or LM Studio, and move over the ones Claude keeps in its cloud. Each app then connects once, to pMCPg which {hl}runs on your computer{/hl}. Keys live in your keychain, not in config files.",
     cta: { label: "Move your connectors", href: "/help/move-claude-connectors/" },
     steps: [
       { title: "Install pMCPg", body: "One line in a terminal, or npm, Homebrew or Docker." },
@@ -46,7 +46,7 @@ export const AUDIENCES: Audience[] = [
   {
     id: "teams",
     label: "IT teams",
-    headline: "Decide which connectors your team's AI can use, and what it can do with them.",
+    headline: "Control and monitor MCP usage of your teams.",
     body: "Profiles, approval rules, personal data masking and an encrypted activity log, on each machine or in Docker. No cloud service, no account. Org-wide management is coming.",
     cta: { label: "For teams", href: "#teams" },
     steps: [
