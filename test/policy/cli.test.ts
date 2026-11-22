@@ -215,7 +215,9 @@ describe("pmcpg approvals", () => {
     const a = store.create({ profileId: "all", tool: "gmail-work__send_email", reason: "r" });
     // No person at a terminal, like an AI client's shell. Set explicitly: `bun test` in a terminal has a TTY.
     const shell = io();
-    expect(await decideApproval(a.id, "approved", shell.io, { ...person(store), interactive: false })).toBe(1);
+    expect(await decideApproval(a.id, "approved", shell.io, { ...person(store), interactive: false })).toBe(
+      1,
+    );
     expect(shell.err.join("")).toContain("need a person");
     const no = io();
     expect(await decideApproval(a.id, "approved", no.io, person(store, false))).toBe(0);
