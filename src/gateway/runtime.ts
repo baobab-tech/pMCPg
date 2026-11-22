@@ -179,6 +179,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     getClientToken: (id) => (getProfile(id) ? vault.get(vaultKeys.clientToken(id)) : undefined),
     getConnector,
     listProfiles: () => profileIds(config),
+    listTools: (id) => catalog.profileTools(id),
     // Order (docs/design.md "Call pipeline"): re-hydrate, secret scan, policy | forward | data flow, mask.
     // Policy runs last before forwarding, so an approval request shows the values the tool will receive.
     steps: [

@@ -11,6 +11,7 @@ import {
 } from "@modelcontextprotocol/server";
 import { Hono } from "hono";
 import { z } from "zod";
+import pkg from "../../package.json";
 import type { Connector } from "../connectors/connector.ts";
 import { ALL_PROFILE, type ProfileDef, Slug } from "../core/config.ts";
 import { GatewayError, type ToolRef, type ToolResult } from "../core/types.ts";
@@ -22,9 +23,16 @@ import { clampLimit, MAX_LIMIT } from "../search/minisearch-index.ts";
 import type { ToolIndex } from "../search/search.ts";
 import type { EventSink } from "../store/events.ts";
 
-export const VERSION = "0.0.0";
+/** From package.json; the release workflow sets it from the tag. */
+export const VERSION: string = pkg.version;
 /** Longer descriptions are cut in search results. */
 export const MAX_DESCRIPTION = 1000;
+/** Up to this many tools, the search_tools description lists one line per tool; above it, one line per account. */
+export const MENU_MAX_TOOLS = 100;
+/** Characters of a tool's description shown in its menu line. */
+export const MENU_LINE_CHARS = 80;
+/** Characters of an account's menu line when tools are grouped. */
+const MENU_GROUP_CHARS = 200;
 
 export interface FrontDoorDeps {
   index: ToolIndex;
@@ -32,6 +40,8 @@ export interface FrontDoorDeps {
   getProfile: (profileId: string) => ProfileDef | undefined;
   /** Client token for the profile; undefined when none is set (requests are then refused). */
   getClientToken: (profileId: string) => Promise<string | undefined> | string | undefined;
+  /** Tools the profile can search, for the menu in the search_tools description. Default: no menu. */
+  listTools?: (profileId: string) => ToolRef[];
   /** Profile ids to try for the universal /mcp endpoint, where the token picks the profile. Default: ["all"]. */
   listProfiles?: () => string[];
   getConnector: (accountId: string) => Connector | undefined;
@@ -91,6 +101,42 @@ function toolView(t: ToolRef) {
     ...(t.annotations ? { annotations: t.annotations } : {}),
   };
 }
+
+const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
+const cut = (s: string, max: number) => (s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s);
+
+/** First sentence of a tool's description (or its title), on one line, at most MENU_LINE_CHARS. */
+export function menuSummary(t: Pick<ToolRef, "description" | "title">): string {
+  const text = oneLine(t.description || t.title || "");
+  // A sentence ends at . ! or ? after three non-dot characters, before a capital: "e.g. x" does not end one.
+  const first = text.split(/(?<=[^.]{3}[.!?])\s+(?=[A-Z"'(])/)[0] ?? "";
+  return cut(first.replace(/[.!?]$/, ""), MENU_LINE_CHARS);
+}
+
+/**
+ * The tool menu appended to the search_tools description, so a client sees what the gateway offers
+ * without a search. One line per tool; above MENU_MAX_TOOLS, one line per account with its tool names.
+ */
+export function toolMenu(tools: ToolRef[]): string {
+  if (tools.length === 0) return "No tools are connected yet.";
+  const sorted = [...tools].sort((a, b) => a.qualifiedName.localeCompare(b.qualifiedName));
+  if (sorted.length <= MENU_MAX_TOOLS) {
+    const lines = sorted.map((t) => {
+      const s = menuSummary(t);
+      return s ? `- ${t.qualifiedName}: ${s}` : `- ${t.qualifiedName}`;
+    });
+    return `Tools available (${sorted.length}):\n${lines.join("\n")}`;
+  }
+  const byAccount = new Map<string, ToolRef[]>();
+  for (const t of sorted) byAccount.set(t.accountId, [...(byAccount.get(t.accountId) ?? []), t]);
+  const lines = [...byAccount].map(([account, list]) =>
+    cut(`- ${account} (${list.length} tools): ${list.map((t) => t.toolName).join(", ")}`, MENU_GROUP_CHARS),
+  );
+  return `Tools available (${sorted.length}, grouped by account; search to see each one):\n${lines.join("\n")}`;
+}
+
+const SEARCH_DESCRIPTION =
+  "Find tools for a task. Returns names, descriptions and input schemas. Search before call_tool to get a tool's input schema.";
 
 function errorResult(code: string, message: string): CallToolResult {
   return {
@@ -185,11 +231,12 @@ export function createFrontDoor(deps: FrontDoorDeps): FrontDoor {
   }
 
   function mcpServer(profileId: string, clientId: string | undefined): McpServer {
+    const menu = deps.listTools ? `\n\n${toolMenu(deps.listTools(profileId))}` : "";
     const s = new McpServer({ name: "pmcpg", version: VERSION });
     s.registerTool(
       "search_tools",
       {
-        description: "Find tools for a task. Returns names, descriptions and input schemas.",
+        description: `${SEARCH_DESCRIPTION}${menu}`,
         inputSchema: z.object({
           query: z.string().describe("What you want to do, in plain words"),
           limit: z.number().int().min(1).max(MAX_LIMIT).optional().describe("Default 5, max 10"),

@@ -71,6 +71,17 @@ describe("pmcpg serve", () => {
     await c.close();
   });
 
+  test("search_tools description lists the profile's tools, and only those", async () => {
+    const desc = async (profile: string) => {
+      const c = await connect(profile, await gw.vault.get(vaultKeys.clientToken(profile)));
+      const d = (await c.listTools()).tools.find((t) => t.name === "search_tools")?.description ?? "";
+      await c.close();
+      return d;
+    };
+    expect(await desc("briefing")).toContain("- echo__send_email");
+    expect(await desc("research")).not.toContain("echo__");
+  });
+
   test("wrong token is refused", async () => {
     const other = await gw.vault.get(vaultKeys.clientToken("research"));
     await expect(connect("briefing", other)).rejects.toThrow();

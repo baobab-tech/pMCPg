@@ -18,6 +18,8 @@ export function toolHash(t: DownstreamTool): string {
 export class ToolCatalog {
   private readonly tools = new Map<string, DownstreamTool[]>();
   private readonly inflight = new Map<string, Promise<void>>();
+  /** Searchable tools per profile, as last pushed into the index. */
+  private readonly byProfile = new Map<string, ToolRef[]>();
 
   constructor(
     private readonly db: Database,
@@ -27,6 +29,11 @@ export class ToolCatalog {
     private readonly events: EventSink,
     private readonly pins?: PinStore,
   ) {}
+
+  /** Tools a profile can search and call: the same set the index holds. */
+  profileTools(profileId: string): ToolRef[] {
+    return [...(this.byProfile.get(profileId) ?? [])];
+  }
 
   count(accountId: string): number {
     return this.tools.get(accountId)?.length ?? 0;
@@ -81,14 +88,13 @@ export class ToolCatalog {
   rebuild(): void {
     const cfg = this.config();
     const byAccount = new Map(Object.keys(cfg.accounts).map((a) => [a, this.refs(a)]));
+    this.byProfile.clear();
     for (const id of profileIds(cfg)) {
       const p = resolveProfile(cfg, id);
       if (!p) continue;
-      const tools = p.accounts.flatMap((a) => byAccount.get(a) ?? []);
-      this.index.setTools(
-        id,
-        tools.filter((t) => searchable(p.def, t)),
-      );
+      const tools = p.accounts.flatMap((a) => byAccount.get(a) ?? []).filter((t) => searchable(p.def, t));
+      this.byProfile.set(id, tools);
+      this.index.setTools(id, tools);
     }
   }
 

@@ -90,7 +90,7 @@ Some clients only launch local stdio servers. Claude Desktop's config file is on
 | `search_tools` | `query` (string), `limit` (default 5, max 10) | Matching tools: namespaced name, description, input schema, annotations |
 | `call_tool` | `name` (`server__tool`, or `server@account__tool` when a profile holds two accounts of one server), `arguments` | The downstream result, after the pipeline |
 
-Both descriptions stay short: the front door's own menu is the fixed cost every client pays.
+`search_tools`' description ends with a menu of the profile's searchable tools, so a client knows what the gateway offers before it searches: one line per tool (`- account__tool: first sentence`, cut at 80 characters). Above 100 tools it lists one line per account with its tool names (cut at 200 characters). The menu is rebuilt on every `tools/list`; quarantined and policy-hidden tools are left out. It is the fixed cost every client pays: about 25 tokens per tool. Downstream descriptions reach the menu only as their first sentence, which limits the room for tool poisoning; full descriptions come back from `search_tools` as before.
 
 ### Protocol versions
 
