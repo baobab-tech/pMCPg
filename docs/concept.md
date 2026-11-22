@@ -369,7 +369,7 @@ Out of scope: a compromised host machine, a compromised OS keychain, and attacks
 - How to rank tools well with no network access and a small local model?
 - Approval rules: per tool, per server, or by read and write hints? (Lean: annotations as the default, per-tool overrides.)
 - Which local NER model is small and fast enough, and in how many languages?
-- OAuth providers without dynamic client registration: ship pre-registered client IDs for common services, or always ask the user for their own?
+- OAuth providers without dynamic client registration: answered with CIMD (one public client ID document, no secret) and per-provider app setup links. No pre-registered secrets ship in the binary.
 - Fixed local port for the OAuth callback (some providers require an exact redirect URI), or a range the user registers?
 - Web UI password: off by default on a single-user Mac, or on by default everywhere?
 - Web UI stack: server-rendered HTML with a little JavaScript, or a small SPA embedded in the binary?

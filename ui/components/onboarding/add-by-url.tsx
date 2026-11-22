@@ -1,11 +1,11 @@
 "use client";
 
-import { CheckCircle2Icon, KeyRoundIcon, LogInIcon, SearchIcon, TriangleAlertIcon } from "lucide-react";
+import { CheckCircle2Icon, ExternalLinkIcon, KeyRoundIcon, LogInIcon, SearchIcon, TriangleAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CodeBlock, ErrorNote, Field, SecretInput } from "@/components/common";
 import { ClientFields } from "@/components/client-fields";
 import { Advanced, type AuthChoice, clientPayload, ServerForm } from "@/components/server-form";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { api, errorMessage, type ProbeResult, type Server, type Status } from "@/lib/api";
@@ -43,6 +43,7 @@ function ProbeCard({ probe, onAdded }: { probe: Found; onAdded: (s: Server, auth
   const [busy, setBusy] = useState(false);
   const auth = probe.auth;
   const manualClient = auth.type === "oauth" && auth.registration === "manual";
+  const setup = auth.type === "oauth" ? auth.setup : undefined;
   const [redirectUri, setRedirectUri] = useState("");
   useEffect(() => {
     if (!manualClient) return;
@@ -118,7 +119,38 @@ function ProbeCard({ probe, onAdded }: { probe: Found; onAdded: (s: Server, auth
         </div>
       </div>
 
-      {manualClient && (
+      {manualClient && setup && (
+        <div className="grid gap-3 rounded-lg border border-brand/30 bg-brand/5 p-3">
+          <p className="text-sm">
+            <span className="font-medium">{setup.provider} needs an app in your workspace.</span>{" "}
+            <span className="text-muted-foreground">
+              The link opens {setup.provider} with the app filled in. It stays in your account; pMCPg never sees it.
+            </span>
+          </p>
+          <a
+            href={setup.createUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(buttonVariants(), "w-fit")}
+          >
+            <ExternalLinkIcon />
+            Create the {setup.provider} app
+          </a>
+          <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+            {setup.steps.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ol>
+          <ClientFields
+            clientId={clientId}
+            onClientId={setClientId}
+            clientSecret={clientSecret}
+            onClientSecret={setClientSecret}
+          />
+        </div>
+      )}
+
+      {manualClient && !setup && (
         <div className="grid gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
           <p className="text-sm">
             <span className="font-medium">This provider needs a client ID you register with them.</span>{" "}

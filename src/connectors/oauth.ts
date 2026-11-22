@@ -15,6 +15,7 @@ import {
 } from "@modelcontextprotocol/client";
 import type { AccountDef, ServerDef } from "../core/config.ts";
 import { type Vault, vaultKeys } from "../vault/vault.ts";
+import { clientMetadataUrlFor } from "./cimd.ts";
 import type { ConnectorDeps, OAuthController } from "./connector.ts";
 import { checkGuardedUrl, guardedFetch } from "./guarded-fetch.ts";
 import { checkRemoteUrl } from "./remote-url.ts";
@@ -107,6 +108,11 @@ export class VaultOAuthProvider implements OAuthClientProvider {
 
   get redirectUrl(): string {
     return `${this.opts.gatewayUrl.replace(/\/+$/, "")}/oauth/callback`;
+  }
+
+  /** Client ID document URL, used when the authorization server supports CIMD and no client is stored. */
+  get clientMetadataUrl(): string | undefined {
+    return clientMetadataUrlFor(this.redirectUrl);
   }
 
   get clientMetadata(): OAuthClientMetadata {

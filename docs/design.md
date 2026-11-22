@@ -92,6 +92,8 @@ Some clients only launch local stdio servers. Claude Desktop's config file is on
 
 `search_tools`' description ends with a menu of the profile's searchable tools, so a client knows what the gateway offers before it searches: one line per tool (`- account__tool: first sentence`, cut at 80 characters). Above 100 tools it lists one line per account with its tool names (cut at 200 characters). The menu is rebuilt on every `tools/list`; quarantined and policy-hidden tools are left out. It is the fixed cost every client pays: about 25 tokens per tool. Downstream descriptions reach the menu only as their first sentence, which limits the room for tool poisoning; full descriptions come back from `search_tools` as before.
 
+The server `instructions` sent at initialize carry a shorter menu: one line per account with its tool names, capped at 2,000 characters, with a count of the accounts left out. Clients that defer tool schemas (Claude's tool search) show instructions up front but not the `search_tools` description until they load it. Instructions are fixed per connection, so a tool added later shows only in the description and in search. The stdio bridge reads them once at start and passes them on.
+
 ### Protocol versions
 
 The front door speaks the 2026-07-28 spec and older revisions, using the SDK's version negotiation. Downstream connections negotiate separately per server. The gateway translates between them; the client never sees downstream protocol details.
@@ -245,7 +247,13 @@ Code in `src/onboarding/`, UI API in `src/api/onboarding.ts`, CLI in `src/cli/co
 
 Applying from the UI asks for the UI password when one is set.
 
-**Manual OAuth clients.** For providers without dynamic registration or CIMD, the account takes a client ID (in `config.yaml`) and an optional client secret (vault only).
+**OAuth client registration.** Order, as in the MCP spec: a client ID in the account, then CIMD, then dynamic registration, then a pasted client ID.
+
+- **CIMD** (`src/connectors/cimd.ts`). The client ID is `https://baobab-tech.github.io/pMCPg/oauth/client.json`, served by GitHub Pages from the `gh-pages` branch. The source is `site/oauth/client.json`; `scripts/publish-site.sh` copies `site/` to `gh-pages`. It holds the name, the loopback redirects on port 7431 and `token_endpoint_auth_method: none`; no secret. The authorization server fetches it, so pMCPg's host never sees who signs in. A test keeps the file equal to `clientMetadataDocument()`.
+- CIMD is offered only when the gateway's redirect is in the file, or `PMCPG_CLIENT_METADATA_URL` names a self-hosted copy. Otherwise the probe falls back to dynamic registration or a pasted client ID.
+- Changing the file's `redirect_uris` can make servers ask for consent again. Changing its URL changes the client ID; keep the old file up for existing sign-ins.
+- **Manual clients.** The account takes a client ID (in `config.yaml`) and an optional client secret (vault only).
+- **App setup links** (`src/onboarding/app-setup.ts`). For Slack, the probe adds a link to `api.slack.com/apps?new_app=1&manifest_json=…` with the redirect, the server's scopes, `pkce_enabled` and `is_mcp_enabled` filled in. The user creates the app in their own workspace and pastes only the client ID. Slack lets only internal and Marketplace apps use its MCP server; the app stays internal.
 
 **Universal URL.** `/mcp` accepts any profile's token; the token picks the profile. `/p/<profile>/mcp` stays as the explicit form.
 

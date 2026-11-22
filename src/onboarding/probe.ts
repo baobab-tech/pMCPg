@@ -57,7 +57,7 @@ export function suggestId(url: string, serverName?: string): string {
   return slug.slice(0, 40) || "server";
 }
 
-async function authFrom(res: Response, url: string, fetchFn: FetchLike): Promise<ProbeAuth> {
+async function authFrom(res: Response, url: string, fetchFn: FetchLike, cimdOk: boolean): Promise<ProbeAuth> {
   const params = extractWWWAuthenticateParams(res);
   try {
     const info = await discoverOAuthServerInfo(url, {
@@ -73,7 +73,8 @@ async function authFrom(res: Response, url: string, fetchFn: FetchLike): Promise
       return {
         type: "oauth",
         issuer: md.issuer ?? info.authorizationServerUrl,
-        registration: md.registration_endpoint ? "dcr" : cimd ? "cimd" : "manual",
+        // MCP order: a client ID document first, then dynamic registration, then a pasted client ID.
+        registration: cimd && cimdOk ? "cimd" : md.registration_endpoint ? "dcr" : "manual",
         ...(scopes?.length ? { scopes } : {}),
       };
     }
@@ -106,7 +107,13 @@ async function serverNameOf(res: Response): Promise<string | undefined> {
 
 export async function probeServer(
   rawUrl: string,
-  opts: { fetch?: FetchLike; allowInsecure?: boolean; timeoutMs?: number } = {},
+  opts: {
+    fetch?: FetchLike;
+    allowInsecure?: boolean;
+    timeoutMs?: number;
+    /** False when this gateway has no usable client ID document (see clientMetadataUrlFor). Default true. */
+    cimd?: boolean;
+  } = {},
 ): Promise<ProbeResult> {
   let url: string;
   try {
@@ -146,7 +153,7 @@ export async function probeServer(
     };
   }
   if (res.status === 401 || res.status === 403) {
-    const auth = await authFrom(res, url, fetchFn);
+    const auth = await authFrom(res, url, fetchFn, opts.cimd ?? true);
     return { ok: true, url, transport: "http", auth, suggestedId: suggestId(url) };
   }
 
@@ -158,7 +165,7 @@ export async function probeServer(
         headers: { accept: "text/event-stream" },
       });
       if (sse.status === 401 || sse.status === 403) {
-        const auth = await authFrom(sse, url, fetchFn);
+        const auth = await authFrom(sse, url, fetchFn, opts.cimd ?? true);
         return { ok: true, url, transport: "sse", auth, suggestedId: suggestId(url) };
       }
       if (sse.ok && sse.headers.get("content-type")?.includes("text/event-stream")) {

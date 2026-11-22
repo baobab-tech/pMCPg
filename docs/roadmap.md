@@ -51,7 +51,8 @@ Status words: **planned** (designed, will be built), **exploring** (plan drafted
 | Owner-only file ACLs on Windows when `PMCPG_HOME` is outside `%APPDATA%` (VLT-2) | [security registry](security-registry.md) | Planned |
 | Open low-severity findings: CON-3, LOG-1, STD-1, VLT-4 | [security registry](security-registry.md) | Planned |
 | Embeddings for tool search, if keyword search proves weak | [DESIGN: Search](design.md#search) | Exploring |
-| Client ID metadata document (CIMD) for providers without dynamic registration | [DESIGN: Onboarding](design.md#onboarding) | Exploring |
+| Publish `site/` (`scripts/publish-site.sh`, push `gh-pages`) and enable GitHub Pages on `gh-pages` so the CIMD client ID URL resolves | [DESIGN: Onboarding](design.md#onboarding) | Planned |
+| Confirm the Slack app link end to end: manifest accepts the `http://127.0.0.1` redirect, PKCE token exchange works without a secret | [DESIGN: Onboarding](design.md#onboarding) | Planned |
 
 ## Ideas
 

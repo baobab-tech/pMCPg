@@ -217,8 +217,17 @@ export function slugify(s: string): string {
 
 export type ProbeAuth =
   | { type: "none" }
-  | { type: "oauth"; issuer: string; registration: "dcr" | "cimd" | "manual"; scopes?: string[] }
+  | {
+      type: "oauth";
+      issuer: string;
+      registration: "dcr" | "cimd" | "manual";
+      scopes?: string[];
+      /** One-click app creation for a known provider (src/onboarding/app-setup.ts). */
+      setup?: AppSetup;
+    }
   | { type: "header"; hint: string };
+
+export type AppSetup = { provider: string; createUrl: string; steps: string[]; secretNeeded: boolean };
 
 export type ProbeResult =
   | { ok: true; url: string; transport: "http" | "sse"; auth: ProbeAuth; serverName?: string; suggestedId: string }

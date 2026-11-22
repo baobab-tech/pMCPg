@@ -2,8 +2,10 @@
 // Registered by createUiApi, so they sit behind the same session, CSRF and Host/Origin checks.
 import type { Hono } from "hono";
 import { z } from "zod";
+import { clientMetadataUrlFor } from "../connectors/cimd.ts";
 import { Slug } from "../core/config.ts";
 import type { GatewayHandle } from "../gateway/handle.ts";
+import { appSetupFor } from "../onboarding/app-setup.ts";
 import { applyImport } from "../onboarding/apply.ts";
 import { applyConnect, type ConnectApp, planConnect, selfCommand } from "../onboarding/clients.ts";
 import {
@@ -99,7 +101,13 @@ export function registerOnboardingRoutes(
     } catch {
       // probeServer reports the bad URL
     }
-    return c.json(await probeServer(url, { allowInsecure: local }));
+    const redirectUrl = `${handle.url.replace(/\/+$/, "")}/oauth/callback`;
+    const found = await probeServer(url, { allowInsecure: local, cimd: !!clientMetadataUrlFor(redirectUrl) });
+    if (found.ok && found.auth.type === "oauth" && found.auth.registration === "manual") {
+      const setup = appSetupFor(found.auth.issuer, found.auth.scopes, redirectUrl);
+      if (setup) return c.json({ ...found, auth: { ...found.auth, setup } });
+    }
+    return c.json(found);
   });
 
   api.get("/import/scan", (c) => {

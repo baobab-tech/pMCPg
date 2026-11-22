@@ -110,8 +110,9 @@ Secrets are encrypted rows in `state.db` (AES-256-GCM). The key that encrypts th
 
 - Streamable HTTP by default, legacy HTTP+SSE for older servers.
 - Auth methods: none, API key or bearer token, custom headers, OAuth 2.1.
-- OAuth follows the MCP authorization spec: protected resource metadata (RFC 9728), authorization server metadata (RFC 8414), dynamic client registration (RFC 7591) when offered, PKCE, and resource indicators (RFC 8707). Providers without dynamic registration take a client ID and secret in the web UI.
-- The callback is `http://localhost:7431/oauth/callback`.
+- OAuth follows the MCP authorization spec: protected resource metadata (RFC 9728), authorization server metadata (RFC 8414), a client ID metadata document (CIMD) or dynamic client registration (RFC 7591) when offered, PKCE, and resource indicators (RFC 8707). Other providers take a client ID and secret in the web UI.
+- CIMD client ID: `https://baobab-tech.github.io/pMCPg/oauth/client.json`, a public file listing the redirect on port 7431. On another port, or to drop the dependency on that file, host your own copy and set `PMCPG_CLIENT_METADATA_URL` to its https URL.
+- The callback is `http://127.0.0.1:7431/oauth/callback` (the gateway's host and port).
 - Tokens refresh in the background before they expire. On a `401` the gateway refreshes once and retries.
 - A failed refresh marks the account "sign-in needed" and removes its tools from search until you sign in again.
 - Signing out revokes the token at the provider where supported, then deletes it.
