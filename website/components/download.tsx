@@ -1,14 +1,20 @@
 "use client";
 
-import { DownloadIcon, MonitorIcon } from "lucide-react";
+import { CheckIcon, DownloadIcon, MonitorIcon, ScanSearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CopyLine } from "@/components/copy-line";
+import { AlpineIcon, AppleIcon, DockerIcon, HomebrewIcon, LinuxIcon, NpmIcon, WindowsIcon } from "@/components/os-icons";
 import { type Release, TARGETS, type TargetId } from "@/lib/release";
 import { INSTALL, RELEASE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 type Os = "mac" | "windows" | "linux";
 const OS_LABEL: Record<Os, string> = { mac: "Mac", windows: "Windows", linux: "Linux" };
+const OS_ICON: Record<Os, (p: { className?: string }) => React.ReactNode> = {
+  mac: AppleIcon,
+  windows: WindowsIcon,
+  linux: LinuxIcon,
+};
 const MAIN = TARGETS.filter((t) => !("musl" in t));
 const MUSL = TARGETS.filter((t) => "musl" in t);
 
@@ -76,6 +82,7 @@ export function Download({ release }: { release: Release }) {
   }, []);
 
   const os = osOf(target);
+  const OsIcon = OS_ICON[os];
   const t = TARGETS.find((x) => x.id === target) ?? TARGETS[0];
   const file = release.files[target];
   const date = new Date(release.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -100,8 +107,16 @@ export function Download({ release }: { release: Release }) {
       )}
 
       <div className="rounded-2xl border border-brand/50 bg-card p-5 shadow-[0_0_60px_-30px_var(--brand)] sm:p-7">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-xl font-bold tracking-tight">For {t.label}</h3>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
+              <OsIcon className="size-6" />
+            </span>
+            <div>
+              <h3 className="text-xl font-bold tracking-tight">For {t.label}</h3>
+              <DetectBadge guess={guess} target={target} onReset={(x) => setTarget(x)} />
+            </div>
+          </div>
           <div className="inline-flex rounded-lg border bg-panel p-0.5 text-sm" role="tablist" aria-label="Operating system">
             {(Object.keys(OS_LABEL) as Os[]).map((o) => (
               <button
@@ -111,10 +126,14 @@ export function Download({ release }: { release: Release }) {
                 aria-selected={os === o}
                 onClick={() => pickOs(o)}
                 className={cn(
-                  "rounded-md px-3 py-1",
+                  "flex items-center gap-1.5 rounded-md px-3 py-1",
                   os === o ? "bg-card font-medium text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                 )}
               >
+                {(() => {
+                  const I = OS_ICON[o];
+                  return <I className="size-3.5" />;
+                })()}
                 {OS_LABEL[o]}
               </button>
             ))}
@@ -143,8 +162,9 @@ export function Download({ release }: { release: Release }) {
                 href={file}
                 className="mt-2.5 flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
               >
-                <DownloadIcon className="size-4" />
+                <OsIcon className="size-4.5" />
                 Download for {t.label}
+                <DownloadIcon className="size-4 opacity-70" />
               </a>
             ) : (
               <p className="mt-2.5 text-sm text-muted-foreground">Not in this release.</p>
@@ -195,8 +215,21 @@ export function Download({ release }: { release: Release }) {
                   x.id === target && "border-brand",
                 )}
               >
-                <button type="button" onClick={() => setTarget(x.id)} className="min-w-0 truncate text-left hover:text-brand">
-                  {x.label}
+                <button
+                  type="button"
+                  onClick={() => setTarget(x.id)}
+                  className="flex min-w-0 items-center gap-2.5 text-left hover:text-brand"
+                >
+                  {(() => {
+                    const I = OS_ICON[osOf(x.id)];
+                    return <I className="size-4.5 shrink-0 text-muted-foreground" />;
+                  })()}
+                  <span className="truncate">{x.label}</span>
+                  {guess?.target === x.id && (
+                    <span className="hidden shrink-0 rounded-full bg-brand-soft px-1.5 text-[10px] font-semibold text-brand sm:inline">
+                      Yours
+                    </span>
+                  )}
                 </button>
                 {href && (
                   <a
@@ -212,6 +245,7 @@ export function Download({ release }: { release: Release }) {
           })}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
+          <AlpineIcon className="mr-1 inline size-3.5 align-[-2px]" />
           Alpine / musl:{" "}
           {MUSL.map((x, i) => (
             <span key={x.id}>
@@ -232,17 +266,52 @@ export function Download({ release }: { release: Release }) {
         <p className="mb-3 text-sm font-semibold">For developers</p>
         <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-3">
           {[
-            { label: "npm", cmd: INSTALL.npm },
-            { label: "Homebrew", cmd: INSTALL.brew },
-            { label: "Docker", cmd: INSTALL.docker },
+            { label: "npm", cmd: INSTALL.npm, Icon: NpmIcon },
+            { label: "Homebrew", cmd: INSTALL.brew, Icon: HomebrewIcon },
+            { label: "Docker", cmd: INSTALL.docker, Icon: DockerIcon },
           ].map((d) => (
             <div key={d.label}>
-              <p className="mb-1 text-xs text-muted-foreground">{d.label}</p>
+              <p className="mb-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <d.Icon className="size-3.5" />
+                {d.label}
+              </p>
               <CopyLine text={d.cmd} />
             </div>
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+/** What we detected, and a way back to it after picking something else. */
+function DetectBadge({
+  guess,
+  target,
+  onReset,
+}: {
+  guess: { target: TargetId | null; sure: boolean } | null;
+  target: TargetId;
+  onReset: (t: TargetId) => void;
+}) {
+  if (!guess) return <p className="mt-0.5 text-xs text-muted-foreground">Checking your computer…</p>;
+  if (!guess.target) return null;
+  const label = TARGETS.find((x) => x.id === guess.target)?.label;
+  if (guess.target !== target)
+    return (
+      <button
+        type="button"
+        onClick={() => guess.target && onReset(guess.target)}
+        className="mt-0.5 flex items-center gap-1 text-xs text-brand hover:underline"
+      >
+        <ScanSearchIcon className="size-3.5" />
+        Detected {label}: switch back
+      </button>
+    );
+  return (
+    <p className="mt-0.5 flex items-center gap-1 text-xs text-ok">
+      <CheckIcon className="size-3.5" />
+      {guess.sure ? "Detected from your browser" : "Best guess from your browser"}
+    </p>
   );
 }
