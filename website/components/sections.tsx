@@ -59,7 +59,7 @@ export function HowItWorks() {
     return () => clearInterval(t);
   }, [reduce, audience.steps.length]);
   return (
-    <Section id="how" eyebrow={audience.label} title="Getting started">
+    <Section id="getting-started" eyebrow={audience.label} title="Getting started">
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {audience.steps.map((s, i) => (
           <motion.li
