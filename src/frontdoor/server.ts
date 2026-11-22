@@ -153,8 +153,13 @@ export function serverInstructions(tools: ToolRef[]): string {
     byAccount.set(t.accountId, [...(byAccount.get(t.accountId) ?? []), t.toolName]);
   let text = `${head}\nTools by account (${tools.length}):`;
   const accounts = [...byAccount];
+  // Share the room between accounts, so every account gets a line before any line runs long.
+  const lineChars = Math.max(
+    60,
+    Math.min(MENU_GROUP_CHARS, Math.floor((INSTRUCTIONS_MAX_CHARS - text.length) / accounts.length) - 1),
+  );
   for (const [i, [account, names]] of accounts.entries()) {
-    const line = `\n${cut(`- ${account} (${names.length}): ${names.join(", ")}`, MENU_GROUP_CHARS)}`;
+    const line = `\n${cut(`- ${account} (${names.length}): ${names.join(", ")}`, lineChars)}`;
     const more = `\n…and ${accounts.length - i} more accounts; search to see them.`;
     if (text.length + line.length + (i < accounts.length - 1 ? more.length : 0) > INSTRUCTIONS_MAX_CHARS)
       return text + more;

@@ -124,6 +124,15 @@ describe("serverInstructions", () => {
     expect(text.length).toBeLessThanOrEqual(INSTRUCTIONS_MAX_CHARS);
     expect(text).toMatch(/…and \d+ more accounts; search to see them\.$/);
   });
+  test("14 accounts with long tool lists all get a line", () => {
+    const tools = Array.from({ length: 14 }, (_, a) =>
+      Array.from({ length: 40 }, (_, i) => ref(`account-${a}`, `some_long_tool_name_${i}`)),
+    ).flat();
+    const text = serverInstructions(tools);
+    expect(text.length).toBeLessThanOrEqual(INSTRUCTIONS_MAX_CHARS);
+    expect(text).not.toContain("more accounts");
+    for (let a = 0; a < 14; a++) expect(text).toContain(`- account-${a} (40):`);
+  });
   test("sent at initialize, for clients that load tool descriptions late", async () => {
     const tools = [ref("mail", "send_email", "Send an email.")];
     h = await startFrontDoor([], { listTools: () => tools });
