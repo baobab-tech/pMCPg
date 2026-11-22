@@ -2,6 +2,13 @@
 
 Each profile has its own URL. The web UI's "Connect a client" page gives a copy-ready snippet for each app.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/connectors-swipe-dark.svg">
+    <img alt="Before: Claude holds seven connectors, each a URL or command with its own key, several with expired sign-ins. After: Private MCP Gateway is Claude's only connector, the servers sit behind it, and all are healthy." src="assets/connectors-swipe-light.svg" width="100%">
+  </picture>
+</p>
+
 ## The stdio bridge
 
 `pmcpg connect <profile>` serves MCP on stdio and relays it to the profile's HTTP endpoint. It reads the profile's client token from pMCPg, so the app's settings hold a command and no token. Use it for every app that can run a command.
