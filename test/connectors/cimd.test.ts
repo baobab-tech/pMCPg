@@ -37,6 +37,11 @@ describe("client ID document", () => {
     expect(hosted.client_id).toBe(CLIENT_METADATA_URL);
   });
 
+  test("URLs in the document share the client ID's origin", () => {
+    const doc = clientMetadataDocument();
+    expect(new URL(doc.client_uri).origin).toBe(new URL(doc.client_id).origin);
+  });
+
   test("document holds no secret and uses no shared-secret auth", () => {
     const doc = clientMetadataDocument() as Record<string, unknown>;
     expect(doc.client_secret).toBeUndefined();

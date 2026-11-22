@@ -23,7 +23,8 @@ export function clientMetadataDocument(
   return {
     client_id: clientId,
     client_name: "pMCPg",
-    client_uri: "https://github.com/baobab-tech/pMCPg",
+    // Same origin as client_id: authorization servers refuse a client_uri on another origin.
+    client_uri: new URL("..", clientId).toString(),
     redirect_uris: redirectUris,
     grant_types: ["authorization_code", "refresh_token"],
     response_types: ["code"],

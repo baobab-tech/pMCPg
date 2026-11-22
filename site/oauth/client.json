@@ -1,7 +1,7 @@
 {
   "client_id": "https://baobab-tech.github.io/pMCPg/oauth/client.json",
   "client_name": "pMCPg",
-  "client_uri": "https://github.com/baobab-tech/pMCPg",
+  "client_uri": "https://baobab-tech.github.io/pMCPg/",
   "redirect_uris": [
     "http://127.0.0.1:7431/oauth/callback",
     "http://localhost:7431/oauth/callback"
