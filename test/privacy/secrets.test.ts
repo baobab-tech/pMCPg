@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { goToJs } from "../../src/privacy/secrets/gen-gitleaks.ts";
+import { defangLiteral, goToJs } from "../../src/privacy/secrets/gen-gitleaks.ts";
 import { secretRules } from "../../src/privacy/secrets/rules.ts";
 import { findSecrets } from "../../src/privacy/secrets/scan.ts";
 
@@ -23,6 +23,7 @@ const SECRETS: [rule: string, text: string, secret: string][] = [
     `Bearer ${"eyJ"}hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,
     `${"eyJ"}hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,
   ],
+  ["gcp-api-key", `key ${"AIza"}Sy${rnd.slice(0, 33)}`, `${"AIza"}Sy${rnd.slice(0, 33)}`],
   ["generic-api-key", 'api_key = "f8Kd93jLq0Zx7Vb2Nm5Rt1Yw"', "f8Kd93jLq0Zx7Vb2Nm5Rt1Yw"],
   ["url-credentials", "postgres://admin:s3cr3tP4ss@db.example.com/app", "s3cr3tP4ss"],
   ["labelled-password", "Password: Tr0ub4dor&3x", "Tr0ub4dor&3x"],
@@ -53,6 +54,7 @@ describe("secret rules", () => {
     ["masked password", "password: ********"],
     ["low entropy", 'token = "aaaaaaaaaaaaaaaaaaaa"'],
     ["documentation key", `${"AKIA"}IOSFODNN7EXAMPLE`],
+    ["allowlisted gcp example key", `key ${"AIza"}Syabcdefghijklmnopqrstuvwxyz1234567`],
     ["prose about tokens", "Rotate your access token every 90 days."],
     ["url without password", "https://user@example.com/path"],
     ["url with variable password", `postgres://app:${"$"}{DB_PASSWORD}@db/app`],
@@ -78,5 +80,15 @@ describe("gitleaks conversion", () => {
     ["(?P<name>x)", "(?<name>x)", ""],
   ])("%s", (go, source, flags) => {
     expect(goToJs(go)).toEqual({ source, flags });
+  });
+
+  test("allowlist literals that match their own rule are split, other entries are kept", () => {
+    const rule = /\b(AIza[\w-]{35})(?:[\x60'"\s;]|\\[nr]|$)/;
+    const sample = `${"AIza"}Syabcdefghijklmnopqrstuvwxyz1234567`;
+    const split = defangLiteral(sample, rule);
+    expect(split).not.toBe(sample);
+    expect(new RegExp(split).test(sample)).toBe(true);
+    expect(defangLiteral("^[a-z]+$", rule)).toBe("^[a-z]+$");
+    expect(defangLiteral("not-a-key-value", rule)).toBe("not-a-key-value");
   });
 });
