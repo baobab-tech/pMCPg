@@ -21,6 +21,8 @@ What leaves your machine depends on where your AI model and MCP servers run. The
 - No telemetry, no update ping, no crash reports.
 - Baobab Tech never holds your data, credentials or usage.
 
+What you type into a cloud AI app goes to its provider, as always. Masking covers what your MCP servers return, not your messages.
+
 Your AI model and your MCP servers decide what else leaves the machine:
 
 | AI model | MCP servers | What leaves your machine | Suggested setup |
