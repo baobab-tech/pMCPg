@@ -32,6 +32,7 @@
     "build:ui": "bun install --cwd ui --frozen-lockfile --ignore-scripts && bun run --cwd ui build && bun scripts/embed-ui.ts",
     "build": "bun run build:ui && bun build --compile --minify src/cli/main.ts --outfile dist/pmcpg",
     "dev:ui": "bun scripts/dev-ui.ts",
+    "website": "bun install --cwd website --frozen-lockfile && bun run --cwd website dev",
     "ci": "bun install --frozen-lockfile --ignore-scripts && bun run check && bun test && bun run build && ./dist/pmcpg version"
   }
 }

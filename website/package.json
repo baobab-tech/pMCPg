@@ -4,7 +4,7 @@
   "private": true,
   "description": "pmcpg.io: the promo site for Private MCP Gateway. Static export; never part of the gateway binary.",
   "scripts": {
-    "dev": "bun scripts/copy-assets.ts && next dev",
+    "dev": "bun scripts/copy-assets.ts && next dev --port 3100",
     "build": "bun scripts/copy-assets.ts && next build",
     "typecheck": "tsc --noEmit"
   },
