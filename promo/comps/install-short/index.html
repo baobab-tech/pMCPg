@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>pMCPg: Get it in one line</title>
+<link rel="stylesheet" href="../../lib/theme.css" />
+<link rel="stylesheet" href="../../lib/site.css" />
+<style>
+  .layout {
+    position: absolute; inset: 0; display: grid;
+    grid-template-rows: auto 1fr 170px; row-gap: 30px;
+    grid-template-areas: "head" "scene" "caption";
+  }
+  [data-format="square"] .layout { grid-template-rows: auto 1fr 120px; row-gap: 16px; }
+  [data-format="landscape"] .layout {
+    grid-template-columns: 600px 1fr; grid-template-rows: 1fr 1fr; column-gap: 40px;
+    grid-template-areas: "head scene" "caption scene";
+  }
+
+  .head { grid-area: head; }
+  [data-format="landscape"] .head { align-self: end; padding-bottom: 30px; }
+  h1 { text-wrap: balance; font-family: var(--font); font-size: 88px; line-height: 1.04; font-weight: 700; letter-spacing: -1px; margin-top: 22px; }
+  [data-format="square"] h1 { font-size: 70px; margin-top: 16px; }
+  [data-format="landscape"] h1 { font-size: 96px; }
+
+  .swrap { grid-area: scene; position: relative; }
+  .persp { position: absolute; left: 50%; top: 50%; perspective: 2400px; }
+  .plane { position: absolute; inset: 0; transform-style: preserve-3d; }
+
+  /* Terminal */
+  .term .body { padding: 22px 28px; font-family: var(--mono); font-size: 30px; line-height: 1.4; }
+  .term .cmd { word-break: break-all; }
+  .term .p { color: var(--brand); }
+  .term .out { color: var(--muted-fg); }
+  .term .out .okc { color: var(--ok); }
+  .cursor { display: inline-block; width: 16px; height: 34px; background: var(--fg); vertical-align: -5px; margin-left: 2px; }
+
+  /* Browser with the web UI */
+  .urlpill {
+    display: inline-flex; align-items: center; gap: 8px; margin-left: 10px;
+    padding: 4px 16px; border-radius: 999px; background: var(--panel); color: var(--muted-fg);
+    font-size: 23px; font-family: var(--mono);
+  }
+  .page { position: absolute; left: 0; right: 0; top: 60px; bottom: 0; padding: 26px 34px; }
+  .page h2 { font-family: var(--font); font-size: 46px; font-weight: 600; }
+  .page .desc { font-size: 28px; color: var(--muted-fg); margin-top: 4px; }
+  .lbl { font-size: 28px; font-weight: 600; margin-top: 22px; margin-bottom: 10px; }
+  .inrow { display: flex; gap: 12px; }
+  .input {
+    flex: 1; height: 66px; border: 1.5px solid rgb(255 255 255 / 0.16); border-radius: 12px; background: rgb(255 255 255 / 0.03);
+    display: flex; align-items: center; padding: 0 18px; font-family: var(--mono); font-size: 28px; white-space: nowrap; overflow: hidden;
+  }
+  .input.ph { color: rgb(161 161 161 / 0.6); }
+  .btn {
+    height: 66px; padding: 0 28px; border-radius: 12px; background: var(--brand); color: #0d1a20;
+    font-size: 28px; font-weight: 600; display: inline-flex; align-items: center; white-space: nowrap;
+  }
+  .probe { margin-top: 18px; border: 1.5px solid var(--border); border-radius: 16px; background: rgb(38 38 38 / 0.3); padding: 18px; display: grid; grid-template-columns: 50px 1fr; gap: 14px; }
+  .probe .ic { width: 50px; height: 50px; border-radius: 12px; background: rgb(61 184 216 / 0.15); color: var(--brand); display: grid; place-items: center; }
+  .probe b { font-size: 30px; font-weight: 600; }
+  .probe .t { font-size: 25px; line-height: 1.25; color: var(--muted-fg); margin-top: 2px; }
+  .probe .u { display: none; font-size: 21px; color: var(--muted-fg); font-family: var(--mono); margin-top: 6px; }
+  .addrow { display: flex; align-items: center; gap: 18px; margin-top: 18px; }
+  .toast {
+    margin-left: auto; padding: 12px 22px; border-radius: 14px;
+    background: var(--panel); border: 1.5px solid var(--border); font-size: 28px; display: flex; gap: 10px; align-items: center;
+    box-shadow: 0 20px 40px -10px rgb(0 0 0 / 0.7);
+  }
+  .toast .c { color: var(--ok); }
+
+  /* Connect your AI app */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 26px; }
+  .tile {
+    display: grid; grid-template-columns: 66px 1fr; gap: 18px; align-items: center;
+    border: 1.5px solid var(--border); border-radius: 18px; padding: 16px 18px;
+  }
+  .tile .lg { width: 66px; height: 66px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 22px; }
+  .tile b { display: block; font-size: 31px; font-weight: 600; }
+  .tile .s { font-size: 25px; color: var(--muted-fg); }
+  .tile .s.on { color: var(--brand); font-weight: 600; }
+  .tile.on { border-color: var(--brand); background: rgb(61 184 216 / 0.05); box-shadow: 0 0 0 1px var(--brand); }
+
+  /* Captions */
+  .caption { grid-area: caption; position: relative; }
+  [data-format="landscape"] .caption { align-self: start; height: 260px; }
+  .cap {
+    position: absolute; inset: 0; display: flex; align-items: center; opacity: 0;
+    font-family: var(--font); font-size: 46px; font-weight: 600; line-height: 1.15;
+  }
+  [data-format="square"] .cap { font-size: 44px; }
+  [data-format="landscape"] .cap { align-items: flex-start; font-size: 48px; }
+  .cap span { text-wrap: balance; }
+  .cap b { color: var(--brand); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="safe">
+    <div class="layout">
+      <header class="head">
+        <div class="eyebrow" id="eyebrow"></div>
+        <h1 id="h1">Get it in one line.</h1>
+      </header>
+      <div class="swrap" id="swrap">
+        <div class="persp" id="persp"><div class="plane" id="plane"><div class="dots"></div></div></div>
+      </div>
+      <div class="caption" id="caption"></div>
+    </div>
+  </div>
+  <div class="end" id="end"></div>
+</div>
+
+<script src="../../node_modules/motion/dist/motion.js"></script>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

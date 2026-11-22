@@ -8,6 +8,7 @@
     "preview": "node render.mjs --preview"
   },
   "devDependencies": {
+    "@fontsource/inter": "5.2.8",
     "@fontsource/oxanium": "5.3.0",
     "motion": "14.14.0",
     "playwright": "1.65.1"
