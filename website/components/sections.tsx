@@ -224,7 +224,7 @@ export function Teams() {
       id="teams"
       eyebrow="Teams and IT"
       title="Control for small teams today"
-      lead="We are working on an entreprise self-hosted edition. We run no service and holds no data."
+      lead="We are working on an enterprise self-hosted edition. We run no service and hold no data."
     >
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-brand/40 bg-card p-6">
