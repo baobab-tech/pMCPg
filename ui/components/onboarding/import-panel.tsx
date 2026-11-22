@@ -3,10 +3,10 @@
 import {
   ArrowLeftIcon,
   CheckCircle2Icon, CloudIcon, GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, RefreshCwIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { EmptyState, ErrorNote } from "@/components/common";
 import { KeysDialog } from "@/components/keys-dialog";
-import { PasteDialog } from "@/components/onboarding/paste-dialog";
 import { Advanced } from "@/components/server-form";
 import { SignInDialog } from "@/components/signin-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ import {
   type ImportOutcome,
   type ImportScan,
 } from "@/lib/api";
+import { helpHref } from "@/lib/help-groups";
 import { cn } from "@/lib/utils";
 import { useView } from "@/components/view";
 
@@ -296,17 +297,20 @@ export function ImportPanel({
       <div className="grid gap-1.5">
         <p className="font-medium">Can't see your Claude or ChatGPT MCPs in the list?</p>
         <p className="text-muted-foreground">
-          {scan.note} <PasteDialog onImported={setOutcomes}>Ask your chatbot to list them</PasteDialog>
-          {onPasteUrl ? (
+          {scan.note} Copy each one's URL from the app's settings (
+          <Link href={helpHref("move-claude-connectors")} className="font-medium text-foreground underline underline-offset-3">
+            how, for Claude
+          </Link>
+          ){onPasteUrl ? (
             <>
-              , or{" "}
+              , then{" "}
               <button type="button" className="font-medium text-foreground underline underline-offset-3" onClick={onPasteUrl}>
-                paste a URL
+                paste it here
               </button>
               .
             </>
           ) : (
-            "."
+            " and add it under Servers."
           )}
         </p>
       </div>

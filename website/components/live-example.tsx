@@ -407,7 +407,7 @@ export function LiveExample() {
               <div className="flex flex-1 flex-col gap-2.5 p-3.5 text-[13.5px]">
                 <div
                   data-k="q"
-                  className="min-h-5 max-w-[92%] self-end rounded-xl rounded-br-sm border bg-panel px-3 py-2"
+                  className="min-h-5 w-full self-stretch rounded-xl rounded-br-sm border bg-panel px-3 py-2"
                 />
                 {["search_tools", "call_tool · DevExplorer", "call_tool · CRM MCP"].map((t, i) => (
                   <span
