@@ -2,6 +2,7 @@ import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 import { AudienceCopy, AudienceProvider, AudienceToggle } from "@/components/audience";
 import { latestRelease } from "@/lib/release";
+import { AskAi } from "@/components/ask-ai";
 import { BeforeAfter } from "@/components/before-after";
 import { HeroCta } from "@/components/hero-cta";
 import { LiveExample } from "@/components/live-example";
@@ -42,6 +43,7 @@ export default async function Home() {
         <section id="how" className="relative overflow-x-clip border-t py-20 sm:py-24">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,var(--brand-soft),transparent_70%)]" />
           <div className="relative mx-auto max-w-6xl px-4">
+            <AskAi />
             <h2 className="text-center text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">
               How it works
             </h2>
