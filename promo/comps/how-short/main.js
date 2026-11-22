@@ -38,9 +38,9 @@ const ROWS = [
   { id: "log", name: "Log", icon: svg('<path d="M3 6h18M3 12h18M3 18h12"/>') },
 ];
 const SERVERS = [
-  { id: "dev", name: "DevExplorer", desc: "IATI aid data" },
+  { id: "dev", name: "DevExplorer MCP", desc: "IATI aid data" },
   { id: "crm", name: "CRM MCP", desc: "Your contacts · custom" },
-  { id: "oa", name: "OpenAlex", desc: "Research papers" },
+  { id: "oa", name: "OpenAlex MCP", desc: "Research papers" },
 ];
 
 // Row and server states over time: [time, [state, text]].
@@ -58,14 +58,14 @@ const SRV_EVENTS = {
 };
 const CHIPS = [
   { label: "search_tools", show: 4.15, done: 6.4 },
-  { label: "call_tool · DevExplorer", show: 7.15, done: 10.35 },
+  { label: "call_tool · DevExplorer MCP", show: 7.15, done: 10.35 },
   { label: "call_tool · CRM MCP", show: 10.45, done: 13.5 },
 ];
 // Packets: wire, label, start, end, back, raw.
 const PACKETS = [
   ["app", "search: IATI projects, contacts", 4.2, 5.0],
-  ["app", "DevExplorer, CRM MCP", 5.6, 6.4, true],
-  ["app", "call: DevExplorer", 7.15, 7.8],
+  ["app", "DevExplorer MCP, CRM MCP", 5.6, 6.4, true],
+  ["app", "call: DevExplorer MCP", 7.15, 7.8],
   ["dev", "🔑 search activities", 8.85, 9.5],
   ["dev", "3 activities", 9.55, 10.0, true],
   ["app", "3 activities", 9.95, 10.4, true],
