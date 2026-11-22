@@ -1,7 +1,29 @@
+import { ClaudeCopyUrl, ClaudeManagePlugins, ClaudeTurnOff } from "@/components/help/claude-screens";
 import type { Diagram } from "@/lib/help";
 
+/** Redrawn Claude Desktop screens for the "move your Claude connectors" articles. */
+const CLAUDE_SCREENS = {
+  "claude-manage-plugins": {
+    Screen: ClaudeManagePlugins,
+    caption: "In Claude Desktop: + under the message box, then Plugins, then Manage plugins (outlined).",
+    alt: "Claude's + menu with Plugins outlined, and the Plugins list with Manage plugins outlined at the bottom.",
+  },
+  "claude-copy-url": {
+    Screen: ClaudeCopyUrl,
+    caption: "A connector's row, opened. Copy server URL (outlined) copies the address to paste into pMCPg.",
+    alt: "Claude's Figma connector row, opened: Connector URL https://mcp.figma.com/mcp with a Copy server URL button, its tools, and Sign-in: Required.",
+  },
+  "claude-turn-off": {
+    Screen: ClaudeTurnOff,
+    caption: "After the move: the connectors you moved are off, and pmcpg (outlined) is on.",
+    alt: "Claude's Plugins list: Figma off, Linear off, pmcpg on.",
+  },
+} as const;
+type ClaudeScreen = keyof typeof CLAUDE_SCREENS;
+const isClaudeScreen = (n: Diagram): n is ClaudeScreen => n in CLAUDE_SCREENS;
+
 // The README pictures (docs/assets) come in a light and a dark file; show the one that matches the theme.
-const IMAGES: Record<Exclude<Diagram, "objects" | "keychain-prompt">, { file: string; alt: string; caption: string }> = {
+const IMAGES: Record<Exclude<Diagram, "objects" | "keychain-prompt" | ClaudeScreen>, { file: string; alt: string; caption: string }> = {
   "request-flow": {
     file: "request-flow",
     caption: "One tool call through pMCPg.",
@@ -144,6 +166,16 @@ export function HelpDiagram({ name }: { name: Diagram }) {
       <Figure caption="The macOS prompt. Enter your Mac login password, then choose Always Allow (outlined). Development builds show “bun” instead of “pmcpg”.">
         <div className="p-3" role="img" aria-label="macOS dialog: pmcpg wants to use your confidential information stored in private-mcp-gateway in your keychain. A password field and three buttons: Always Allow, Deny, Allow.">
           <KeychainPrompt />
+        </div>
+      </Figure>
+    );
+  }
+  if (isClaudeScreen(name)) {
+    const { Screen, caption, alt } = CLAUDE_SCREENS[name];
+    return (
+      <Figure caption={caption}>
+        <div className="p-3" role="img" aria-label={alt}>
+          <Screen />
         </div>
       </Figure>
     );

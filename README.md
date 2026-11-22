@@ -37,7 +37,7 @@
   <a href="#documentation">Docs</a>
 </p>
 
-Connect your AI app once. The gateway runs your MCP servers, keeps your keys safe, and hides personal data and keys from cloud AI models or providers.
+Connect your AI app once. The gateway runs your MCP servers and keeps your keys away from the AI. It masks personal data in what your MCP servers return, before a cloud AI model reads it. What you type into the chat still goes to the AI provider as usual.
 
 <p align="center">
   <picture>

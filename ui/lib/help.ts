@@ -1,4 +1,4 @@
-// Build-time loader for help articles in content/help/*.md. Runs only during `next build`
+// Build-time loader for help articles in help/*.md at the repo root, shared with website/. Runs only during `next build`
 // (server components with static export), so `marked` and `fs` never reach the browser.
 //
 // Front matter: title, summary, group, order. Body: Markdown, plus two kinds of block markers on
@@ -10,7 +10,17 @@ import { Marked } from "marked";
 import { HELP_GROUPS, type HelpGroupId, type HelpSummary, helpHref } from "./help-groups";
 
 export const LIVE_PANELS = ["get-started", "connect-app", "account-doctor", "password-status", "key-source"] as const;
-export const DIAGRAMS = ["request-flow", "profiles", "where-data-goes", "before-after", "objects", "keychain-prompt"] as const;
+export const DIAGRAMS = [
+  "request-flow",
+  "profiles",
+  "where-data-goes",
+  "before-after",
+  "objects",
+  "keychain-prompt",
+  "claude-manage-plugins",
+  "claude-copy-url",
+  "claude-turn-off",
+] as const;
 const CONNECT_APPS = ["claude-desktop", "claude-code", "lm-studio", "cursor", "vscode"];
 export type LivePanel = (typeof LIVE_PANELS)[number];
 export type Diagram = (typeof DIAGRAMS)[number];
@@ -24,7 +34,8 @@ export interface HelpArticle extends HelpSummary {
   blocks: HelpBlock[];
 }
 
-const DIR = join(process.cwd(), "content", "help");
+// `next build` runs in ui/, so the shared folder is one level up.
+const DIR = join(process.cwd(), "..", "help");
 const MARKER = /^\{\{(live|diagram):([a-z-]+)(?:\s+([a-z0-9-]+))?\}\}$/;
 
 function parseFrontMatter(file: string, src: string): { meta: Record<string, string>; body: string } {

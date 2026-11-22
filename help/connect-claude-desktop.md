@@ -23,5 +23,5 @@ Ask Claude something that needs one of your tools. It should search pMCPg's tool
 
 ## Notes
 
-- Connectors you added on claude.ai are separate and keep working. pMCPg can't use them: see [ChatGPT, claude.ai and Gemini](help:cloud-apps).
+- Connectors you added in Claude are separate and keep working. To use them through pMCPg, [move them over](help:move-claude-connectors).
 - To use a different profile, pick it above before connecting. Each profile gets its own entry.

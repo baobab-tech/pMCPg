@@ -28,4 +28,4 @@ Import only reads. It never changes your apps' files.
 
 ## Not found?
 
-Connectors added on claude.ai, ChatGPT or Gemini live in those companies' clouds and can't be read from this computer. Paste their URLs instead: see [ChatGPT, claude.ai and Gemini](help:cloud-apps).
+Connectors added on claude.ai, ChatGPT or Gemini live in those companies' clouds and can't be read from this computer. Bring them over by hand: see [Move your Claude connectors](help:move-claude-connectors).
