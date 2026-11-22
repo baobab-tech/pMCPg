@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme";
-import { GITHUB, RELEASE } from "@/lib/site";
+import { GITHUB } from "@/lib/site";
 
 const NAV = [
   { href: "/#how", label: "How it works" },
@@ -20,10 +20,10 @@ export function SiteHeader() {
           pMCPg
         </Link>
         <a
-          href={RELEASE}
+          href="/#download"
           className="hidden rounded-full border px-2.5 py-0.5 text-xs text-brand hover:border-brand sm:inline"
         >
-          Latest release
+          Download
         </a>
         <nav className="ml-auto hidden items-center gap-5 text-sm text-muted-foreground md:flex">
           {NAV.map((n) => (

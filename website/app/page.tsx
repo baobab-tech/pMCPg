@@ -1,12 +1,14 @@
 import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 import { AudienceCopy, AudienceProvider, AudienceToggle } from "@/components/audience";
+import { latestRelease } from "@/lib/release";
 import { BeforeAfter } from "@/components/before-after";
 import { HeroCta } from "@/components/hero-cta";
 import { LiveExample } from "@/components/live-example";
 import { Features, HowItWorks, Install, InstallTabs, Privacy, Teams } from "@/components/sections";
 
-export default function Home() {
+export default async function Home() {
+  const release = await latestRelease();
   return (
     <AudienceProvider>
       <main>
@@ -41,7 +43,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,var(--brand-soft),transparent_70%)]" />
           <div className="relative mx-auto max-w-6xl px-4">
             <h2 className="text-center text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold tracking-tight">
-              One question, two connectors
+              Getting started
             </h2>
             <p className="mx-auto mt-3 mb-12 max-w-xl text-center text-muted-foreground">
               Follow one request from Claude, through pMCPg, to DevExplorer and your CRM and back.
@@ -54,7 +56,7 @@ export default function Home() {
         <Features />
         <Privacy />
         <Teams />
-        <Install />
+        <Install release={release} />
       </main>
     </AudienceProvider>
   );

@@ -6,7 +6,7 @@ import { BAOBAB, DOCS, GITHUB, ISSUES, RELEASE, ROADMAP, SECURITY } from "@/lib/
 export function SiteFooter() {
   const links = [
     { href: GITHUB, label: "GitHub" },
-    { href: RELEASE, label: "Releases" },
+    { href: RELEASE, label: "All releases" },
     { href: DOCS, label: "Docs" },
     { href: SECURITY, label: "Security" },
     { href: ROADMAP, label: "Roadmap" },

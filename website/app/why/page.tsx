@@ -106,7 +106,7 @@ export default function Why() {
             <a href={ROADMAP} className="text-brand hover:underline">
               Roadmap
             </a>
-            <Link href="/#install" className="inline-flex items-center gap-1 text-brand hover:underline">
+            <Link href="/#download" className="inline-flex items-center gap-1 text-brand hover:underline">
               Install pMCPg <ArrowRightIcon className="size-4" />
             </Link>
           </div>
