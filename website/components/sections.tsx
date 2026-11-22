@@ -47,6 +47,14 @@ export function Section({
 
 export function HowItWorks() {
   const { audience } = useAudience();
+  const reduce = useReducedMotion();
+  // The highlight walks through the steps in order, on a loop.
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    if (reduce) return;
+    const t = setInterval(() => setActive((n) => (n + 1) % audience.steps.length), 1800);
+    return () => clearInterval(t);
+  }, [reduce, audience.steps.length]);
   return (
     <Section id="how" eyebrow={audience.label} title="How it works">
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -56,9 +64,12 @@ export function HowItWorks() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="rounded-2xl border bg-card p-5"
+            className={cn(
+              "rounded-2xl border bg-card p-5 transition-[border-color,box-shadow] duration-500",
+              !reduce && i === active && "border-brand shadow-[0_0_0_1px_var(--brand),0_0_32px_-8px_var(--brand)]",
+            )}
           >
-            <span className="font-mono text-xs text-brand">0{i + 1}</span>
+            <span className="text-xs font-semibold tracking-wide text-brand uppercase">Step {i + 1}</span>
             <h3 className="mt-2 font-semibold">{s.title}</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">{s.body}</p>
           </motion.li>
