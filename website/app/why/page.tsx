@@ -31,7 +31,7 @@ export default function Why() {
             <HeartIcon className="size-3.5 fill-rose-500 text-rose-500" /> Built by Baobab Tech
           </p>
           <h1 className="text-[clamp(2rem,5vw,3.2rem)] leading-[1.06] font-bold tracking-tight text-balance">
-            Small tech, so your organization keeps control
+            Sovereign data, AI and tooling
           </h1>
           <p className="mt-5 text-lg text-muted-foreground">
             <a href={BAOBAB} className="text-foreground underline underline-offset-3 hover:text-brand">

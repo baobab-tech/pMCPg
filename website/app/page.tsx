@@ -19,7 +19,7 @@ export default function Home() {
                 className="mb-5 inline-flex items-center gap-1.5 rounded-full border bg-card/70 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand hover:text-foreground"
               >
                 Built with <HeartIcon className="size-3.5 fill-rose-500 text-rose-500" />
-                by Baobab Tech<span className="hidden sm:inline">, for social impact</span>
+                by Baobab Tech, for social impact
                 <span className="whitespace-nowrap text-brand">Why →</span>
               </Link>
               <div>
