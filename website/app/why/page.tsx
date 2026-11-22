@@ -1,7 +1,7 @@
 import { ArrowRightIcon, HeartIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { GITHUB, ISSUES, ROADMAP } from "@/lib/site";
+import { BAOBAB, GITHUB, ISSUES, ROADMAP } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Why",
@@ -34,7 +34,10 @@ export default function Why() {
             Small tech, so your organization keeps control
           </h1>
           <p className="mt-5 text-lg text-muted-foreground">
-            Baobab Tech is a small tech practice. We build AI tools for social impact organizations: nonprofits, NGOs,
+            <a href={BAOBAB} className="text-foreground underline underline-offset-3 hover:text-brand">
+              Baobab Tech
+            </a>{" "}
+            is a small tech practice. We build AI tools for social impact organizations: nonprofits, NGOs,
             foundations and development agencies.
           </p>
         </div>
@@ -91,6 +94,9 @@ export default function Why() {
             pMCPg is open source. Tell us what your organization needs, or send a fix.
           </p>
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
+            <a href={BAOBAB} className="text-brand hover:underline">
+              baobabtech.ai
+            </a>
             <a href={GITHUB} className="text-brand hover:underline">
               GitHub
             </a>

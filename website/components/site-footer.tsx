@@ -1,7 +1,7 @@
 import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { DOCS, GITHUB, ISSUES, RELEASE, ROADMAP, SECURITY } from "@/lib/site";
+import { BAOBAB, DOCS, GITHUB, ISSUES, RELEASE, ROADMAP, SECURITY } from "@/lib/site";
 
 export function SiteFooter() {
   const links = [
@@ -11,6 +11,7 @@ export function SiteFooter() {
     { href: SECURITY, label: "Security" },
     { href: ROADMAP, label: "Roadmap" },
     { href: ISSUES, label: "Issues" },
+    { href: BAOBAB, label: "baobabtech.ai" },
   ];
   return (
     <footer className="border-t">

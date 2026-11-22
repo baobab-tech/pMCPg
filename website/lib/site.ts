@@ -6,6 +6,7 @@ export const ROADMAP = `${GITHUB}/blob/main/docs/roadmap.md`;
 export const SECURITY = `${GITHUB}/blob/main/docs/security.md`;
 export const PRIVACY = `${GITHUB}/blob/main/docs/privacy.md`;
 export const ISSUES = `${GITHUB}/issues`;
+export const BAOBAB = "https://baobabtech.ai";
 
 export const INSTALL = {
   unix: "curl -fsSL https://github.com/baobab-tech/pMCPg/releases/latest/download/install.sh | sh",
