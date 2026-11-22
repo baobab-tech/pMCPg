@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { McpServer, WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/server";
-import { probeServer, suggestId } from "../../src/onboarding/probe.ts";
+import { freeId, hostId, probeServer, suggestId } from "../../src/onboarding/probe.ts";
 import { type OAuthServerFixture, startOAuthServer } from "../fixtures/oauth-server.ts";
 
 let oauth: OAuthServerFixture;
@@ -68,4 +68,12 @@ test("suggestId", () => {
   expect(suggestId("https://mcp.linear.app/mcp")).toBe("linear");
   expect(suggestId("https://api.example-search.com/mcp")).toBe("example-search");
   expect(suggestId("https://x.dev/mcp", "My Server!")).toBe("my-server");
+});
+
+test("freeId: short id, then the whole host, then a number", () => {
+  const url = "https://washai.org/api/mcp";
+  expect(freeId("washai", url, new Set())).toBe("washai");
+  expect(freeId("washai", url, new Set(["washai"]))).toBe("washai-org");
+  expect(freeId("washai", url, new Set(["washai", "washai-org"]))).toBe("washai-2");
+  expect(hostId("https://mcp.app.washai.org/mcp")).toBe("app-washai-org");
 });

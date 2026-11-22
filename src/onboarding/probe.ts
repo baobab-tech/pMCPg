@@ -87,6 +87,37 @@ async function authFrom(res: Response, url: string, fetchFn: FetchLike, cimdOk: 
   };
 }
 
+/** `base`, or `base-2`, `base-3`… when taken. Adds the result to `taken`. */
+export function uniqueId(base: string, taken: Set<string>): string {
+  let id = base;
+  for (let n = 2; taken.has(id); n++) id = `${base.slice(0, 36)}-${n}`;
+  taken.add(id);
+  return id;
+}
+
+/** "app.washai.org" -> "app-washai-org": the whole host, for when the short id is taken. */
+export function hostId(url: string): string {
+  const host = new URL(url).hostname.toLowerCase().replace(/^(www|mcp)\./, "");
+  return (
+    host
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40)
+      .replace(/-+$/, "") || "server"
+  );
+}
+
+/**
+ * An id not in `taken`: the suggested one, else the whole host, else a numbered one.
+ * Two servers on one domain (washai.org and app.washai.org) both shorten to "washai".
+ */
+export function freeId(suggested: string, url: string, taken: Set<string>): string {
+  if (!taken.has(suggested)) return suggested;
+  const host = hostId(url);
+  if (!taken.has(host)) return host;
+  return uniqueId(suggested, new Set(taken));
+}
+
 /** Pull serverInfo.name from a JSON or SSE initialize answer. */
 async function serverNameOf(res: Response): Promise<string | undefined> {
   const text = await res.text().catch(() => "");

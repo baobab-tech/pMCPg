@@ -27,7 +27,7 @@ import {
   parsePasted,
   pastedCandidate,
 } from "../onboarding/paste.ts";
-import { probeServer } from "../onboarding/probe.ts";
+import { freeId, probeServer } from "../onboarding/probe.ts";
 import { clientAddress, type UiAuth } from "./auth.ts";
 
 export interface OnboardingOptions {
@@ -102,7 +102,16 @@ export function registerOnboardingRoutes(
       // probeServer reports the bad URL
     }
     const redirectUrl = `${handle.url.replace(/\/+$/, "")}/oauth/callback`;
-    const found = await probeServer(url, { allowInsecure: local, cimd: !!clientMetadataUrlFor(redirectUrl) });
+    const probed = await probeServer(url, {
+      allowInsecure: local,
+      cimd: !!clientMetadataUrlFor(redirectUrl),
+    });
+    // The new server's account takes the same id, so both lists count.
+    const cfg = handle.config();
+    const taken = new Set([...Object.keys(cfg.servers), ...Object.keys(cfg.accounts)]);
+    const found = probed.ok
+      ? { ...probed, suggestedId: freeId(probed.suggestedId, probed.url, taken) }
+      : probed;
     if (found.ok && found.auth.type === "oauth" && found.auth.registration === "manual") {
       const setup = appSetupFor(found.auth.issuer, found.auth.scopes, redirectUrl);
       if (setup) return c.json({ ...found, auth: { ...found.auth, setup } });

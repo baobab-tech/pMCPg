@@ -6,7 +6,7 @@ import type { GatewayHandle } from "../gateway/handle.ts";
 import { vaultKeys } from "../vault/vault.ts";
 import type { Candidate } from "./importers.ts";
 import { ARG_SECRET_MARKER, isThisGateway, keyOf } from "./importers.ts";
-import { type ProbeResult, probeServer } from "./probe.ts";
+import { type ProbeResult, probeServer, uniqueId } from "./probe.ts";
 
 export interface ImportOptions {
   /** Create a profile per Claude Code project, holding that project's servers. */
@@ -56,13 +56,6 @@ export async function probeWithSseFallback(
   moved.pathname = moved.pathname.replace(/\/sse\/?$/, "/mcp");
   const second = await probe(moved.toString(), isLocalUrl(url));
   return second.ok ? second : first;
-}
-
-function uniqueId(base: string, taken: Set<string>): string {
-  let id = base;
-  for (let n = 2; taken.has(id); n++) id = `${base.slice(0, 36)}-${n}`;
-  taken.add(id);
-  return id;
 }
 
 function existingKeys(cfg: Config): Set<string> {
