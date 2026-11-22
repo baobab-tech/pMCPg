@@ -135,6 +135,34 @@ export function toolMenu(tools: ToolRef[]): string {
   return `Tools available (${sorted.length}, grouped by account; search to see each one):\n${lines.join("\n")}`;
 }
 
+/** Cap on the server instructions; clients such as Claude Code cut longer ones. */
+export const INSTRUCTIONS_MAX_CHARS = 2000;
+
+/**
+ * Server instructions sent at initialize. Clients that defer tool schemas (Claude's tool search) show
+ * these up front but not the search_tools description, so the menu goes here too: one line per account
+ * with its tool names, cut to INSTRUCTIONS_MAX_CHARS.
+ */
+export function serverInstructions(tools: ToolRef[]): string {
+  const head =
+    "pMCPg is a gateway to the user's MCP servers. Pick a tool from the list below, call search_tools " +
+    "to get its input schema, then call_tool.";
+  if (tools.length === 0) return `${head}\nNo tools are connected yet.`;
+  const byAccount = new Map<string, string[]>();
+  for (const t of [...tools].sort((a, b) => a.qualifiedName.localeCompare(b.qualifiedName)))
+    byAccount.set(t.accountId, [...(byAccount.get(t.accountId) ?? []), t.toolName]);
+  let text = `${head}\nTools by account (${tools.length}):`;
+  const accounts = [...byAccount];
+  for (const [i, [account, names]] of accounts.entries()) {
+    const line = `\n${cut(`- ${account} (${names.length}): ${names.join(", ")}`, MENU_GROUP_CHARS)}`;
+    const more = `\n…and ${accounts.length - i} more accounts; search to see them.`;
+    if (text.length + line.length + (i < accounts.length - 1 ? more.length : 0) > INSTRUCTIONS_MAX_CHARS)
+      return text + more;
+    text += line;
+  }
+  return text;
+}
+
 const SEARCH_DESCRIPTION =
   "Find tools for a task. Returns names, descriptions and input schemas. Search before call_tool to get a tool's input schema.";
 
@@ -231,8 +259,12 @@ export function createFrontDoor(deps: FrontDoorDeps): FrontDoor {
   }
 
   function mcpServer(profileId: string, clientId: string | undefined): McpServer {
-    const menu = deps.listTools ? `\n\n${toolMenu(deps.listTools(profileId))}` : "";
-    const s = new McpServer({ name: "pmcpg", version: VERSION });
+    const tools = deps.listTools?.(profileId);
+    const menu = tools ? `\n\n${toolMenu(tools)}` : "";
+    const s = new McpServer(
+      { name: "pmcpg", version: VERSION },
+      tools ? { instructions: serverInstructions(tools) } : {},
+    );
     s.registerTool(
       "search_tools",
       {

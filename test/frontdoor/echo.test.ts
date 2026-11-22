@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { runBridge } from "../../src/frontdoor/bridge.ts";
-import { type Harness, StdioTestConnector, startFrontDoor, TOKENS, text } from "./helpers.ts";
+import { type Harness, StdioTestConnector, startFrontDoor, TOKENS, text, toolRef } from "./helpers.ts";
 
 const ECHO = join(import.meta.dir, "../fixtures/echo-server.ts");
 const RUNNER = join(import.meta.dir, "bridge-runner.ts");
@@ -13,7 +13,8 @@ let echo: StdioTestConnector;
 
 beforeAll(async () => {
   echo = new StdioTestConnector("echo", ECHO);
-  h = await startFrontDoor([echo]);
+  const tools = (await echo.listTools()).map((t) => toolRef("echo", t));
+  h = await startFrontDoor([echo], { listTools: () => tools });
 });
 afterAll(async () => {
   await h.stop();
@@ -44,6 +45,7 @@ describe("echo fixture", () => {
     );
     try {
       expect((await c.listTools()).tools.map((t) => t.name).sort()).toEqual(["call_tool", "search_tools"]);
+      expect(c.getInstructions()).toContain("- echo (");
       const r = await c.callTool({
         name: "call_tool",
         arguments: { name: "echo__echo", arguments: { text: "via bridge" } },

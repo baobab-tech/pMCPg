@@ -2,9 +2,11 @@ import { afterEach, describe, expect, test } from "bun:test";
 import pkg from "../../package.json";
 import type { ToolRef } from "../../src/core/types.ts";
 import {
+  INSTRUCTIONS_MAX_CHARS,
   MENU_LINE_CHARS,
   MENU_MAX_TOOLS,
   menuSummary,
+  serverInstructions,
   toolMenu,
   VERSION,
 } from "../../src/frontdoor/server.ts";
@@ -102,5 +104,35 @@ describe("search_tools description", () => {
     h = await startFrontDoor([mail()]);
     const c = await h.connect();
     expect(c.getServerVersion()?.version).toBe(pkg.version);
+  });
+});
+
+describe("serverInstructions", () => {
+  test("one line per account with its tool names", () => {
+    const text = serverInstructions([ref("slack", "post"), ref("mail", "send"), ref("slack", "read")]);
+    expect(text).toContain("search_tools");
+    expect(text).toContain("Tools by account (3):\n- mail (1): send\n- slack (2): post, read");
+  });
+  test("empty", () => {
+    expect(serverInstructions([])).toContain("No tools are connected yet.");
+  });
+  test("many accounts stay under the cap and say how many are left out", () => {
+    const tools = Array.from({ length: 200 }, (_, i) =>
+      ref(`account-${String(i).padStart(3, "0")}`, "do_thing"),
+    );
+    const text = serverInstructions(tools);
+    expect(text.length).toBeLessThanOrEqual(INSTRUCTIONS_MAX_CHARS);
+    expect(text).toMatch(/…and \d+ more accounts; search to see them\.$/);
+  });
+  test("sent at initialize, for clients that load tool descriptions late", async () => {
+    const tools = [ref("mail", "send_email", "Send an email.")];
+    h = await startFrontDoor([], { listTools: () => tools });
+    const c = await h.connect();
+    expect(c.getInstructions()).toContain("- mail (1): send_email");
+  });
+  test("no instructions without listTools", async () => {
+    h = await startFrontDoor([]);
+    const c = await h.connect();
+    expect(c.getInstructions()).toBeUndefined();
   });
 });

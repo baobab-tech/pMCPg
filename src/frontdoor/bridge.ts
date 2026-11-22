@@ -42,7 +42,12 @@ export async function runBridge(opts: BridgeOptions): Promise<Bridge> {
 
   // Only tools are relayed: the front door exposes nothing else.
   const factory = () => {
-    const s = new Server({ name: "pmcpg", version: VERSION }, { capabilities: { tools: {} } });
+    // The front door's instructions carry the tool menu; they are read once, when the bridge connected.
+    const instructions = upstream.getInstructions();
+    const s = new Server(
+      { name: "pmcpg", version: VERSION },
+      { capabilities: { tools: {} }, ...(instructions ? { instructions } : {}) },
+    );
     s.setRequestHandler("tools/list", (req, ctx) =>
       upstream.listTools(req.params, { signal: ctx.mcpReq.signal }),
     );
