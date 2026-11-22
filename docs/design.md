@@ -230,7 +230,7 @@ Code in `src/onboarding/`, UI API in `src/api/onboarding.ts`, CLI in `src/cli/co
 - Optional: one profile per Claude Code project.
 - claude.ai, ChatGPT and Gemini connectors live in those vendors' clouds and cannot be imported. The user pastes the URL.
 
-**Paste cloud connectors.** claude.ai and ChatGPT connectors live in those vendors' clouds. The Import screen gives a prompt that asks the chatbot to list them as a fenced JSON array of `{ name, url, auth, builtin }`; the user pastes the answer (`POST /api/ui/import/paste`, or `pmcpg import --paste <file|->`). `src/onboarding/paste.ts` treats the text as data and never fetches while parsing.
+**Paste cloud connectors.** claude.ai and ChatGPT connectors live in those vendors' clouds. The web UI guides the user to copy each connector's URL from the app's settings (help: `move-claude-connectors`). Asking the chatbot to list its connectors proved unreliable (Claude would not list them), so the UI no longer offers it. The parser stays for the CLI and API: `pmcpg import --paste <file|->` and `POST /api/ui/import/paste` take a fenced JSON array of `{ name, url, auth, builtin }`. `src/onboarding/paste.ts` treats the text as data and never fetches while parsing.
 
 - Reads JSON first, then Markdown tables, bullet lists and prose with URLs.
 - Keeps https URLs (http only for localhost), drops credentials and fragments, strips secret query parameters, dedupes, and caps input at 100,000 characters and 50 entries. Names that look like keys or tokens are dropped.

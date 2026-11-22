@@ -39,7 +39,7 @@ export const AUDIENCES: Audience[] = [
     steps: [
       { title: "Install pMCPg", body: "One line in a terminal, or npm, Homebrew or Docker." },
       { title: "Import from your desktop apps", body: "pMCPg reads their settings files and lists what it finds. You pick." },
-      { title: "Move your Claude connectors", body: "Claude keeps them in its cloud. Let Claude list them, or copy each URL." },
+      { title: "Move your Claude connectors", body: "Claude keeps them in its cloud. Copy each URL from Claude's settings." },
       { title: "One entry per app", body: "Swap each app's list for one pMCPg entry. pMCPg backs up the file first." },
     ],
   },

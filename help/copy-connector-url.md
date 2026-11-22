@@ -4,7 +4,7 @@ summary: Find the server address of a Claude connector and add it to pMCPg. Show
 group: servers
 order: 5
 ---
-Use this for one connector at a time, or when Claude didn't know an address while [listing your connectors](help:move-claude-connectors).
+Each connector you added in Claude has a server URL. Copy it from Claude, then paste it into pMCPg. To move all of them, see [Move your Claude connectors](help:move-claude-connectors).
 
 ## In Claude Desktop
 
