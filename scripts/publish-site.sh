@@ -8,7 +8,7 @@ tmp=$(mktemp -d)
 trap 'git worktree remove --force "$tmp" 2>/dev/null || true; rm -rf "$tmp"' EXIT
 
 if git show-ref --verify --quiet refs/heads/gh-pages; then
-  git worktree add "$tmp" refs/heads/gh-pages
+  git worktree add "$tmp" gh-pages
 else
   git worktree add --detach "$tmp"
   git -C "$tmp" checkout --orphan gh-pages
