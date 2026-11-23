@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   title: { default: "pMCPg: Private MCP Gateway", template: "%s · pMCPg" },
   description:
     "Connect your AI app once. pMCPg runs your MCP connectors on your computer, keeps the keys in your keychain, and gives you rules, approvals and an activity log.",
-  openGraph: { title: "pMCPg: Private MCP Gateway", url: "https://pmcpg.io", siteName: "pMCPg" },
+  openGraph: { title: "pMCPg: Private MCP Gateway", url: "https://pmcpg.io", siteName: "pMCPg", type: "website" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
