@@ -15,6 +15,7 @@ import { ensureDataDir, loadConfig, saveConfig, validateConfig } from "../core/c
 import { paths } from "../core/paths.ts";
 import { checkReferences, profileIds, resolveProfile } from "../core/profiles.ts";
 import { createFrontDoor, tokensMatch } from "../frontdoor/server.ts";
+import type { PinStore } from "../pinning/pins.ts";
 import { SqlitePinStore } from "../pinning/store.ts";
 import { SqliteApprovalStore } from "../policy/approvals.ts";
 import { dataFlowStep, policyStep } from "../policy/step.ts";
@@ -288,6 +289,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
       for (const key of [vaultKeys.oauthTokens(id), vaultKeys.oauthClient(id), vaultKeys.oauthDiscovery(id)])
         await vault.delete(key);
     await ensureProfileTokens();
+    forgetRemovedPins(db, pinStore, config);
     catalog.rebuild();
     // List tools again where the server changed; refreshMissing covers new accounts.
     await Promise.allSettled(
@@ -298,6 +300,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
 
   const problems = checkReferences(config);
   if (problems.length) throw new Error(`config.yaml has broken references:\n${problems.join("\n")}`);
+  forgetRemovedPins(db, pinStore, config);
   catalog.loadCache();
   catalog.rebuild();
   const handle: GatewayHandle = {
@@ -364,6 +367,22 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
 }
 
 export { ALL_PROFILE };
+
+/**
+ * Drop pins of accounts no longer in config. Otherwise an account added back under the same name
+ * skips trust on first use and inherits the old pins.
+ */
+export function forgetRemovedPins(db: Database, pins: Pick<PinStore, "forget">, cfg: Config): void {
+  const ids = db
+    .query<{ account_id: string }, []>(
+      `SELECT account_id FROM tool_pin_accounts
+       UNION SELECT account_id FROM tool_pins
+       UNION SELECT account_id FROM tool_quarantine`,
+    )
+    .all()
+    .map((r) => r.account_id);
+  for (const id of ids) if (!cfg.accounts[id]) pins.forget(id);
+}
 
 /** Largest request body the gateway reads, on any route. */
 export const MCP_BODY_LIMIT = 8 * 1024 * 1024;
