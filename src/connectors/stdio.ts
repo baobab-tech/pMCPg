@@ -6,8 +6,7 @@ import type { AccountDef, ServerDef } from "../core/config.ts";
 import { type AccountState, GatewayError, type ToolResult } from "../core/types.ts";
 import type { Connector, ConnectorDeps, DownstreamTool } from "./connector.ts";
 import { buildEnv, effectivePath, resolveArgs, resolveCommand } from "./stdio-env.ts";
-import { LaunchdTransport, launchdAvailable } from "./stdio-launchd.ts";
-import { descendants, isAlive, killAll, taskkillTree } from "./stdio-tree.ts";
+import { descendants, killAll, taskkillTree } from "./stdio-tree.ts";
 
 export interface StdioOptions {
   /** Stop the process after this long without calls. Default 10 min. */
@@ -18,13 +17,6 @@ export interface StdioOptions {
   startTimeoutMs?: number;
   /** Lines of stderr kept for diagnostics. Default 200. */
   stderrLines?: number;
-  /**
-   * macOS: start the server as its own launchd job, so privacy prompts and grants
-   * (Reminders, Calendar, Contacts, Photos) belong to the server. Default on macOS.
-   */
-  launchd?: boolean;
-  /** Command that starts pmcpg, for the launchd job. Default: this binary. */
-  selfProgram?: string[];
 }
 
 export interface StdioConnector extends Connector {
@@ -51,11 +43,9 @@ export function createStdioConnector(
   return new Stdio(accountId, account, server, deps, options);
 }
 
-type Transport = StdioClientTransport | LaunchdTransport;
-
 interface Running {
   client: Client;
-  transport: Transport;
+  transport: StdioClientTransport;
   pid: number;
 }
 
@@ -76,8 +66,6 @@ class Stdio implements StdioConnector {
   private readonly firstStartTimeoutMs: number;
   private readonly startTimeoutMs: number;
   private readonly stderrLines: number;
-  private readonly launchd: boolean;
-  private readonly selfProgram: string[] | undefined;
 
   constructor(
     readonly accountId: string,
@@ -90,8 +78,6 @@ class Stdio implements StdioConnector {
     this.firstStartTimeoutMs = options.firstStartTimeoutMs ?? 120_000;
     this.startTimeoutMs = options.startTimeoutMs ?? 30_000;
     this.stderrLines = options.stderrLines ?? 200;
-    this.launchd = options.launchd ?? launchdAvailable();
-    this.selfProgram = options.selfProgram;
   }
 
   state(): AccountState {
@@ -206,29 +192,14 @@ class Stdio implements StdioConnector {
     this.stderr = [];
     this.partial = "";
 
-    const timeout = this.started ? this.startTimeoutMs : this.firstStartTimeoutMs;
-    let transport: Transport;
-    if (this.launchd) {
-      transport = new LaunchdTransport({
-        command,
-        args: resolved.args,
-        env,
-        cwd: this.server.cwd,
-        name: this.accountId,
-        onStderr: (chunk) => this.captureStderr(chunk),
-        selfProgram: this.selfProgram,
-      });
-    } else {
-      const spawned = new StdioClientTransport({
-        command,
-        args: resolved.args,
-        env,
-        cwd: this.server.cwd,
-        stderr: "pipe",
-      });
-      spawned.stderr?.on("data", (chunk: Buffer) => this.captureStderr(chunk));
-      transport = spawned;
-    }
+    const transport = new StdioClientTransport({
+      command,
+      args: resolved.args,
+      env,
+      cwd: this.server.cwd,
+      stderr: "pipe",
+    });
+    transport.stderr?.on("data", (chunk: Buffer) => this.captureStderr(chunk));
 
     const client = new Client(CLIENT_INFO, {
       capabilities: {},
@@ -237,6 +208,7 @@ class Stdio implements StdioConnector {
       },
     });
 
+    const timeout = this.started ? this.startTimeoutMs : this.firstStartTimeoutMs;
     let exitCode: number | null = null;
     try {
       await client.connect(transport, { timeout, signal });
@@ -251,7 +223,6 @@ class Stdio implements StdioConnector {
 
     const pid = transport.pid ?? 0;
     // The SDK keeps the ChildProcess private; read it only to learn the exit code.
-    // A launchd job is not our child: its exit code is not known.
     const child = (transport as unknown as { _process?: ChildProcess })._process;
     child?.once("exit", (code) => {
       exitCode = code;
@@ -370,7 +341,7 @@ class Stdio implements StdioConnector {
 }
 
 /** Stops the server and everything it started. */
-async function killTree(pid: number, transport: Transport, client?: Client): Promise<void> {
+async function killTree(pid: number, transport: StdioClientTransport, client?: Client): Promise<void> {
   if (process.platform === "win32") {
     await taskkillTree(pid);
     await (client ?? transport).close().catch(() => {});
@@ -378,16 +349,6 @@ async function killTree(pid: number, transport: Transport, client?: Client): Pro
   }
   // List descendants first: once the server exits they are re-parented and untraceable.
   const tree = descendants(pid);
-  if (transport instanceof LaunchdTransport) {
-    // launchd is the parent, not us: end stdin, give the server 2 s, then kill it too.
-    // Closing the transport afterwards removes the job.
-    transport.endInput();
-    const end = Date.now() + 2000;
-    while (isAlive(pid) && Date.now() < end) await Bun.sleep(50);
-    killAll([pid, ...tree]);
-    await (client ?? transport).close().catch(() => {});
-    return;
-  }
   await (client ?? transport).close().catch(() => {});
   killAll(tree);
 }
