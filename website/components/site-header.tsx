@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme";
+import { latestRelease } from "@/lib/release";
 import { GITHUB } from "@/lib/site";
 
 const NAV = [
@@ -11,7 +12,8 @@ const NAV = [
   { href: "/why/", label: "Why" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const release = await latestRelease();
   return (
     <header className="sticky top-0 z-40 border-b bg-background/75 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
@@ -23,7 +25,7 @@ export function SiteHeader() {
           href="/#download"
           className="hidden rounded-full border px-2.5 py-0.5 text-xs text-brand hover:border-brand sm:inline"
         >
-          Download
+          Download v{release.version}
         </a>
         <nav className="ml-auto hidden items-center gap-5 text-sm text-muted-foreground md:flex">
           {NAV.map((n) => (

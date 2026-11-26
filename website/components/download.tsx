@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, DownloadIcon, MonitorIcon, ScanSearchIcon } from "lucide-react";
+import { CheckIcon, ChevronRightIcon, DownloadIcon, MonitorIcon, ScanSearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CopyLine } from "@/components/copy-line";
 import { AlpineIcon, AppleIcon, DockerIcon, HomebrewIcon, LinuxIcon, NpmIcon, WindowsIcon } from "@/components/os-icons";
@@ -146,42 +146,47 @@ export function Download({ release }: { release: Release }) {
           </p>
         )}
 
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-          <div>
-            <p className="text-xs font-semibold tracking-wide text-brand uppercase">Recommended</p>
-            <p className="mt-1.5 text-sm text-muted-foreground">
-              Paste this into {os === "windows" ? "PowerShell" : "Terminal"}. It checks the download, starts pMCPg at
-              login, adds a pMCPg launcher with your apps, and opens the web UI. Run it again to upgrade.
-            </p>
-            <CopyLine className="mt-3" text={os === "windows" ? INSTALL.windows : INSTALL.unix} />
-          </div>
-          <div>
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Or download it</p>
-            {file ? (
-              <a
-                href={file}
-                className="mt-2.5 flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-              >
-                <OsIcon className="size-4.5" />
-                Download for {t.label}
-                <DownloadIcon className="size-4 opacity-70" />
-              </a>
-            ) : (
-              <p className="mt-2.5 text-sm text-muted-foreground">Not in this release.</p>
-            )}
-            <p className="mt-2 text-center text-xs text-muted-foreground">.{t.ext} · {release.version}</p>
-          </div>
+        <div className="mt-6">
+          <p className="text-xs font-semibold tracking-wide text-brand uppercase">Recommended</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Paste this into {os === "windows" ? "PowerShell" : "Terminal"}. It checks the download, starts pMCPg at
+            login, adds a pMCPg launcher with your apps, and opens the web UI. Run it again to upgrade.
+          </p>
+          <CopyLine className="mt-3" text={os === "windows" ? INSTALL.windows : INSTALL.unix} />
         </div>
 
-        <div className="mt-7 border-t pt-5">
-          <p className="text-sm font-semibold">After a direct download</p>
-          <ol className="mt-3 grid gap-3 text-sm text-muted-foreground">
+        <details className="group mt-6 border-t pt-4">
+          <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground [&::-webkit-details-marker]:hidden">
+            <ChevronRightIcon className="size-4 transition-transform group-open:rotate-90" />
+            Or download it and set it up yourself
+          </summary>
+          <ol className="mt-4 grid gap-3 text-sm text-muted-foreground">
             <li className="grid grid-cols-[22px_minmax(0,1fr)] gap-2">
               <span className="font-semibold text-brand">1</span>
-              <div>{AFTER[os].unpack}</div>
+              <div>
+                {file ? (
+                  <a
+                    href={file}
+                    className="inline-flex items-center gap-2 rounded-lg border border-brand/60 px-3.5 py-1.5 font-medium text-brand hover:bg-brand-soft"
+                  >
+                    <OsIcon className="size-4" />
+                    Download for {t.label}
+                    <span className="text-xs opacity-70">
+                      .{t.ext} · {release.version}
+                    </span>
+                    <DownloadIcon className="size-3.5 opacity-70" />
+                  </a>
+                ) : (
+                  "Not in this release."
+                )}
+              </div>
             </li>
             <li className="grid grid-cols-[22px_minmax(0,1fr)] gap-2">
               <span className="font-semibold text-brand">2</span>
+              <div>{AFTER[os].unpack}</div>
+            </li>
+            <li className="grid grid-cols-[22px_minmax(0,1fr)] gap-2">
+              <span className="font-semibold text-brand">3</span>
               <div>
                 {os === "windows"
                   ? "Move pmcpg.exe to a folder you keep. In PowerShell, in that folder, start it at login and open the web UI. This also adds a pMCPg launcher to the Start menu:"
@@ -193,13 +198,13 @@ export function Download({ release }: { release: Release }) {
               </div>
             </li>
             <li className="grid grid-cols-[22px_minmax(0,1fr)] gap-2">
-              <span className="font-semibold text-brand">3</span>
+              <span className="font-semibold text-brand">4</span>
               <div>
                 In the web UI, import the servers from your AI apps or paste a server's URL. Then connect your AI app.
               </div>
             </li>
           </ol>
-        </div>
+        </details>
       </div>
 
       <div>
