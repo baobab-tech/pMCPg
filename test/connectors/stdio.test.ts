@@ -1,10 +1,11 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { ConnectorDeps } from "../../src/connectors/connector.ts";
 import { createStdioConnector, type StdioConnector, type StdioOptions } from "../../src/connectors/stdio.ts";
 import { buildEnv, loginShellPath, resolveCommand } from "../../src/connectors/stdio-env.ts";
+import { launchdAvailable } from "../../src/connectors/stdio-launchd.ts";
 import { isAlive } from "../../src/connectors/stdio-tree.ts";
 import { AccountDef, ServerDef } from "../../src/core/config.ts";
 import type { AccountState } from "../../src/core/types.ts";
@@ -14,6 +15,14 @@ import type { Vault } from "../../src/vault/vault.ts";
 const fixtures = path.join(import.meta.dir, "..", "fixtures");
 const echoServer = path.join(fixtures, "echo-server.ts");
 const probeServer = path.join(fixtures, "stdio-probe-server.ts");
+const mainTs = path.join(import.meta.dir, "..", "..", "src", "cli", "main.ts");
+
+// On macOS the connector tests run twice: plain spawn and launchd job.
+const modes: { name: string; opts: StdioOptions }[] = [{ name: "spawn", opts: { launchd: false } }];
+if (launchdAvailable()) {
+  modes.push({ name: "launchd", opts: { launchd: true, selfProgram: [process.execPath, mainTs] } });
+}
+let mode: StdioOptions = { launchd: false };
 
 function memoryVault(entries: Record<string, string> = {}): Vault {
   const m = new Map(Object.entries(entries));
@@ -56,7 +65,7 @@ function setup(
     AccountDef.parse({ server: "srv", ...account }),
     ServerDef.parse({ transport: "stdio", ...server }),
     deps,
-    opts,
+    { ...mode, ...opts },
   );
   conn.onStateChange((s) => states.push(s.status));
   open.push(conn);
@@ -80,7 +89,11 @@ async function waitFor(cond: () => boolean, ms = 5000): Promise<boolean> {
   return cond();
 }
 
-describe("stdio connector", () => {
+describe.each(modes)("stdio connector ($name)", ({ name, opts }) => {
+  beforeEach(() => {
+    mode = opts;
+  });
+
   test("starts lazily, lists and calls tools", async () => {
     const { conn, events, states } = setup(bun(echoServer));
     expect(conn.state().status).toBe("stopped");
@@ -158,7 +171,8 @@ describe("stdio connector", () => {
     await conn.callTool("crash", {});
     expect(await waitFor(() => conn.state().status === "error")).toBe(true);
     const exited = events.find((e) => e.type === "server-exited");
-    expect(exited?.type === "server-exited" && exited.code).toBe(3);
+    // A launchd job is not the gateway's child, so its exit code is not known.
+    expect(exited?.type === "server-exited" && exited.code).toBe(name === "launchd" ? null : 3);
     expect(textOf(await conn.callTool("get_env", { name: "NOPE" }))).toBe("<unset>");
     expect(conn.state().status).toBe("connected");
   });

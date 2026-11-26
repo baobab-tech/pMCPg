@@ -115,6 +115,13 @@ The front door speaks the 2026-07-28 spec and older revisions, using the SDK's v
 - **Process trees.** npx and uvx start grandchildren. Use a process group on Unix and a Job Object with kill-on-close on Windows, so stopping a server stops everything it started.
 - **Lifecycle.** Start on first use, stop after 10 minutes idle. Cached tool lists keep search working while a server is stopped. First start allows a long timeout (npx and uvx download on first run).
 - **Instances.** One process per account. Profiles that share an account share the process.
+- **macOS privacy permissions.** macOS grants Reminders, Calendar, Contacts and Photos to the "responsible process". A child of `pmcpg` has `pmcpg` as responsible, and `pmcpg` has no usage strings, so macOS denies without a prompt. On macOS each stdio server therefore starts as its own launchd job, which makes the server responsible for itself:
+  - One job per start, loaded with `launchctl bootstrap gui/<uid>` and removed with `launchctl bootout`. Label `io.github.baobab-tech.pmcpg.stdio.<gateway pid>.<account>.<n>`.
+  - `Sockets` with `inetdCompatibility`: launchd listens on a Unix socket in a fresh 0700 temp directory and starts the job with the connection as stdin and stdout. The gateway removes the socket path once connected. stderr goes through a FIFO in the same directory.
+  - The job runs `pmcpg __launchd-exec <command>`. It reads arguments, environment and working directory from the socket, writes its pid back, then `execve`s the command. The pid stays the launchd-started process.
+  - The plist holds the label, paths and command only; it is deleted after bootstrap. Arguments and environment, which can carry vault secrets, never touch disk and do not show in `launchctl print`.
+  - Stopping ends stdin, waits 2 s, then kills the server and its descendants and boots the job out.
+  - The exit code of a launchd job is not reported (`server-exited` carries `null`). `PMCPG_STDIO_LAUNCHD=0` falls back to a plain child process.
 
 ## Search
 
