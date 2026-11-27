@@ -262,7 +262,8 @@ export interface ImportCandidate {
   headerNames: string[];
   secretParams: string[];
   foundIn: {
-    app: ConnectAppId;
+    /** "file": from a file the user picked, not an app on this computer. */
+    app: ConnectAppId | "file";
     appLabel: string;
     name: string;
     file: string;

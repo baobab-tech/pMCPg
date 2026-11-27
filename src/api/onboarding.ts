@@ -9,6 +9,7 @@ import { appSetupFor } from "../onboarding/app-setup.ts";
 import { applyImport } from "../onboarding/apply.ts";
 import { applyConnect, type ConnectApp, planConnect, selfCommand } from "../onboarding/clients.ts";
 import { EXPORT_FORMATS, exportServers, FORMAT_INFO } from "../onboarding/export.ts";
+import { MAX_FILE_CHARS, parseServerFile } from "../onboarding/import-file.ts";
 import {
   APP_LABELS,
   type AppId,
@@ -45,6 +46,11 @@ const ExportQuery = z.object({
   format: z.enum(EXPORT_FORMATS).default("mcp-json"),
   share: z.enum(["0", "1"]).default("0"),
 });
+const FileBody = z.object({
+  text: z.string().max(MAX_FILE_CHARS),
+  name: z.string().max(200).default("file"),
+});
+const FileApplyBody = FileBody.extend({ keys: z.array(z.string().max(4000)).min(1).max(200) });
 const ProbeBody = z.object({ url: z.string().min(1).max(2000) });
 const ImportBody = z.object({
   keys: z.array(z.string().max(4000)).min(1).max(200),
@@ -159,6 +165,43 @@ export function registerOnboardingRoutes(
     const wanted = new Set(keys);
     const picked = scan().filter((cand) => wanted.has(cand.key));
     return c.json({ outcomes: await applyImport(handle, picked, { profilePerProject }) });
+  });
+
+  // A server list file: pMCPg's export or another app's config. The file may come from someone else,
+  // so apply parses it again here and the client only picks keys.
+  const parseFile = (text: string, name: string) => {
+    const r = parseServerFile(text, name, env().home);
+    if ("error" in r) return r;
+    return { ...r, candidates: r.candidates.filter((cand) => !isThisGateway(cand.server, port())) };
+  };
+
+  api.post("/import/file", async (c) => {
+    const { text, name } = FileBody.parse(await c.req.json());
+    const r = parseFile(text, name);
+    if ("error" in r) return c.json({ error: r.error }, 400);
+    const have = serverKeys(handle);
+    return c.json({
+      format: r.format,
+      truncated: r.truncated,
+      candidates: r.candidates.map((cand) => ({
+        ...cand,
+        alreadyAdded: have.has(cand.key),
+        foundIn: cand.foundIn.map((f) => ({ name: f.name, file: name, app: "file", appLabel: name })),
+      })),
+    });
+  });
+
+  api.post("/import/file/apply", async (c) => {
+    const { text, name, keys } = FileApplyBody.parse(await c.req.json());
+    const r = parseFile(text, name);
+    if ("error" in r) return c.json({ error: r.error }, 400);
+    const wanted = new Set(keys);
+    return c.json({
+      outcomes: await applyImport(
+        handle,
+        r.candidates.filter((cand) => wanted.has(cand.key)),
+      ),
+    });
   });
 
   // Cloud connectors (claude.ai, ChatGPT): the user pastes the chatbot's own list. Parsing never fetches.

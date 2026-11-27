@@ -363,10 +363,10 @@ const NOISE_ARGS = new Set(["-y", "--yes"]);
 export function keyOf(s: FoundServer): string {
   if (s.transport === "stdio") {
     const cmd = s.command.split(/[\\/]/).pop() ?? s.command;
-    const args = ["npx", "pnpx", "bunx", "uvx"].includes(cmd)
-      ? s.args.filter((a) => !NOISE_ARGS.has(a))
-      : s.args;
-    return [s.command, ...args].join("\u0000");
+    // A package launcher is the same server wherever it is installed: /opt/homebrew/bin/npx and npx match.
+    const launcher = ["npx", "pnpx", "bunx", "uvx"].includes(cmd);
+    const args = launcher ? s.args.filter((a) => !NOISE_ARGS.has(a)) : s.args;
+    return [launcher ? cmd : s.command, ...args].join("\u0000");
   }
   const u = new URL(s.url);
   u.hash = "";

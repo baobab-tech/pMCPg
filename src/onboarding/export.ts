@@ -46,7 +46,7 @@ export const FORMAT_INFO: Record<ExportFormat, { label: string; file: string; hi
   pmcpg: {
     label: "pMCPg (config.yaml)",
     file: "pmcpg-servers.yaml",
-    hint: "Servers and accounts for another pMCPg. Copy into its config.yaml, then enter keys or sign in again.",
+    hint: "Servers and accounts for another pMCPg: import it there under Import, From a file.",
   },
 };
 

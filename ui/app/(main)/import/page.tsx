@@ -10,7 +10,7 @@ export default function ImportPage() {
     <>
       <PageHeader
         title="Import from your AI apps"
-        description="Servers you already set up in Claude Desktop, Claude Code, LM Studio, Cursor or VS Code. Your keys stay out of it: you type them here."
+        description="Servers you already set up in Claude Desktop, Claude Code, LM Studio, Cursor or VS Code, or in a server list file someone exported. Your keys stay out of it: you type them here."
       />
       <ImportPanel onPasteUrl={() => router.push("/servers/?add=1")} />
     </>

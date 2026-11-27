@@ -243,6 +243,8 @@ Code in `src/onboarding/`, UI API in `src/api/onboarding.ts`, CLI in `src/cli/co
 - One entry per account. "For sharing" writes one entry per server, drops account labels and `cwd`, and writes the home folder as `${HOME}`.
 - A test seeds the vault and config with canary values and checks that no format, through the function or the API, contains one.
 
+**Import from a file.** Import, From a file (`POST /api/ui/import/file`, `src/onboarding/import-file.ts`) reads any of those formats back, or another app's config. Values in the file are never read: only names, commands and URLs, as for app import. `${NAME}`, `${input:id}` and vault references in arguments become values to fill in; `${HOME}` becomes this computer's home. Apply parses the file again on the server, and the client only picks keys. Command servers start unticked, with a note to tick them only if the sender is trusted.
+
 **Connect an AI app.** Plan first (shown to the user, tokens masked), then apply with a timestamped backup. Only the app's MCP list changes.
 
 | App | Change |

@@ -54,8 +54,8 @@ export function ExportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
         <DialogHeader>
           <DialogTitle>Export server list</DialogTitle>
           <DialogDescription>
-            A file other AI apps can read. Keys and sign-ins are never included: after importing, enter keys or sign in
-            again.
+            A file other AI apps can read. Another pMCPg imports any of these under Import, From a file. Keys and
+            sign-ins are never included: after importing, enter keys or sign in again.
           </DialogDescription>
         </DialogHeader>
 

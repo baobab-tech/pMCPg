@@ -2,9 +2,9 @@
 
 import {
   ArrowLeftIcon,
-  CheckCircle2Icon, CloudIcon, GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, RefreshCwIcon } from "lucide-react";
+  CheckCircle2Icon, CloudIcon, FileUpIcon, GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, RefreshCwIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState, ErrorNote } from "@/components/common";
 import { KeysDialog } from "@/components/keys-dialog";
 import { Advanced } from "@/components/server-form";
@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   type Account,
+  type ConnectAppId,
   api,
   errorMessage,
   type ImportCandidate,
@@ -88,7 +89,7 @@ function CandidateRow({
         <div className="flex flex-wrap gap-1">
           {foundChips(c).map((chip) => (
             <span key={chip} className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-              Found in {chip}
+              {c.foundIn[0]?.app === "file" ? "From" : "Found in"} {chip}
             </span>
           ))}
         </div>
@@ -239,8 +240,11 @@ export function ImportPanel({
   /** Shows a Back button beside the panel's main action. */
   onBack?: () => void;
   /** Called with the AI apps the imported servers came from. */
-  onDone?: (apps: ImportCandidate["foundIn"][number]["app"][]) => void;
+  onDone?: (apps: ConnectAppId[]) => void;
 }) {
+  const fileInput = useRef<HTMLInputElement>(null);
+  /** Set while showing servers from a file instead of the AI apps on this computer. */
+  const [file, setFile] = useState<{ name: string; text: string; format: string }>();
   const [scan, setScan] = useState<ImportScan>();
   const [error, setError] = useState<string>();
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -248,13 +252,31 @@ export function ImportPanel({
   const [busy, setBusy] = useState(false);
   const [outcomes, setOutcomes] = useState<ImportOutcome[]>();
 
+  function pickRemote(candidates: ImportCandidate[]) {
+    // Remote servers are pre-ticked: they need no install and usually just a sign-in.
+    setPicked(new Set(candidates.filter((c) => isRemote(c) && !c.alreadyAdded).map((c) => c.key)));
+  }
+
+  async function loadFile(f: File) {
+    setError(undefined);
+    try {
+      const text = await f.text();
+      const r = await api.post<{ format: string; candidates: ImportCandidate[] }>("/import/file", { text, name: f.name });
+      setFile({ name: f.name, text, format: r.format });
+      setScan({ apps: [], candidates: r.candidates, note: "" });
+      pickRemote(r.candidates);
+    } catch (e) {
+      setError(errorMessage(e));
+    }
+  }
+
   async function load() {
     setError(undefined);
+    setFile(undefined);
     try {
       const s = await api.get<ImportScan>("/import/scan");
       setScan(s);
-      // Remote servers are pre-ticked: they need no install and usually just a sign-in.
-      setPicked(new Set(s.candidates.filter((c) => isRemote(c) && !c.alreadyAdded).map((c) => c.key)));
+      pickRemote(s.candidates);
     } catch (e) {
       setError(errorMessage(e));
     }
@@ -279,10 +301,16 @@ export function ImportPanel({
     setBusy(true);
     setError(undefined);
     try {
-      const r = await api.post<{ outcomes: ImportOutcome[] }>("/import/apply", {
-        keys: [...picked],
-        profilePerProject: perProject,
-      });
+      const r = file
+        ? await api.post<{ outcomes: ImportOutcome[] }>("/import/file/apply", {
+            text: file.text,
+            name: file.name,
+            keys: [...picked],
+          })
+        : await api.post<{ outcomes: ImportOutcome[] }>("/import/apply", {
+            keys: [...picked],
+            profilePerProject: perProject,
+          });
       setOutcomes(r.outcomes);
     } catch (e) {
       setError(errorMessage(e));
@@ -322,7 +350,8 @@ export function ImportPanel({
       ...new Set(
         (scan?.candidates ?? [])
           .filter((c) => picked.has(c.key))
-          .flatMap((c) => c.foundIn.filter((f) => !f.project && !f.extension).map((f) => f.app)),
+          .flatMap((c) => c.foundIn.filter((f) => !f.project && !f.extension).map((f) => f.app))
+          .filter((a): a is ConnectAppId => a !== "file"),
       ),
     ];
     return <TodoList outcomes={outcomes} onDone={onDone && (() => onDone(from))} onBack={onBack} />;
@@ -337,16 +366,40 @@ export function ImportPanel({
   if (!scan) return <Skeleton className="h-40" />;
 
   const found = scan.apps.filter((a) => a.servers > 0);
+  const fromFile = (
+    <>
+      <input
+        ref={fileInput}
+        type="file"
+        accept=".json,.yaml,.yml,.toml,application/json,text/yaml,text/plain"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (f) void loadFile(f);
+        }}
+      />
+      <Button variant="ghost" onClick={() => fileInput.current?.click()}>
+        <FileUpIcon />
+        {file ? "Another file" : "From a file"}
+      </Button>
+    </>
+  );
   return (
     <div className="grid gap-4">
       <p className="text-sm text-muted-foreground">
-        {found.length
+        {file
+          ? `${scan.candidates.length} server${scan.candidates.length === 1 ? "" : "s"} in ${file.name} (${file.format} format). Keys and sign-ins are not in the file: you add them after importing.`
+          : found.length
           ? `Found servers in ${found.map((a) => `${a.label} (${a.servers})`).join(", ")}. Nothing is changed in those apps.`
           : "Looked in Claude Desktop, Claude Code, LM Studio, Cursor and VS Code."}
       </p>
+      {scan.candidates.length === 0 && <ErrorNote error={error} />}
       {scan.candidates.length === 0 ? (
-        <EmptyState title="No servers found in your AI apps">
-          If you set up servers in claude.ai, ChatGPT or Gemini, paste their URLs instead.
+        <EmptyState title={file ? "No new servers in this file" : "No servers found in your AI apps"} action={fromFile}>
+          {file
+            ? "Every server in it already points at pMCPg."
+            : "If you set up servers in claude.ai, ChatGPT or Gemini, paste their URLs instead, or import a server list file."}
         </EmptyState>
       ) : (
         <>
@@ -382,12 +435,18 @@ export function ImportPanel({
             </Button>
             <Button variant="ghost" onClick={() => void load()}>
               <RefreshCwIcon />
-              Look again
+              {file ? "Back to my AI apps" : "Look again"}
             </Button>
+            {fromFile}
           </div>
+          {file && scan.candidates.some((c) => !isRemote(c)) && (
+            <p className="text-xs text-muted-foreground">
+              Servers under “On this computer” run a program here. Tick them only if you trust whoever sent the file.
+            </p>
+          )}
         </>
       )}
-      {cloudNote}
+      {!file && cloudNote}
       <Advanced label="What is read">
         <p className="text-sm text-muted-foreground">
           Names, commands and URLs from each app's config file. Environment and header values are never read; their
