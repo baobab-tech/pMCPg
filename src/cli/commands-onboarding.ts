@@ -1,10 +1,12 @@
 // CLI for onboarding: import servers from AI apps, connect AI apps to the gateway.
 import { type Config, Slug } from "../core/config.ts";
-import { saveConfig, validateConfig } from "../core/config-store.ts";
+import { loadConfig, saveConfig, validateConfig } from "../core/config-store.ts";
+import { paths } from "../core/paths.ts";
 import { checkReferences } from "../core/profiles.ts";
 import { ensureToken, openState } from "../gateway/runtime.ts";
 import { applyImport } from "../onboarding/apply.ts";
 import { applyConnect, type ConnectApp, planConnect, selfCommand } from "../onboarding/clients.ts";
+import { EXPORT_FORMATS, type ExportFormat, exportServers, FORMAT_INFO } from "../onboarding/export.ts";
 import {
   APP_LABELS,
   type Candidate,
@@ -59,6 +61,51 @@ function describe(c: Candidate): string {
 }
 
 export const onboardingCommands: Command[] = [
+  {
+    path: ["export"],
+    summary: "Export your server list for another AI app, a backup or your team; keys are never included",
+    args: "[--format <format>] [--share] [--output <file>]",
+    options: {
+      format: { type: "string" },
+      share: { type: "boolean" },
+      output: { type: "string", short: "o" },
+    },
+    optionHelp: {
+      format: `One of: ${EXPORT_FORMATS.join(", ")} (default mcp-json, read by Claude Code, LM Studio, Windsurf and most apps)`,
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal placeholder written into the file
+      share: "For sharing: one entry per server, no account names, home folder written as ${HOME}",
+      output: "Write to this file instead of printing",
+    },
+    maxArgs: 0,
+    run: async (p, io) => {
+      const format = (typeof p.values.format === "string" ? p.values.format : "mcp-json") as ExportFormat;
+      if (!EXPORT_FORMATS.includes(format)) {
+        io.err(`Unknown format "${format}". Use one of: ${EXPORT_FORMATS.join(", ")}`);
+        return EXIT_USAGE;
+      }
+      // Reads config.yaml only, never the vault: no key can reach the file.
+      const r = exportServers(loadConfig(paths().config), format, {
+        share: !!p.values.share,
+        home: defaultScanEnv().home,
+      });
+      const output = typeof p.values.output === "string" ? p.values.output : undefined;
+      if (!output) {
+        io.out(r.content.replace(/\n$/, ""));
+        return EXIT_OK;
+      }
+      try {
+        await Bun.write(output, r.content);
+      } catch (e) {
+        io.err(`Could not write ${output}: ${(e as Error).message}`);
+        return EXIT_ERROR;
+      }
+      io.out(`Wrote ${r.count} server${r.count === 1 ? "" : "s"} to ${output}. ${FORMAT_INFO[format].hint}`);
+      if (r.placeholders.length) io.out(`To fill in after importing: ${r.placeholders.join(", ")}`);
+      if (r.signIn.length) io.out(`Sign in again: ${r.signIn.join(", ")}`);
+      for (const s of r.skipped) io.out(`Left out ${s.name}: ${s.reason}`);
+      return EXIT_OK;
+    },
+  },
   {
     path: ["import"],
     summary: "Import MCP servers from your AI apps (Claude Desktop, Claude Code, LM Studio, Cursor, VS Code)",

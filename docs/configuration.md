@@ -13,6 +13,7 @@ pmcpg server add linear --url https://mcp.linear.app/mcp
 pmcpg server add files --command "npx -y @modelcontextprotocol/server-filesystem ~/Documents"
 pmcpg server list
 pmcpg import                               # from Claude Desktop, Claude Code, Cursor, VS Code, LM Studio
+pmcpg export --format codex -o config.toml # server list for another app; keys never included (--share for a team)
 
 pmcpg account signin linear --name work    # opens the browser for OAuth
 pmcpg account list

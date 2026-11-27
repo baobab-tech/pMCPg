@@ -20,6 +20,8 @@ Turn on **For sharing** before you send the file to someone. It leaves out your 
 - The **names** of the keys each server needs, written as `${NAME}`. Never the keys themselves.
 - Servers you sign in to through the browser appear with their address only. The app that imports them asks you to sign in.
 
+From a terminal: `pmcpg export --format codex -o config.toml`. Run `pmcpg export --help` for the formats.
+
 The **pMCPg** format is for another copy of pMCPg: it keeps each account as its own entry.
 
 ## Import a file
