@@ -45,6 +45,12 @@ const SPEC: Record<GatewayEvent["type"], FieldSpec> = {
     required: { sessions: "number", placeholders: "number" },
     optional: { profileId: "string" },
   },
+  "skill-read": {
+    required: { profileId: "string", skill: "string", file: "string", via: ["tool", "mcp"] },
+  },
+  "skills-changed": {
+    required: { accountId: "string", added: "number", removed: "number", changed: "number", held: "number" },
+  },
 };
 
 /** Longest string field kept. Longer values are rejected: names and reasons are short. */
@@ -94,6 +100,12 @@ export function eventColumns(e: GatewayEvent): { profileId: string | null; accou
   if (e.type === "call") return { profileId: e.profileId, accountId: unqualify(e.tool)?.accountId ?? null };
   if (e.type === "token-rotated") return { profileId: e.profileId ?? null, accountId: null };
   if (e.type === "privacy-reset") return { profileId: e.profileId ?? null, accountId: null };
+  // Server skills are named "<account>/<path>"; library skills have no account.
+  if (e.type === "skill-read")
+    return {
+      profileId: e.profileId,
+      accountId: e.skill.includes("/") ? (e.skill.split("/")[0] ?? null) : null,
+    };
   return { profileId: null, accountId: e.accountId };
 }
 

@@ -5,6 +5,7 @@ import type { DownstreamTool, OAuthController } from "../connectors/connector.ts
 import type { Config } from "../core/config.ts";
 import type { AccountState } from "../core/types.ts";
 import type { PinStore } from "../pinning/pins.ts";
+import type { SkillsHandle } from "../skills/skills.ts";
 import type { ActivityLog } from "../store/activity.ts";
 import type { ApprovalStore } from "../store/approvals.ts";
 import type { Vault } from "../vault/vault.ts";
@@ -40,4 +41,6 @@ export interface GatewayHandle {
   approvals?: ApprovalStore;
   activity?: ActivityLog;
   pins?: PinStore;
+  /** Skill library and server skills (docs/skills.md). */
+  skills?: SkillsHandle;
 }

@@ -79,6 +79,7 @@ describe("diagnose", () => {
     env: [],
     params: [],
     clientId: null,
+    skills: "off",
     state,
     tools: 3,
     profiles: ["all"],

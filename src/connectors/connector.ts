@@ -1,4 +1,5 @@
 // Connector contract. Owners: stdio (Phase 1, session B), remote + OAuth (session C).
+import type { Skill } from "@modelcontextprotocol/client/ext/skills";
 import type { AccountDef, ServerDef } from "../core/config.ts";
 import type { AccountState, ToolResult } from "../core/types.ts";
 import type { EventSink } from "../store/events.ts";
@@ -13,6 +14,9 @@ export interface DownstreamTool {
   annotations?: Record<string, unknown>;
 }
 
+/** A skill entry as the server lists it (MCP Skills extension, `skills/list`): SKILL.md URI, frontmatter, files. */
+export type DownstreamSkill = Skill;
+
 /** One live connection to one server, signed in as one account. */
 export interface Connector {
   readonly accountId: string;
@@ -20,6 +24,13 @@ export interface Connector {
   /** Connects if needed. Throws GatewayError("sign-in-needed" | "unreachable" | "timeout"). */
   listTools(signal?: AbortSignal): Promise<DownstreamTool[]>;
   callTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult>;
+  /**
+   * Skills the server publishes; empty when it does not declare the Skills extension.
+   * Optional so fakes without skills stay valid. Throws like listTools.
+   */
+  listSkills?(signal?: AbortSignal): Promise<DownstreamSkill[]>;
+  /** One file of a listed skill, checked against the entry's size and digest. Throws on a mismatch. */
+  readSkillFile?(skill: DownstreamSkill, uri: string, signal?: AbortSignal): Promise<Uint8Array>;
   /** Called when the server reports tools/list_changed or the cached list expires. */
   onToolsChanged(listener: () => void): () => void;
   onStateChange(listener: (s: AccountState) => void): () => void;

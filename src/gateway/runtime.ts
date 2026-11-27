@@ -1,6 +1,7 @@
 // The running gateway: wires config, vault, connectors, tool index, front door, OAuth callback and local API.
 import type { Database } from "bun:sqlite";
 import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { localhostHostValidation } from "@modelcontextprotocol/hono";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
@@ -21,6 +22,9 @@ import { SqliteApprovalStore } from "../policy/approvals.ts";
 import { dataFlowStep, policyStep } from "../policy/step.ts";
 import { maskStep, rehydrateStep, secretScanStep } from "../privacy/steps.ts";
 import { MiniSearchToolIndex } from "../search/minisearch-index.ts";
+import { SkillLibrary } from "../skills/library.ts";
+import { ServerSkillStore } from "../skills/server-skills.ts";
+import { SkillService } from "../skills/service.ts";
 import { DEFAULT_RETENTION_DAYS, SqliteActivityLog } from "../store/activity-log.ts";
 import { openDb } from "../store/db.ts";
 import type { EventSink, GatewayEvent } from "../store/events.ts";
@@ -133,6 +137,34 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     },
   });
 
+  const library = new SkillLibrary(join(state.paths.dir, "skills"));
+  for (const w of await library.load()) process.stderr.write(`Skill library: ${w}\n`);
+  const skillStore = new ServerSkillStore(db);
+  const skills = new SkillService({
+    library,
+    store: skillStore,
+    config: () => config,
+    getConnector,
+    events,
+    dropFromProfiles: async (name) => {
+      if (!Object.values(config.profiles).some((p) => p.skills?.includes(name))) return;
+      await handle.updateConfig((d) => {
+        for (const p of Object.values(d.profiles))
+          if (p.skills) p.skills = p.skills.filter((n) => n !== name);
+      });
+    },
+  });
+  /** List tools, then sync skills (when turned on for the account). */
+  const refreshAccount = async (accountId: string) => {
+    await catalog.refresh(accountId);
+    await skills.sync(accountId);
+  };
+  /** Accounts whose skills to fetch after a reload or at start: new to skills, changed, or remote (cheap to list). */
+  const needsSkillSync = (changed: Set<string>) => (id: string) =>
+    changed.has(id) ||
+    !skillStore.accounts().includes(id) ||
+    config.servers[config.accounts[id]?.server ?? ""]?.transport !== "stdio";
+
   function getConnector(accountId: string): Connector | undefined {
     const found = connectors.get(accountId);
     if (found) return found;
@@ -142,7 +174,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
       target.server.transport === "stdio"
         ? createStdioConnector(accountId, target.account, target.server, deps)
         : createRemoteConnector(accountId, target.account, target.server, deps);
-    c.onToolsChanged(() => void catalog.refresh(accountId));
+    c.onToolsChanged(() => void refreshAccount(accountId));
     c.onStateChange((s) =>
       events.emit({
         type: "account-state",
@@ -159,7 +191,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     onSignedIn: (id) => {
       void connectors.get(id)?.close();
       connectors.delete(id);
-      void catalog.refresh(id);
+      void refreshAccount(id);
     },
     onSignedOut: (id) => {
       void connectors.get(id)?.close();
@@ -181,6 +213,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     getConnector,
     listProfiles: () => profileIds(config),
     listTools: (id) => catalog.profileTools(id),
+    skills,
     // Order (docs/design.md "Call pipeline"): re-hydrate, secret scan, policy | forward | data flow, mask.
     // Policy runs last before forwarding, so an approval request shows the values the tool will receive.
     steps: [
@@ -291,11 +324,13 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     await ensureProfileTokens();
     forgetRemovedPins(db, pinStore, config);
     catalog.rebuild();
+    for (const w of await library.load()) process.stderr.write(`Skill library: ${w}\n`);
     // List tools again where the server changed; refreshMissing covers new accounts.
     await Promise.allSettled(
       [...changed].filter((id) => config.accounts[id]).map((id) => catalog.refresh(id)),
     );
     await catalog.refreshMissing();
+    await skills.syncAll(needsSkillSync(changed));
   }
 
   const problems = checkReferences(config);
@@ -303,6 +338,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
   forgetRemovedPins(db, pinStore, config);
   catalog.loadCache();
   catalog.rebuild();
+  await skills.rebuild();
   const handle: GatewayHandle = {
     url,
     config: () => config,
@@ -319,7 +355,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     accountState: (id) => connectors.get(id)?.state() ?? { status: "stopped" },
     toolCount: (id) => catalog.count(id),
     tools: (id) => catalog.listed(id),
-    refreshAccount: (id) => catalog.refresh(id),
+    refreshAccount: (id) => refreshAccount(id),
     resetPrivacy: (id) => frontDoor.resetPrivacy(id),
     oauth,
     vault,
@@ -328,6 +364,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     approvals,
     activity,
     pins,
+    skills: skills.handle(),
   };
 
   // The UI answers / and /api/ui/* itself, ahead of the CLI's /api/* admin-token check.
@@ -343,7 +380,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
       ? undefined
       : Bun.serve({ hostname: host, port, fetch: root.fetch, maxRequestBodySize: MCP_BODY_LIMIT });
   // List tools for accounts with no cache, in the background.
-  void catalog.refreshMissing();
+  void catalog.refreshMissing().then(() => skills.syncAll(needsSkillSync(new Set())));
 
   return {
     app: root,

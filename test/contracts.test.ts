@@ -79,5 +79,5 @@ test("encrypt / decrypt with aad", async () => {
 test("db migrates", () => {
   const db = openDb(":memory:");
   const v = db.query<{ user_version: number }, []>("PRAGMA user_version").get();
-  expect(v?.user_version).toBe(2);
+  expect(v?.user_version).toBe(3);
 });

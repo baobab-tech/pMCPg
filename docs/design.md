@@ -94,6 +94,10 @@ Some clients only launch local stdio servers. Claude Desktop's config file is on
 
 The server `instructions` sent at initialize carry a shorter menu: one line per account with its tool names, capped at 2,000 characters. Accounts share that room equally (each line 60 to 200 characters), so all of them get a line before any runs long; past that, a count of the accounts left out. Clients that defer tool schemas (Claude's tool search) show instructions up front but not the `search_tools` description until they load it. Instructions are fixed per connection, so a tool added later shows only in the description and in search. The stdio bridge reads them once at start and passes them on.
 
+### Skills
+
+The front door also serves skills: a library the user keeps in `<data dir>/skills/`, assigned per profile, and skills that upstream servers publish (off by default, pinned, reviewed when they change). Clients with the MCP Skills extension get them natively; every other client reads them through `search_tools` and `call_tool name="skill:<id>"`. Design: [skills.md](skills.md).
+
 ### Protocol versions
 
 The front door speaks the 2026-07-28 spec and older revisions, using the SDK's version negotiation. Downstream connections negotiate separately per server. The gateway translates between them; the client never sees downstream protocol details.
@@ -299,6 +303,7 @@ src/
   search/      index and ranking
   pipeline/    policy, privacy, logging steps
   privacy/     detectors, placeholders, secret rules
+  skills/      skill library, server skills and their pins, serving per profile
   ui/          Hono routes, JSX views, static assets
   cli/         commands
 test/

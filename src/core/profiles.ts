@@ -37,6 +37,8 @@ export function checkReferences(config: Config): string[] {
       problems.push(`accounts.${id}.server: no server named "${account.server}"`);
   }
   for (const [id, profile] of Object.entries(config.profiles)) {
+    if (id === ALL_PROFILE && (profile.skills?.length ?? 0) > 0)
+      problems.push(`profiles.all.skills: "all" always holds every library skill; remove this list`);
     if (id === ALL_PROFILE && profile.accounts.length > 0) {
       problems.push(`profiles.all.accounts: "all" always holds every account; remove this list`);
       continue;
