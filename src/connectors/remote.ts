@@ -16,9 +16,16 @@ import {
 import type { AccountDef, ServerDef } from "../core/config.ts";
 import { type AccountState, GatewayError, type ToolResult } from "../core/types.ts";
 import { resolveSecrets } from "../vault/vault.ts";
-import type { Connector, ConnectorDeps, ConnectorFactory, DownstreamTool } from "./connector.ts";
+import type {
+  Connector,
+  ConnectorDeps,
+  ConnectorFactory,
+  DownstreamSkill,
+  DownstreamTool,
+} from "./connector.ts";
 import { httpOriginOf, refreshTokens, SignInNeededError, VaultOAuthProvider } from "./oauth.ts";
 import { checkRemoteUrl } from "./remote-url.ts";
+import { listServerSkills, readServerSkillFile, SKILLS_CLIENT_CAPABILITIES } from "./skills.ts";
 
 export interface RemoteConnectorOptions {
   /** Refresh access tokens this long before they expire. Default 60 s. */
@@ -100,6 +107,14 @@ class RemoteConnector implements Connector {
     });
   }
 
+  listSkills(signal?: AbortSignal): Promise<DownstreamSkill[]> {
+    return this.run((client) => listServerSkills(client, signal));
+  }
+
+  readSkillFile(skill: DownstreamSkill, uri: string, signal?: AbortSignal): Promise<Uint8Array> {
+    return this.run((client) => readServerSkillFile(client, skill, uri, signal));
+  }
+
   async callTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
     return this.run(async (client) => {
       const res = await client.callTool({ name, arguments: args }, { signal });
@@ -179,6 +194,7 @@ class RemoteConnector implements Connector {
     const client = new Client(
       { name: "pmcpg", version: this.opts.clientVersion ?? "0.0.0" },
       {
+        capabilities: SKILLS_CLIENT_CAPABILITIES,
         versionNegotiation: { mode: "auto" },
         listChanged: {
           tools: {

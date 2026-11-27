@@ -77,6 +77,7 @@ Developers: `npx private-mcp-gateway` · `brew install baobab-tech/tap/pmcpg` ·
 - **Approvals.** Presets `open`, `balanced` or `careful`, or custom rules. Answer in the web UI or the terminal.
 - **Activity log.** Every search and call, encrypted, values left out. Kept 30 days by default.
 - **Tool pinning and secret scanning.** A tool that changes is quarantined until you review it. Keys and tokens in results are redacted.
+- **Skills.** Keep skills (a `SKILL.md` and its files) in one library, give each profile the ones it needs, and every connected AI app can use them. Skills that your servers publish can pass through too, off by default and reviewed when they change ([design](docs/skills.md)).
 
 No account, no telemetry. With a local model and local servers, nothing leaves your machine. [What leaves your machine →](docs/privacy.md)
 

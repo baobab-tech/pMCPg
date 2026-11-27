@@ -30,6 +30,16 @@ function describe(e: ActivityEntry["event"]): { what: string; detail: string } {
         what: e.token === "admin" ? "Admin token" : `Token of ${s("profileId")}`,
         detail: `replaced · ${s("via")}`,
       };
+    case "skill-read":
+      return {
+        what: `Skill ${s("skill")}`,
+        detail: `read ${s("file")} · ${e.via === "mcp" ? "as a skill" : "through search"} · ${s("profileId")}`,
+      };
+    case "skills-changed":
+      return {
+        what: `Skills of ${s("accountId")}`,
+        detail: `+${s("added")} −${s("removed")} ~${s("changed")}${Number(e.held) ? ` · ${s("held")} waiting for review` : ""}`,
+      };
     case "privacy-reset":
       return {
         what: "Forgot masked values",

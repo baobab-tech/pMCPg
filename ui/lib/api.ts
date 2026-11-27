@@ -27,7 +27,9 @@ export interface Status {
   profiles: number;
   pendingApprovals: number | null;
   quarantined: number | null;
-  features: { approvals: boolean; activity: boolean; pins: boolean };
+  /** Server skills waiting for review; null when skills are not available. */
+  skillReviews?: number | null;
+  features: { approvals: boolean; activity: boolean; pins: boolean; skills?: boolean };
 }
 
 export interface Server {
@@ -54,6 +56,8 @@ export interface Account {
   params: { name: string; set: boolean }[];
   /** OAuth client ID when the provider needs one registered by hand. */
   clientId: string | null;
+  /** Skills the server publishes: off, text (Markdown and plain text only) or all files. */
+  skills: SkillMode;
   state: AccountState;
   tools: number;
   profiles: string[];
@@ -71,6 +75,8 @@ export interface Profile {
   preset: Preset;
   customRules: number;
   readOnly: boolean;
+  /** Library skills it serves. "all" serves every one. */
+  skills: string[];
   url: string;
 }
 
@@ -139,6 +145,63 @@ export interface QuarantinedTool {
   current: DownstreamTool;
 }
 
+// ---- skills (src/api/skills.ts, docs/skills.md) ----
+
+export type SkillMode = "off" | "text" | "all";
+
+export interface SkillFileInfo {
+  path: string;
+  size: number;
+  digest: string;
+}
+
+export interface LibrarySkill {
+  name: string;
+  description: string;
+  files: SkillFileInfo[];
+  profiles: string[];
+}
+
+export interface ServerSkill {
+  accountId: string;
+  path: string;
+  id: string;
+  name: string;
+  description: string;
+  /** held: waiting for review; the approved version, if any, is still served. */
+  status: "active" | "held" | "rejected";
+  served: boolean;
+  files: SkillFileInfo[];
+}
+
+export interface SkillsOverview {
+  available: boolean;
+  library: LibrarySkill[];
+  server: ServerSkill[];
+  reviews: number;
+}
+
+export interface SkillReview {
+  accountId: string;
+  path: string;
+  reason: "new" | "changed";
+  status: "pending" | "rejected";
+  pinnedSkillMd?: string;
+  currentSkillMd: string;
+  pinnedFiles?: SkillFileInfo[];
+  currentFiles: SkillFileInfo[];
+}
+
+/** A file sent to create or replace a library skill: text, or base64 for binary files. */
+export type SkillFileBody = { path: string; text: string } | { path: string; base64: string };
+
+export interface SkillFileContent {
+  path: string;
+  size: number;
+  text?: string;
+  base64?: string;
+}
+
 export interface Listing<T> {
   available: boolean;
   items: T[];
@@ -184,6 +247,7 @@ export const api = {
   get: <T>(path: string) => request<T>("GET", path),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body),
+  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body),
   del: <T>(path: string, body?: unknown) => request<T>("DELETE", path, body),
 
   session: async () => remember(await request<Session>("GET", "/session")),

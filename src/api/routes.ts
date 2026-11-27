@@ -13,6 +13,7 @@ import {
   PrivacyLevel,
   ProfileDef,
   type ServerDef,
+  SkillName,
   Slug,
   TrustLevel,
 } from "../core/config.ts";
@@ -36,6 +37,7 @@ import {
 } from "./auth.ts";
 import { profileUrl, snippets } from "./connect.ts";
 import { type OnboardingOptions, registerOnboardingRoutes } from "./onboarding.ts";
+import { registerSkillRoutes } from "./skills.ts";
 
 export interface UiApiOptions {
   db: Database;
@@ -128,6 +130,8 @@ const ProfileBody = z.object({
   privacy: PrivacyLevel.optional(),
   preset: PolicyPreset.optional(),
   readOnly: z.boolean().optional(),
+  /** Library skills served to the profile. Not for "all", which holds every library skill. */
+  skills: z.array(SkillName).max(500).optional(),
 });
 
 const Confirm = z.object({ password: z.string().optional() });
@@ -310,7 +314,13 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
       profiles: profileIds(cfg).length,
       pendingApprovals: handle.approvals?.list({ status: "pending" }).length ?? null,
       quarantined: handle.pins?.quarantined().length ?? null,
-      features: { approvals: !!handle.approvals, activity: !!handle.activity, pins: !!handle.pins },
+      skillReviews: handle.skills?.reviews().filter((r) => r.status === "pending").length ?? null,
+      features: {
+        approvals: !!handle.approvals,
+        activity: !!handle.activity,
+        pins: !!handle.pins,
+        skills: !!handle.skills,
+      },
     });
   });
 
@@ -590,6 +600,7 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
       clientId: a.auth.type === "oauth" ? (a.auth.clientId ?? null) : null,
       state: handle.accountState(aid),
       tools: handle.toolCount(aid),
+      skills: a.skills ?? "off",
       profiles: profileIds(cfg).filter((p) => resolveProfile(cfg, p)?.accounts.includes(aid)),
     };
   }
@@ -629,6 +640,8 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
         headers: z.array(secretPair).optional(),
         env: z.array(envPair).optional(),
         params: z.array(secretPair).optional(),
+        /** Skills the server publishes: off, text (Markdown and plain text only) or all files. */
+        skills: z.enum(["off", "text", "all"]).optional(),
         ...oauthClient,
       }),
     );
@@ -675,6 +688,10 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
     await handle.updateConfig((d) => {
       const acc = d.accounts[aid] as AccountDef;
       if (b.label !== undefined) acc.label = b.label || undefined;
+      if (b.skills !== undefined) {
+        if (b.skills === "off") delete acc.skills;
+        else acc.skills = b.skills;
+      }
       if (Object.keys(params).length) acc.urlParams = { ...(acc.urlParams ?? {}), ...params };
       if (b.clientId && acc.auth.type === "oauth") acc.auth = { ...acc.auth, clientId: b.clientId };
       if (Object.keys(headers).length)
@@ -778,6 +795,9 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
       preset: r.def.policy.preset,
       customRules: r.def.policy.rules.length,
       readOnly: r.def.readOnly,
+      /** Library skills; "all" holds every one. */
+      skills:
+        pid === ALL_PROFILE ? (handle.skills?.library().map((k) => k.name) ?? []) : (r.def.skills ?? []),
       url: profileUrl(handle.url, pid),
     };
   }
@@ -795,6 +815,13 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
     if (b.accounts) {
       if (pid === ALL_PROFILE) throw new ApiError(400, `"All" always holds every account.`);
       def.accounts = [...new Set(b.accounts)];
+    }
+    if (b.skills) {
+      if (pid === ALL_PROFILE) throw new ApiError(400, `"All" always holds every library skill.`);
+      const known = new Set(handle.skills?.library().map((k) => k.name) ?? []);
+      const unknown = b.skills.filter((n) => !known.has(n));
+      if (unknown.length) throw new ApiError(404, `No library skill named "${unknown[0]}".`);
+      def.skills = [...new Set(b.skills)];
     }
   }
 
@@ -966,6 +993,7 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
   });
 
   registerOnboardingRoutes(api, handle, auth, opts.onboarding);
+  registerSkillRoutes(api, handle, auth);
   api.all("*", (c) => c.json({ error: "Not found" }, 404));
 
   app.route(API_PREFIX, api);

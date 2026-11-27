@@ -6,6 +6,7 @@ import { logCommands } from "./commands-log.ts";
 import { onboardingCommands } from "./commands-onboarding.ts";
 import { policyCommands } from "./commands-policy.ts";
 import { privacyCommands } from "./commands-privacy.ts";
+import { skillsCommands } from "./commands-skills.ts";
 import { tokenCommands } from "./commands-token.ts";
 import { uiCommands } from "./commands-ui.ts";
 import { installService, serviceEnv, serviceStatus, uninstallService } from "./service.ts";
@@ -168,6 +169,7 @@ export const commands: Command[] = [
   },
   ...privacyCommands,
   ...policyCommands,
+  ...skillsCommands,
   ...logCommands,
   ...uiCommands,
   ...onboardingCommands,

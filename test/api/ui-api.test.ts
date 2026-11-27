@@ -567,6 +567,7 @@ describe("approvals, activity, quarantine", () => {
       approvals: false,
       activity: false,
       pins: false,
+      skills: false,
     });
   });
 

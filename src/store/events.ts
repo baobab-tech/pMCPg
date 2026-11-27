@@ -19,6 +19,17 @@ export type GatewayEvent =
   | { type: "token-rotated"; token: "client" | "admin"; profileId?: string; via: "cli" | "ui" }
   | { type: "server-spawned"; accountId: string; pid: number }
   | { type: "server-exited"; accountId: string; code: number | null }
+  /** A client read a skill file. `skill` is the skill id ("notes", "github/pr-review"); `file` its relative path. */
+  | { type: "skill-read"; profileId: string; skill: string; file: string; via: "tool" | "mcp" }
+  /** A server's skills differ from the last sync. `held` counts skills now waiting for review. */
+  | {
+      type: "skills-changed";
+      accountId: string;
+      added: number;
+      removed: number;
+      changed: number;
+      held: number;
+    }
   /** Masked values forgotten. No profileId: every profile. */
   | { type: "privacy-reset"; profileId?: string; sessions: number; placeholders: number };
 

@@ -13,6 +13,14 @@ export const Slug = z
   .string()
   .regex(/^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$/, "lowercase letters, digits and single dashes");
 
+/** Agent Skills name: 1 to 64 lowercase letters, digits and single dashes. Also the library folder name. */
+export const SkillName = z
+  .string()
+  .regex(
+    /^(?!.*--)[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/,
+    "1 to 64 lowercase letters, digits and single dashes",
+  );
+
 export const TrustLevel = z.enum(["local", "private-data", "external-content", "can-send"]);
 export type TrustLevel = z.infer<typeof TrustLevel>;
 
@@ -67,6 +75,12 @@ export const AccountDef = z.object({
    * plain values or SecretRefs. Keeps keys out of the server URL in config.yaml.
    */
   urlParams: z.record(z.string(), z.string()).optional(),
+  /**
+   * Skills the server publishes (MCP Skills extension), passed through to profiles that hold this account.
+   * off (or absent): none. text: Markdown and plain-text files only. all: every file, scripts included.
+   * See docs/skills.md.
+   */
+  skills: z.enum(["off", "text", "all"]).optional(),
 });
 export type AccountDef = z.infer<typeof AccountDef>;
 
@@ -81,6 +95,8 @@ export const ProfileDef = z.object({
   readOnly: z.boolean().default(false),
   /** Tools hidden from this profile, as qualified names or globs ("gmail-work__delete_*"). */
   deny: z.array(z.string()).default([]),
+  /** Library skills served to this profile, by name. "all" always holds every library skill. */
+  skills: z.array(SkillName).optional(),
 });
 export type ProfileDef = z.infer<typeof ProfileDef>;
 

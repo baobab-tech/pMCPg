@@ -14,6 +14,7 @@ import {
   SettingsIcon,
   ShieldAlertIcon,
   ShieldCheckIcon,
+  SparklesIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -42,6 +43,13 @@ const NAV: NavItem[] = [
   { href: "/servers/", label: "Servers", simpleLabel: "Connections", icon: BoxesIcon, simple: true },
   { href: "/import/", label: "Import", icon: DownloadIcon, simple: false },
   { href: "/profiles/", label: "Profiles", icon: LayersIcon, simple: false },
+  {
+    href: "/skills/",
+    label: "Skills",
+    icon: SparklesIcon,
+    simple: (s) => !!s.features.skills,
+    badge: (s) => s.skillReviews ?? null,
+  },
   { href: "/connect/", label: "Connect your AI app", simpleLabel: "AI apps", icon: CableIcon, simple: true },
   {
     href: "/approvals/",

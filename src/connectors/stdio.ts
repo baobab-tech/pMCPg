@@ -4,7 +4,8 @@ import { Client, ProtocolError, SdkError, SdkErrorCode } from "@modelcontextprot
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import type { AccountDef, ServerDef } from "../core/config.ts";
 import { type AccountState, GatewayError, type ToolResult } from "../core/types.ts";
-import type { Connector, ConnectorDeps, DownstreamTool } from "./connector.ts";
+import type { Connector, ConnectorDeps, DownstreamSkill, DownstreamTool } from "./connector.ts";
+import { listServerSkills, readServerSkillFile, SKILLS_CLIENT_CAPABILITIES } from "./skills.ts";
 import { buildEnv, effectivePath, resolveArgs, resolveCommand } from "./stdio-env.ts";
 import { descendants, killAll, taskkillTree } from "./stdio-tree.ts";
 
@@ -131,6 +132,14 @@ class Stdio implements StdioConnector {
     });
   }
 
+  listSkills(signal?: AbortSignal): Promise<DownstreamSkill[]> {
+    return this.use(signal, (client) => listServerSkills(client, signal));
+  }
+
+  readSkillFile(skill: DownstreamSkill, uri: string, signal?: AbortSignal): Promise<Uint8Array> {
+    return this.use(signal, (client) => readServerSkillFile(client, skill, uri, signal));
+  }
+
   async callTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
     return this.use(signal, async (client) => {
       const result = await client.callTool({ name, arguments: args }, { signal });
@@ -202,7 +211,7 @@ class Stdio implements StdioConnector {
     transport.stderr?.on("data", (chunk: Buffer) => this.captureStderr(chunk));
 
     const client = new Client(CLIENT_INFO, {
-      capabilities: {},
+      capabilities: SKILLS_CLIENT_CAPABILITIES,
       listChanged: {
         tools: { autoRefresh: false, debounceMs: 100, onChanged: () => this.emitToolsChanged() },
       },

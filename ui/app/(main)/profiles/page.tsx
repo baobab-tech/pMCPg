@@ -25,23 +25,36 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { type Account, api, errorMessage, type Preset, type Privacy, type Profile, slugify } from "@/lib/api";
+import {
+  type Account,
+  api,
+  errorMessage,
+  type LibrarySkill,
+  type Preset,
+  type Privacy,
+  type Profile,
+  type SkillsOverview,
+  slugify,
+} from "@/lib/api";
 import { useApi } from "@/lib/hooks";
 import { LearnMore } from "@/components/help/learn-more";
 
 function ProfileForm({
   profile,
   accounts,
+  skills,
   onSaved,
   onCancel,
 }: {
   profile?: Profile;
   accounts: Account[];
+  skills: LibrarySkill[];
   onSaved: (p: Profile) => void;
   onCancel: () => void;
 }) {
   const [name, setName] = useState(profile?.name ?? "");
   const [picked, setPicked] = useState<string[]>(profile?.accounts ?? []);
+  const [pickedSkills, setPickedSkills] = useState<string[]>(profile?.skills ?? []);
   const [privacy, setPrivacy] = useState<Privacy>(profile?.privacy ?? "standard");
   const [preset, setPreset] = useState<Preset>(profile?.preset ?? "balanced");
   const [readOnly, setReadOnly] = useState(profile?.readOnly ?? false);
@@ -60,7 +73,7 @@ function ProfileForm({
           privacy,
           preset,
           readOnly,
-          ...(profile?.builtIn ? {} : { accounts: picked }),
+          ...(profile?.builtIn ? {} : { accounts: picked, skills: pickedSkills }),
         };
         try {
           const saved = profile
@@ -77,7 +90,7 @@ function ProfileForm({
       </Field>
 
       {profile?.builtIn ? (
-        <p className="text-sm text-muted-foreground">“All” always holds all your MCPs.</p>
+        <p className="text-sm text-muted-foreground">“All” always holds all your MCPs and every skill in your library.</p>
       ) : (
         <Field label="MCPs in this profile" hint="An AI app connected to this profile sees only these tools.">
           {accounts.length === 0 ? (
@@ -96,6 +109,25 @@ function ProfileForm({
               ))}
             </div>
           )}
+        </Field>
+      )}
+
+      {!profile?.builtIn && skills.length > 0 && (
+        <Field label="Skills in this profile" hint="Instructions from your skill library that AI apps on this profile can read.">
+          <div className="grid gap-1.5 sm:grid-cols-2">
+            {skills.map((k) => (
+              <label key={k.name} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted/40">
+                <Checkbox
+                  checked={pickedSkills.includes(k.name)}
+                  onCheckedChange={(c) =>
+                    setPickedSkills(c ? [...pickedSkills, k.name] : pickedSkills.filter((x) => x !== k.name))
+                  }
+                />
+                <span className="shrink-0 font-medium whitespace-nowrap">{k.name}</span>
+                <span className="truncate text-xs text-muted-foreground">{k.description}</span>
+              </label>
+            ))}
+          </div>
         </Field>
       )}
 
@@ -203,6 +235,7 @@ function OrganizeHelp({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
 export default function ProfilesPage() {
   const { data, error, reload } = useApi<Profile[]>("/profiles");
   const accounts = useApi<Account[]>("/accounts");
+  const skills = useApi<SkillsOverview>("/skills");
   const [editing, setEditing] = useState<Profile | "new">();
   const [removing, setRemoving] = useState<Profile>();
   const [help, setHelp] = useState(false);
@@ -263,6 +296,11 @@ export default function ProfilesPage() {
                 <Badge variant="outline">Privacy: {privacyTitle(p.privacy)}</Badge>
                 <Badge variant="outline">Safety: {presetTitle(p.preset)}</Badge>
                 {p.readOnly && <Badge variant="outline">Read-only</Badge>}
+                {p.skills.length > 0 && (
+                  <Badge variant="outline">
+                    {p.skills.length} skill{p.skills.length > 1 ? "s" : ""}
+                  </Badge>
+                )}
                 <span className="text-muted-foreground">
                   {p.builtIn
                     ? "All your MCPs"
@@ -287,6 +325,7 @@ export default function ProfilesPage() {
               key={editing === "new" ? "new" : editing.id}
               profile={editing === "new" ? undefined : editing}
               accounts={accounts.data ?? []}
+              skills={skills.data?.library ?? []}
               onCancel={() => setEditing(undefined)}
               onSaved={(p) => {
                 toast.success(`Saved ${p.name}`);
