@@ -3,6 +3,7 @@
 import { DownloadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CodeBlock, ErrorNote } from "@/components/common";
+import { LearnMore } from "@/components/help/learn-more";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -55,7 +56,8 @@ export function ExportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
           <DialogTitle>Export server list</DialogTitle>
           <DialogDescription>
             A file other AI apps can read. Another pMCPg imports any of these under Import, From a file. Keys and
-            sign-ins are never included: after importing, enter keys or sign in again.
+            sign-ins are never included: after importing, enter keys or sign in again.{" "}
+            <LearnMore slug="export-import-servers" />
           </DialogDescription>
         </DialogHeader>
 

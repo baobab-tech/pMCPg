@@ -6,6 +6,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState, ErrorNote } from "@/components/common";
+import { LearnMore } from "@/components/help/learn-more";
 import { KeysDialog } from "@/components/keys-dialog";
 import { Advanced } from "@/components/server-form";
 import { SignInDialog } from "@/components/signin-dialog";
@@ -441,7 +442,8 @@ export function ImportPanel({
           </div>
           {file && scan.candidates.some((c) => !isRemote(c)) && (
             <p className="text-xs text-muted-foreground">
-              Servers under “On this computer” run a program here. Tick them only if you trust whoever sent the file.
+              Servers under “On this computer” run a program here. Tick them only if you trust whoever sent the file.{" "}
+              <LearnMore slug="export-import-servers" />
             </p>
           )}
         </>
