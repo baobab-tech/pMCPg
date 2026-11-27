@@ -8,6 +8,7 @@ import type { GatewayHandle } from "../gateway/handle.ts";
 import { appSetupFor } from "../onboarding/app-setup.ts";
 import { applyImport } from "../onboarding/apply.ts";
 import { applyConnect, type ConnectApp, planConnect, selfCommand } from "../onboarding/clients.ts";
+import { EXPORT_FORMATS, exportServers, FORMAT_INFO } from "../onboarding/export.ts";
 import {
   APP_LABELS,
   type AppId,
@@ -40,6 +41,10 @@ export interface OnboardingOptions {
 const CONNECT_APPS = ["claude-desktop", "claude-code", "lm-studio", "cursor", "vscode"] as const;
 const AppParam = z.enum(CONNECT_APPS);
 
+const ExportQuery = z.object({
+  format: z.enum(EXPORT_FORMATS).default("mcp-json"),
+  share: z.enum(["0", "1"]).default("0"),
+});
 const ProbeBody = z.object({ url: z.string().min(1).max(2000) });
 const ImportBody = z.object({
   keys: z.array(z.string().max(4000)).min(1).max(200),
@@ -117,6 +122,16 @@ export function registerOnboardingRoutes(
       if (setup) return c.json({ ...found, auth: { ...found.auth, setup } });
     }
     return c.json(found);
+  });
+
+  // Server list for other apps: built from config only, so no key or token can be in it.
+  api.get("/export/formats", (c) =>
+    c.json(EXPORT_FORMATS.map((id) => ({ id, label: FORMAT_INFO[id].label, hint: FORMAT_INFO[id].hint }))),
+  );
+
+  api.get("/export", (c) => {
+    const q = ExportQuery.parse({ format: c.req.query("format"), share: c.req.query("share") });
+    return c.json(exportServers(handle.config(), q.format, { share: q.share === "1", home: env().home }));
   });
 
   api.get("/import/scan", (c) => {

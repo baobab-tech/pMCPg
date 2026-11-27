@@ -233,6 +233,21 @@ export type ProbeResult =
   | { ok: true; url: string; transport: "http" | "sse"; auth: ProbeAuth; serverName?: string; suggestedId: string }
   | { ok: false; url: string; error: string };
 
+export interface ExportFormat {
+  id: string;
+  label: string;
+  hint: string;
+}
+
+export interface ExportResult {
+  filename: string;
+  content: string;
+  count: number;
+  skipped: { name: string; reason: string }[];
+  placeholders: string[];
+  signIn: string[];
+}
+
 export type ConnectAppId = "claude-desktop" | "claude-code" | "lm-studio" | "cursor" | "vscode";
 
 export type FoundServer =

@@ -1,6 +1,6 @@
 "use client";
 
-import { GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, PencilIcon, PlusIcon, Trash2Icon, WrenchIcon } from "lucide-react";
+import { DownloadIcon, GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, PencilIcon, PlusIcon, Trash2Icon, WrenchIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { EmptyState, ErrorNote, Field, PageHeader, StateBadge } from "@/componen
 import { AddAccountDialog } from "@/components/add-account-dialog";
 import { CatalogSoon } from "@/components/catalog-soon";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ExportDialog } from "@/components/export-dialog";
 import { InfoTip } from "@/components/info-tip";
 import { KeysDialog } from "@/components/keys-dialog";
 import { AddByUrl } from "@/components/onboarding/add-by-url";
@@ -245,6 +246,7 @@ function ServersInner() {
   const params = useSearchParams();
   const router = useRouter();
   const [adding, setAdding] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [signIn, setSignIn] = useState<string>();
   const [starter, setStarter] = useState<string>();
   const { advanced } = useView();
@@ -284,8 +286,19 @@ function ServersInner() {
             </>
           )
         }
-        actions={data?.length ? add : undefined}
+        actions={
+          data?.length ? (
+            <>
+              <Button variant="outline" onClick={() => setExporting(true)}>
+                <DownloadIcon />
+                Export
+              </Button>
+              {add}
+            </>
+          ) : undefined
+        }
       />
+      <ExportDialog open={exporting} onOpenChange={setExporting} />
       <ErrorNote error={error} />
       {!data ? (
         <Skeleton className="h-32" />

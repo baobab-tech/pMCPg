@@ -237,6 +237,12 @@ Code in `src/onboarding/`, UI API in `src/api/onboarding.ts`, CLI in `src/cli/co
 - Names without a URL are matched against `known-endpoints.ts`, a short list of vendor-documented public endpoints with sources. Built-in features (web search, Google Drive, Microsoft 365…) show as "not an MCP server". Anything else shows as "URL needed".
 - The UI probes an entry only when the user ticks it. Import goes through `applyImport`, after the server checks each URL again.
 
+**Export the server list.** The Servers page's Export button (`GET /api/ui/export?format=…&share=1`, `src/onboarding/export.ts`) writes the list for other apps: the common `mcpServers` file (Claude Code, LM Studio, Windsurf), VS Code, Claude Desktop, Gemini CLI, Zed, Codex, Goose, or pMCPg's own `config.yaml` shape.
+
+- Built from config only; the export never reads the vault. Every env and header value becomes a placeholder in the app's own syntax (`${NAME}`, `${input:id}`, Codex `env_vars`, Goose `env_keys`); plain values are dropped too. OAuth servers keep only their URL.
+- One entry per account. "For sharing" writes one entry per server, drops account labels and `cwd`, and writes the home folder as `${HOME}`.
+- A test seeds the vault and config with canary values and checks that no format, through the function or the API, contains one.
+
 **Connect an AI app.** Plan first (shown to the user, tokens masked), then apply with a timestamped backup. Only the app's MCP list changes.
 
 | App | Change |
