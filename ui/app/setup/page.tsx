@@ -25,7 +25,8 @@ import { ConnectApps } from "@/components/onboarding/connect-apps";
 import { ImportPanel } from "@/components/onboarding/import-panel";
 import { McpChatDemo } from "@/components/onboarding/mcp-chat-demo";
 import { McpFlow } from "@/components/onboarding/mcp-flow";
-import { type Starter, StarterTiles, starterByUrl } from "@/components/onboarding/starters";
+import { type Starter, StarterTiles, useStarters } from "@/components/onboarding/starters";
+import { CatalogAddDialog } from "@/components/catalog/add-dialog";
 import { ProtectionCard } from "@/components/protection-card";
 import type { AuthChoice } from "@/components/server-form";
 import { SessionProvider, useSession } from "@/components/session";
@@ -492,7 +493,9 @@ function SetupWizard() {
   const [path, setPath] = useState<"a" | "f">();
   const [history, setHistory] = useState<Step[]>([]);
   const [importedFrom, setImportedFrom] = useState<ConnectAppId[]>([]);
-  const [starterUrl, setStarterUrl] = useState<string>();
+  const starters = useStarters();
+  const [starter, setStarter] = useState<Starter>();
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const [server, setServer] = useState<{ server: Server; auth: AuthChoice }>();
   const [signingIn, setSigningIn] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
@@ -520,7 +523,6 @@ function SetupWizard() {
     }
   }
 
-  const starter = starterByUrl(starterUrl);
   const account = server?.server.accounts[0];
   const pathSteps = path === "a" ? PATH_A : path === "f" ? PATH_F : undefined;
 
@@ -596,9 +598,29 @@ function SetupWizard() {
 
       {step === "starter" && (
         <StepCard title="Pick a service" description="Start with one. You can add more any time.">
-          <StarterTiles value={starterUrl} onPick={setStarterUrl} />
+          <StarterTiles
+            starters={starters}
+            value={starter?.id}
+            onPick={(s) => {
+              setStarter(s);
+              if (s.entry) setCatalogOpen(true);
+            }}
+          />
+          {starter?.entry && (
+            <CatalogAddDialog
+              entry={starter.entry}
+              open={catalogOpen}
+              onOpenChange={setCatalogOpen}
+              onAdded={(s, auth) => {
+                setCatalogOpen(false);
+                setServer({ server: s, auth });
+                setSignedIn(false);
+                go(auth === "oauth" ? "signin" : "connect");
+              }}
+            />
+          )}
           <AddByUrl
-            url={starterUrl}
+            url={starter?.entry ? undefined : starter?.url}
             onAdded={(s, auth) => {
               setServer({ server: s, auth });
               setSignedIn(false);
