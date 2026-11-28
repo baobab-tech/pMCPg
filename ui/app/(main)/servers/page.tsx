@@ -1,12 +1,14 @@
 "use client";
 
-import { DownloadIcon, GlobeIcon, KeyRoundIcon, LogInIcon, MonitorIcon, PencilIcon, PlusIcon, Trash2Icon, WrenchIcon } from "lucide-react";
+import { DownloadIcon, GlobeIcon, LibraryIcon, KeyRoundIcon, LogInIcon, MonitorIcon, PencilIcon, PlusIcon, Trash2Icon, WrenchIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, ErrorNote, Field, PageHeader, StateBadge } from "@/components/common";
 import { AddAccountDialog } from "@/components/add-account-dialog";
-import { CatalogSoon } from "@/components/catalog-soon";
+import { CatalogAddDialog } from "@/components/catalog/add-dialog";
+import { CatalogLink } from "@/components/catalog/catalog-link";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ExportDialog } from "@/components/export-dialog";
 import { InfoTip } from "@/components/info-tip";
@@ -15,13 +17,13 @@ import { AddByUrl } from "@/components/onboarding/add-by-url";
 import { SignInDialog } from "@/components/signin-dialog";
 import { ToolsDialog } from "@/components/tools-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RunActionButton } from "@/components/watermelon/run-action-button";
-import { StarterTiles } from "@/components/onboarding/starters";
+import { type Starter, StarterTiles, useStarters } from "@/components/onboarding/starters";
 import { AdvancedOnly, MoreInAdvanced, useView } from "@/components/view";
 import { type Account, type AccountState, api, errorMessage, type Server } from "@/lib/api";
 import { useApi } from "@/lib/hooks";
@@ -249,7 +251,14 @@ function ServersInner() {
   const [exporting, setExporting] = useState(false);
   const [signIn, setSignIn] = useState<string>();
   const [starter, setStarter] = useState<string>();
+  const [fromCatalog, setFromCatalog] = useState<Starter["entry"]>();
+  const starters = useStarters();
   const { advanced } = useView();
+  const pickStarter = (s: Starter) => {
+    if (!s.entry) return setStarter(s.url);
+    setAdding(false);
+    setFromCatalog(s.entry);
+  };
 
   useEffect(() => {
     if (params.get("add")) setAdding(true);
@@ -289,6 +298,10 @@ function ServersInner() {
         actions={
           data?.length ? (
             <>
+              <Link href="/servers/catalog/" className={buttonVariants({ variant: "outline" })}>
+                <LibraryIcon />
+                Catalog
+              </Link>
               <Button variant="outline" onClick={() => setExporting(true)}>
                 <DownloadIcon />
                 Export
@@ -335,7 +348,9 @@ function ServersInner() {
               .
             </DialogDescription>
           </DialogHeader>
-          {!advanced && <StarterTiles value={starter} onPick={setStarter} compact />}
+          {!advanced && (
+            <StarterTiles starters={starters} value={starters.find((s) => s.url === starter)?.id} onPick={pickStarter} compact />
+          )}
           <AddByUrl
             url={starter}
             onAdded={(server, auth) => {
@@ -346,9 +361,23 @@ function ServersInner() {
               if (auth === "oauth" && server.accounts[0]) setSignIn(server.accounts[0]);
             }}
           />
-          <CatalogSoon />
+          <CatalogLink onNavigate={() => setAdding(false)} />
         </DialogContent>
       </Dialog>
+      {fromCatalog && (
+        <CatalogAddDialog
+          entry={fromCatalog}
+          open={!!fromCatalog}
+          onOpenChange={(o) => !o && setFromCatalog(undefined)}
+          onAdded={(server, auth) => {
+            setFromCatalog(undefined);
+            if (params.get("add")) router.replace("/servers/");
+            reloadAll();
+            toast.success(`Added ${server.name}`);
+            if (auth === "oauth" && server.accounts[0]) setSignIn(server.accounts[0]);
+          }}
+        />
+      )}
       {signIn && (
         <SignInDialog
           accountId={signIn}

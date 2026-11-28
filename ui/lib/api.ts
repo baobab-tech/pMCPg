@@ -382,3 +382,77 @@ export interface AppConnectStatus {
   /** Profiles its gateway entries use ("all" for the universal URL). */
   profiles: string[];
 }
+
+export type CatalogTier = "baobab-built" | "approved" | "community";
+export type TrustLabel = "local" | "private-data" | "external-content" | "can-send";
+
+export interface CatalogCredential {
+  name: string;
+  description?: string;
+  required: boolean;
+  secret: boolean;
+}
+
+interface CatalogEntryBase {
+  name: string;
+  title: string;
+  description: string;
+  version: string;
+  websiteUrl: string | null;
+  repositoryUrl: string | null;
+  icon: string | null;
+  tier: CatalogTier;
+  auth: { type: "none" | "oauth" | "header"; registration: "dcr" | "cimd" | "manual" | null };
+  trust: TrustLabel[];
+  privacy: Privacy;
+  audience: string[];
+  categories: string[];
+  samplePrompt: string | null;
+  reviewedAt: string;
+  hasRemote: boolean;
+  hasPackage: boolean;
+  /** Server id that already runs this entry, or null. */
+  addedAs: string | null;
+}
+
+export type CatalogEntry = CatalogEntryBase &
+  (
+    | {
+        available: true;
+        kind: "remote" | "package";
+        /** URL or command line. */
+        target: string;
+        transport: "stdio" | "http" | "sse";
+        /** Free short name the add flow would use. */
+        serverId: string;
+        credentials: CatalogCredential[];
+      }
+    | { available: false; reason: string }
+  );
+
+export interface CatalogPreset {
+  id: string;
+  name: string;
+  description: string;
+  audience: string[];
+  servers: string[];
+  privacy: Privacy;
+  approvals: Preset;
+}
+
+export interface CatalogResponse {
+  enabled: boolean;
+  source: "network" | "cache" | "snapshot";
+  fetchedAt: string | null;
+  serial: number;
+  error?: string;
+  entries: CatalogEntry[];
+  presets: CatalogPreset[];
+}
+
+export interface CatalogAddResult {
+  server: Server;
+  account: string;
+  auth: "none" | "oauth" | "header";
+  privacy?: Privacy;
+}

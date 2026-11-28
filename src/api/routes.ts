@@ -35,6 +35,7 @@ import {
   LAUNCH_PATH,
   UiAuth,
 } from "./auth.ts";
+import { registerCatalogRoutes } from "./catalog.ts";
 import { profileUrl, snippets } from "./connect.ts";
 import { type OnboardingOptions, registerOnboardingRoutes } from "./onboarding.ts";
 import { registerSkillRoutes } from "./skills.ts";
@@ -994,6 +995,12 @@ export function createUiApi(handle: GatewayHandle, opts: UiApiOptions): Hono {
 
   registerOnboardingRoutes(api, handle, auth, opts.onboarding);
   registerSkillRoutes(api, handle, auth);
+  registerCatalogRoutes(api, handle, {
+    prepareAccount,
+    fail: (status, message) => {
+      throw new ApiError(status, message);
+    },
+  });
   api.all("*", (c) => c.json({ error: "Not found" }, 404));
 
   app.route(API_PREFIX, api);

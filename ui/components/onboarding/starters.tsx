@@ -1,9 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { SIMPLE_TIERS } from "@/components/catalog/labels";
+import { api, type CatalogEntry, type CatalogResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-// A few public remote servers that work today, until the catalog exists (docs/plans/onboarding-v2.md).
-// Nothing is fetched until the user picks one; the probe then decides the sign-in type.
+// Starters: Built by Baobab and Approved catalog entries when the saved catalog has any, otherwise a few
+// public remote servers that work today (docs/plans/onboarding-v2.md). Loading the catalog reads the
+// saved copy and never contacts pmcpg.io. A static starter is probed when picked; a catalog starter
+// opens the catalog add dialog.
 
 export interface Starter {
   id: string;
@@ -14,6 +19,8 @@ export interface Starter {
   /** Something to ask the AI app to try it out. */
   prompt: string;
   color: string;
+  /** Set for starters taken from the catalog. */
+  entry?: Extract<CatalogEntry, { available: true }>;
 }
 
 export const STARTERS: Starter[] = [
@@ -64,32 +71,78 @@ export const STARTERS: Starter[] = [
   },
 ];
 
-export const starterByUrl = (url?: string) => STARTERS.find((s) => s.url === url);
+
+const COLORS = STARTERS.map((s) => s.color);
+
+/** Catalog starters, best tier first; empty when the catalog has none to offer. */
+export function catalogStarters(entries: CatalogEntry[], max = 6): Starter[] {
+  return entries
+    .filter((e): e is Extract<CatalogEntry, { available: true }> => e.available && SIMPLE_TIERS.includes(e.tier))
+    .sort((a, b) => SIMPLE_TIERS.indexOf(a.tier) - SIMPLE_TIERS.indexOf(b.tier))
+    .slice(0, max)
+    .map((e, i) => ({
+      id: e.name,
+      name: e.title,
+      url: e.kind === "remote" ? e.target : "",
+      blurb: e.description,
+      signIn: e.auth.type === "none" && e.credentials.length === 0 ? "none" : "sign-in",
+      prompt: e.samplePrompt ?? `Using ${e.title}, what can you do for me?`,
+      color: COLORS[i % COLORS.length] as string,
+      entry: e,
+    }));
+}
+
+/** Starters to show: from the saved catalog when it has any, else the static list. */
+export function useStarters(): Starter[] {
+  const [starters, setStarters] = useState<Starter[]>(STARTERS);
+  useEffect(() => {
+    let stop = false;
+    api
+      .get<CatalogResponse>("/catalog")
+      .then((c) => {
+        const fromCatalog = catalogStarters(c.entries);
+        if (!stop && fromCatalog.length) setStarters(fromCatalog);
+      })
+      .catch(() => {});
+    return () => {
+      stop = true;
+    };
+  }, []);
+  return starters;
+}
 
 export function StarterTiles({
+  starters,
   value,
   onPick,
   compact,
 }: {
+  starters: Starter[];
+  /** Id of the picked starter. */
   value?: string;
-  onPick: (url: string) => void;
+  onPick: (s: Starter) => void;
   compact?: boolean;
 }) {
+  const fromCatalog = starters.some((s) => s.entry);
   return (
     <div className="grid gap-2">
       <p className="text-sm text-muted-foreground">
-        {compact ? "Start with one of these, or paste an address below." : "A few public services to start with. More will come with the catalog."}
+        {compact
+          ? "Start with one of these, or paste an address below."
+          : fromCatalog
+            ? "Services reviewed by the pMCPg team. More in the catalog."
+            : "A few public services to start with. More in the catalog."}
       </p>
       <div className={cn("grid grid-cols-1 gap-2", compact ? "sm:grid-cols-2" : "min-[420px]:grid-cols-2")}>
-        {STARTERS.map((s) => (
+        {starters.map((s) => (
           <button
             key={s.id}
             type="button"
-            aria-pressed={value === s.url}
-            onClick={() => onPick(s.url)}
+            aria-pressed={value === s.id}
+            onClick={() => onPick(s)}
             className={cn(
               "flex items-center gap-3 rounded-xl border p-3 text-left text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-              value === s.url ? "border-brand bg-brand/5 ring-1 ring-brand" : "hover:bg-muted/50",
+              value === s.id ? "border-brand bg-brand/5 ring-1 ring-brand" : "hover:bg-muted/50",
             )}
           >
             <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg font-semibold", s.color)}>
