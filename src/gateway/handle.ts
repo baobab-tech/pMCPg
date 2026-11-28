@@ -1,6 +1,7 @@
 // What the web UI's API (src/api) may read and change in the running gateway.
 // Implemented by the runtime; the UI API is built against this interface and tested with fakes.
 
+import type { CatalogView } from "../catalog/schema.ts";
 import type { DownstreamTool, OAuthController } from "../connectors/connector.ts";
 import type { Config } from "../core/config.ts";
 import type { AccountState } from "../core/types.ts";
@@ -43,4 +44,8 @@ export interface GatewayHandle {
   pins?: PinStore;
   /** Skill library and server skills (docs/skills.md). */
   skills?: SkillsHandle;
+  /** The public catalog: cache or bundled snapshot. Never fetches (docs/catalog.md). */
+  catalog(): Promise<CatalogView>;
+  /** Fetch and verify the catalog now (the user is browsing). On failure, the cached view with `error`. */
+  refreshCatalog(): Promise<CatalogView>;
 }

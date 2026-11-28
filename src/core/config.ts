@@ -108,6 +108,8 @@ export const Config = z.object({
       port: z.number().int().min(1).max(65535).default(7431),
     })
     .default({ host: "127.0.0.1", port: 7431 }),
+  /** The public catalog (docs/catalog.md). Off: the gateway never contacts the catalog URL. */
+  catalog: z.object({ enabled: z.boolean().default(true) }).default({ enabled: true }),
   servers: z.record(Slug, ServerDef).default({}),
   accounts: z.record(Slug, AccountDef).default({}),
   /** "all" is reserved: it always contains every account and is created implicitly. */
