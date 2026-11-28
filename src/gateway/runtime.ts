@@ -7,7 +7,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { embeddedAssets, type UiAssets } from "../api/assets.ts";
 import { createUiApi } from "../api/routes.ts";
-import { emptyCatalogView } from "../catalog/view.ts";
+import { CatalogService } from "../catalog/service.ts";
 import type { Connector, ConnectorDeps, OAuthController } from "../connectors/connector.ts";
 import { createOAuthController } from "../connectors/oauth.ts";
 import { createRemoteConnector } from "../connectors/remote.ts";
@@ -340,6 +340,10 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
   catalog.loadCache();
   catalog.rebuild();
   await skills.rebuild();
+  const publicCatalog = new CatalogService({
+    dir: join(state.paths.dir, "catalog"),
+    enabled: () => config.catalog.enabled,
+  });
   const handle: GatewayHandle = {
     url,
     config: () => config,
@@ -366,8 +370,8 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     activity,
     pins,
     skills: skills.handle(),
-    catalog: async () => emptyCatalogView(),
-    refreshCatalog: async () => emptyCatalogView(),
+    catalog: () => publicCatalog.view(),
+    refreshCatalog: () => publicCatalog.refresh(),
   };
 
   // The UI answers / and /api/ui/* itself, ahead of the CLI's /api/* admin-token check.
