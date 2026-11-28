@@ -1,0 +1,52 @@
+{
+  "name": "io.github.github/github-mcp-server",
+  "title": "GitHub",
+  "description": "Reads repositories, code, issues, pull requests and Actions, and creates or updates issues, pull requests and comments. Uses a personal access token as a Bearer header.",
+  "version": "2.3.0",
+  "repository": {
+    "url": "https://github.com/github/github-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/github/github-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer token",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://github.com/github/github-mcp-server",
+      "auth": {
+        "type": "header",
+        "credentials": [
+          "Authorization"
+        ]
+      },
+      "trust": [
+        "private-data",
+        "external-content",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "dev-tools"
+      ],
+      "samplePrompt": "Using GitHub, list the open pull requests waiting for my review."
+    }
+  }
+}

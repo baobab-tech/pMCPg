@@ -1,0 +1,15 @@
+{
+  "id": "program-data",
+  "name": "Program data",
+  "description": "Programme records and open development data such as IATI. Strict masking; asks before every write.",
+  "audience": [
+    "social-impact"
+  ],
+  "servers": [
+    "ai.devexplorer/devexplorer",
+    "com.airtable/mcp",
+    "org.openalex/openalex"
+  ],
+  "privacy": "strict",
+  "approvals": "careful"
+}

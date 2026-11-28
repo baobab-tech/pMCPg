@@ -1,0 +1,39 @@
+{
+  "name": "com.notion/mcp",
+  "title": "Notion",
+  "description": "Searches and reads your Notion workspace, and creates or updates pages and comments.",
+  "version": "1.0.1",
+  "websiteUrl": "https://developers.notion.com/docs/get-started-with-mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.notion.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.notion.com/docs/get-started-with-mcp",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "docs"
+      ],
+      "samplePrompt": "Using Notion, list the pages I edited this week."
+    }
+  }
+}

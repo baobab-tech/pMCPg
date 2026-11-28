@@ -1,0 +1,1560 @@
+{
+  "format": 1,
+  "serial": 1,
+  "generatedAt": "2026-11-28T00:15:17.000Z",
+  "expires": "2027-02-26T00:15:17.000Z",
+  "servers": [
+    {
+      "name": "ai.devexplorer/devexplorer",
+      "title": "DevExplorer",
+      "description": "Searches IATI international development programmes and their documents, and saves results to your DevExplorer workspaces. Sign in with a DevExplorer account.",
+      "version": "1.0.0",
+      "websiteUrl": "https://devexplorer.ai",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://app.devexplorer.ai/api/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "baobab-built",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://app.devexplorer.ai",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "social-impact",
+            "general"
+          ],
+          "categories": [
+            "open-data",
+            "research"
+          ],
+          "samplePrompt": "Using DevExplorer, find UK-funded water and sanitation programmes in Kenya."
+        }
+      }
+    },
+    {
+      "name": "ai.exa/exa",
+      "title": "Exa",
+      "description": "Searches the web and fetches page content. Read-only.",
+      "version": "3.5.1",
+      "repository": {
+        "url": "https://github.com/exa-labs/exa-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://exa.ai",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.exa.ai/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.exa.ai/reference/exa-mcp",
+          "auth": {
+            "type": "none",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact",
+            "developers"
+          ],
+          "categories": [
+            "search",
+            "research"
+          ],
+          "samplePrompt": "Using Exa, find recent reports on cash transfer programmes in East Africa."
+        }
+      }
+    },
+    {
+      "name": "ai.fireflies/fireflies",
+      "title": "Fireflies",
+      "description": "Reads meeting transcripts and summaries, and can share meetings by email and change titles or privacy.",
+      "version": "1.1.0",
+      "websiteUrl": "https://docs.fireflies.ai/mcp-tools/overview",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://api.fireflies.ai/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.fireflies.ai/getting-started/mcp-configuration",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "meetings"
+          ],
+          "samplePrompt": "Using Fireflies, summarize yesterday's team meeting."
+        }
+      }
+    },
+    {
+      "name": "ai.granola/mcp",
+      "title": "Granola",
+      "description": "Searches and reads your meeting notes and transcripts. Paid plans can also edit titles, notes and folders.",
+      "version": "1.0.0",
+      "websiteUrl": "https://www.granola.ai",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.granola.ai/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.granola.ai/help-center/sharing/integrations/mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "meetings"
+          ],
+          "samplePrompt": "Using Granola, list the action items from my meetings this week."
+        }
+      }
+    },
+    {
+      "name": "app.linear/linear",
+      "title": "Linear",
+      "description": "Finds, creates and updates Linear issues, projects and comments.",
+      "version": "1.0.2",
+      "websiteUrl": "https://linear.app",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.linear.app/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://linear.app/docs/mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "developers"
+          ],
+          "categories": [
+            "project-management"
+          ],
+          "samplePrompt": "Using Linear, show the issues assigned to me."
+        }
+      }
+    },
+    {
+      "name": "co.huggingface/hf-mcp-server",
+      "title": "Hugging Face",
+      "description": "Searches models, datasets, Spaces, papers and docs on the Hugging Face Hub. Without sign-in it gets the public read-only tools.",
+      "version": "0.2.33",
+      "repository": {
+        "url": "https://github.com/huggingface/hf-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://huggingface.co/docs/hub/hf-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://huggingface.co/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://github.com/huggingface/hf-mcp-server",
+          "auth": {
+            "type": "none",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "developers",
+            "social-impact"
+          ],
+          "categories": [
+            "ai-models",
+            "research"
+          ],
+          "samplePrompt": "Using Hugging Face, find three small open models for translating French to English."
+        }
+      }
+    },
+    {
+      "name": "com.airtable/mcp",
+      "title": "Airtable",
+      "description": "Reads Airtable bases, and creates and updates records within your base permissions.",
+      "version": "0.1.0",
+      "websiteUrl": "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.airtable.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "databases"
+          ],
+          "samplePrompt": "Using Airtable, summarize the records added to my tracker this month."
+        }
+      }
+    },
+    {
+      "name": "com.asana/mcp",
+      "title": "Asana",
+      "description": "Reads and searches Asana work, and creates and manages tasks and projects. Needs an MCP app registered in Asana's developer console.",
+      "version": "2.0.0",
+      "websiteUrl": "https://developers.asana.com/docs/using-asanas-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.asana.com/v2/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.asana.com/docs/integrating-with-asanas-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "manual",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "project-management"
+          ],
+          "samplePrompt": "Using Asana, list the tasks due this week."
+        }
+      }
+    },
+    {
+      "name": "com.atlassian/atlassian-mcp-server",
+      "title": "Atlassian (Jira and Confluence)",
+      "description": "Searches and reads Jira and Confluence, and creates or updates work items, pages and comments.",
+      "version": "2.0.0",
+      "repository": {
+        "url": "https://github.com/atlassian/atlassian-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://support.atlassian.com/atlassian-rovo-mcp-server/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.atlassian.com/v2/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "developers"
+          ],
+          "categories": [
+            "project-management",
+            "docs"
+          ],
+          "samplePrompt": "Using Jira, list my open issues."
+        }
+      }
+    },
+    {
+      "name": "com.box/mcp",
+      "title": "Box",
+      "description": "Searches, reads and uploads Box files and folders, and runs Box AI. An admin creates the client ID and secret in the Box Admin Console.",
+      "version": "1.0.0",
+      "websiteUrl": "https://developer.box.com/guides/box-mcp/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.box.com",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developer.box.com/guides/box-mcp/remote/",
+          "auth": {
+            "type": "oauth",
+            "registration": "manual",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "files"
+          ],
+          "samplePrompt": "Using Box, find last quarter's board report."
+        }
+      }
+    },
+    {
+      "name": "com.clickup/mcp",
+      "title": "ClickUp",
+      "description": "Searches and manages ClickUp tasks across lists and spaces. No delete tools.",
+      "version": "1.0.0",
+      "websiteUrl": "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.clickup.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "project-management"
+          ],
+          "samplePrompt": "Using ClickUp, list my tasks due this week."
+        }
+      }
+    },
+    {
+      "name": "com.cloudflare/api",
+      "title": "Cloudflare",
+      "description": "Reaches the whole Cloudflare API through search and execute tools, so it can read and change account resources you grant.",
+      "version": "1.0.0",
+      "repository": {
+        "url": "https://github.com/cloudflare/mcp-server-cloudflare",
+        "source": "github"
+      },
+      "websiteUrl": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.cloudflare.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "destructive"
+              },
+              "then": "ask",
+              "reason": "This tool can delete projects or data."
+            }
+          ],
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "hosting",
+            "dev-tools"
+          ],
+          "samplePrompt": "Using Cloudflare, list my Workers and when each was last deployed."
+        }
+      }
+    },
+    {
+      "name": "com.cloudflare/docs",
+      "title": "Cloudflare Docs",
+      "description": "Searches Cloudflare's reference documentation. Read-only.",
+      "version": "1.0.0",
+      "repository": {
+        "url": "https://github.com/cloudflare/mcp-server-cloudflare",
+        "source": "github"
+      },
+      "websiteUrl": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://docs.mcp.cloudflare.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+          "auth": {
+            "type": "none",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "dev-tools",
+            "docs"
+          ],
+          "samplePrompt": "Using Cloudflare Docs, how do I bind a D1 database to a Worker?"
+        }
+      }
+    },
+    {
+      "name": "com.deepwiki/mcp",
+      "title": "DeepWiki",
+      "description": "Reads generated documentation for public GitHub repositories and answers questions about them. Read-only.",
+      "version": "1.0.0",
+      "websiteUrl": "https://deepwiki.com",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.deepwiki.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.devin.ai/work-with-devin/deepwiki-mcp",
+          "auth": {
+            "type": "none",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "developers"
+          ],
+          "categories": [
+            "dev-tools",
+            "research"
+          ],
+          "samplePrompt": "Using DeepWiki, explain what the modelcontextprotocol/typescript-sdk repository does."
+        }
+      }
+    },
+    {
+      "name": "com.hubspot/mcp",
+      "title": "HubSpot",
+      "description": "Reads and writes CRM records such as contacts, companies, deals and tickets. Needs an MCP connector created in HubSpot's developer settings.",
+      "version": "1.0.0",
+      "websiteUrl": "https://developers.hubspot.com/mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.hubspot.com",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "manual",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "crm"
+          ],
+          "samplePrompt": "Using HubSpot, list the contacts added this week."
+        }
+      }
+    },
+    {
+      "name": "com.intercom/mcp",
+      "title": "Intercom",
+      "description": "Searches and reads conversations, contacts and companies, adds internal notes, and manages Help Center articles. US workspaces; EU uses mcp.eu.intercom.com.",
+      "version": "1.0.0",
+      "websiteUrl": "https://developers.intercom.com/docs/guides/mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.intercom.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.intercom.com/docs/guides/mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general"
+          ],
+          "categories": [
+            "crm"
+          ],
+          "samplePrompt": "Using Intercom, summarize the open conversations from today."
+        }
+      }
+    },
+    {
+      "name": "com.make/mcp-server",
+      "title": "Make",
+      "description": "Runs your Make scenarios as tools, and on paid plans views and changes scenarios, connections and data stores.",
+      "version": "2.0.0",
+      "repository": {
+        "url": "https://github.com/integromat/make-skills",
+        "source": "github"
+      },
+      "websiteUrl": "https://developers.make.com/mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.make.com/v2",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.make.com/mcp-server",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "automation"
+          ],
+          "samplePrompt": "Using Make, list my active scenarios."
+        }
+      }
+    },
+    {
+      "name": "com.monday/monday.com",
+      "title": "monday.com",
+      "description": "Creates and updates boards, items, column values and updates. An account admin approves each new connection.",
+      "version": "0.0.1",
+      "repository": {
+        "url": "https://github.com/mondaycom/mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://developer.monday.com/api-reference/docs/mondaycom-mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.monday.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developer.monday.com/api-reference/docs/integrate-with-monday-mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "destructive"
+              },
+              "then": "ask",
+              "reason": "This tool can delete projects or data."
+            }
+          ],
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "project-management"
+          ],
+          "samplePrompt": "Using monday.com, list the items assigned to me."
+        }
+      }
+    },
+    {
+      "name": "com.neon/mcp",
+      "title": "Neon",
+      "description": "Manages Neon projects, branches and computes, and runs SQL and migrations.",
+      "version": "2.0.0",
+      "repository": {
+        "url": "https://github.com/neondatabase/mcp-server-neon",
+        "source": "github"
+      },
+      "websiteUrl": "https://neon.com/docs/ai/neon-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.neon.tech/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://neon.com/docs/ai/neon-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "destructive"
+              },
+              "then": "ask",
+              "reason": "This tool can delete projects or data."
+            }
+          ],
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "databases"
+          ],
+          "samplePrompt": "Using Neon, list my projects and their branches."
+        }
+      }
+    },
+    {
+      "name": "com.netlify/mcp",
+      "title": "Netlify",
+      "description": "Creates, builds, deploys and manages Netlify projects.",
+      "version": "1.0.0",
+      "repository": {
+        "url": "https://github.com/netlify/netlify-mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.netlify.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "hosting"
+          ],
+          "samplePrompt": "Using Netlify, list my sites and their last deploy."
+        }
+      }
+    },
+    {
+      "name": "com.notion/mcp",
+      "title": "Notion",
+      "description": "Searches and reads your Notion workspace, and creates or updates pages and comments.",
+      "version": "1.0.1",
+      "websiteUrl": "https://developers.notion.com/docs/get-started-with-mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.notion.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.notion.com/docs/get-started-with-mcp",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "docs"
+          ],
+          "samplePrompt": "Using Notion, list the pages I edited this week."
+        }
+      }
+    },
+    {
+      "name": "com.slack/mcp",
+      "title": "Slack",
+      "description": "Searches and reads Slack messages, channels, users and canvases, and sends messages. Needs your own internal Slack app's client ID and secret.",
+      "version": "1.0.0",
+      "websiteUrl": "https://docs.slack.dev/ai/mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.slack.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.slack.dev/ai/mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "manual",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "communication"
+          ],
+          "samplePrompt": "Using Slack, summarize what I missed in #general today."
+        }
+      }
+    },
+    {
+      "name": "com.squareup/mcp",
+      "title": "Square",
+      "description": "Calls the Square API for customers, orders, catalog items and payments. Production accounts only.",
+      "version": "1.0.0",
+      "repository": {
+        "url": "https://github.com/square/square-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://developer.squareup.com/docs/mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.squareup.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developer.squareup.com/docs/mcp",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "write"
+              },
+              "then": "ask",
+              "reason": "Changes here can move money or bill customers."
+            }
+          ],
+          "audience": [
+            "general"
+          ],
+          "categories": [
+            "payments"
+          ],
+          "samplePrompt": "Using Square, list yesterday's orders."
+        }
+      }
+    },
+    {
+      "name": "com.stripe/mcp",
+      "title": "Stripe",
+      "description": "Reads and writes Stripe objects such as customers, invoices, subscriptions, refunds and payment links, and searches Stripe docs.",
+      "version": "0.2.4",
+      "repository": {
+        "url": "https://github.com/stripe/agent-toolkit",
+        "source": "github"
+      },
+      "websiteUrl": "https://docs.stripe.com/mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.stripe.com",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.stripe.com/mcp",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "strict",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "write"
+              },
+              "then": "ask",
+              "reason": "Changes here can move money or bill customers."
+            }
+          ],
+          "audience": [
+            "general"
+          ],
+          "categories": [
+            "payments"
+          ],
+          "samplePrompt": "Using Stripe, list this month's failed payments."
+        }
+      }
+    },
+    {
+      "name": "com.supabase/mcp",
+      "title": "Supabase",
+      "description": "Manages Supabase projects and branches, runs SQL and migrations, and reads docs and logs.",
+      "version": "0.21.0",
+      "repository": {
+        "url": "https://github.com/supabase/mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://supabase.com/mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.supabase.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://supabase.com/docs/guides/getting-started/mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "approvalHints": [
+            {
+              "when": {
+                "annotation": "destructive"
+              },
+              "then": "ask",
+              "reason": "This tool can delete projects or data."
+            }
+          ],
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "databases"
+          ],
+          "samplePrompt": "Using Supabase, list the tables in my project."
+        }
+      }
+    },
+    {
+      "name": "com.vercel/vercel-mcp",
+      "title": "Vercel",
+      "description": "Searches Vercel docs, manages projects and deployments, and reads deployment logs.",
+      "version": "0.0.3",
+      "repository": {
+        "url": "https://github.com/vercel/vercel-mcp-overview",
+        "source": "github"
+      },
+      "websiteUrl": "https://vercel.com/docs/agent-resources/vercel-mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.vercel.com",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://vercel.com/docs/agent-resources/vercel-mcp",
+          "auth": {
+            "type": "oauth",
+            "registration": "cimd",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "hosting",
+            "dev-tools"
+          ],
+          "samplePrompt": "Using Vercel, show my latest failed deployment and its build log."
+        }
+      }
+    },
+    {
+      "name": "com.webflow/mcp",
+      "title": "Webflow",
+      "description": "Edits Webflow sites: pages, elements, styles, assets and CMS collections, and publishes CMS items.",
+      "version": "2.0.0",
+      "repository": {
+        "url": "https://github.com/webflow/mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://developers.webflow.com/mcp/reference/overview",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.webflow.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://developers.webflow.com/mcp/reference/getting-started",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "websites"
+          ],
+          "samplePrompt": "Using Webflow, list the CMS collections on my site."
+        }
+      }
+    },
+    {
+      "name": "com.wix/mcp",
+      "title": "Wix",
+      "description": "Searches Wix docs, lists your sites, and calls Wix APIs on a site, including updating and publishing it.",
+      "version": "1.0.2",
+      "repository": {
+        "url": "https://github.com/wix/wix-mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://dev.wix.com/docs/sdk/articles/use-the-wix-mcp/about-the-wix-mcp",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.wix.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://dev.wix.com/docs/sdk/articles/use-the-wix-mcp/about-the-wix-mcp",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "websites"
+          ],
+          "samplePrompt": "Using Wix, list my sites."
+        }
+      }
+    },
+    {
+      "name": "com.zapier/mcp",
+      "title": "Zapier",
+      "description": "Runs actions in the apps you connect to Zapier, such as sending messages, creating tasks and updating records.",
+      "version": "1.0.2",
+      "repository": {
+        "url": "https://github.com/zapier/zapier-mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://docs.zapier.com/mcp/home",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.zapier.com/api/v1/connect",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://docs.zapier.com/mcp/overview/how-connections-work",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "general",
+            "social-impact"
+          ],
+          "categories": [
+            "automation"
+          ],
+          "samplePrompt": "Using Zapier, what actions do I have set up?"
+        }
+      }
+    },
+    {
+      "name": "io.github.getsentry/sentry-mcp",
+      "title": "Sentry",
+      "description": "Searches Sentry errors and performance data, reads docs, and helps triage issues.",
+      "version": "0.51.0",
+      "repository": {
+        "url": "https://github.com/getsentry/sentry-mcp",
+        "source": "github"
+      },
+      "websiteUrl": "https://mcp.sentry.dev",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.sentry.dev/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://mcp.sentry.dev/",
+          "auth": {
+            "type": "oauth",
+            "credentials": []
+          },
+          "trust": [
+            "private-data",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "dev-tools"
+          ],
+          "samplePrompt": "Using Sentry, show the top unresolved errors from the last 24 hours."
+        }
+      }
+    },
+    {
+      "name": "io.github.github/github-mcp-server",
+      "title": "GitHub",
+      "description": "Reads repositories, code, issues, pull requests and Actions, and creates or updates issues, pull requests and comments. Uses a personal access token as a Bearer header.",
+      "version": "2.3.0",
+      "repository": {
+        "url": "https://github.com/github/github-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://github.com/github/github-mcp-server",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://api.githubcopilot.com/mcp/",
+          "headers": [
+            {
+              "name": "Authorization",
+              "description": "Bearer token",
+              "isRequired": true,
+              "isSecret": true
+            }
+          ]
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://github.com/github/github-mcp-server",
+          "auth": {
+            "type": "header",
+            "credentials": [
+              "Authorization"
+            ]
+          },
+          "trust": [
+            "private-data",
+            "external-content",
+            "can-send"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "dev-tools"
+          ],
+          "samplePrompt": "Using GitHub, list the open pull requests waiting for my review."
+        }
+      }
+    },
+    {
+      "name": "io.github.upstash/context7",
+      "title": "Context7",
+      "description": "Fetches current documentation and code examples for software libraries. Read-only; an optional API key raises rate limits.",
+      "version": "4.9.1",
+      "repository": {
+        "url": "https://github.com/upstash/context7",
+        "source": "github"
+      },
+      "websiteUrl": "https://context7.com",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.context7.com/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://github.com/upstash/context7",
+          "auth": {
+            "type": "none",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "developers"
+          ],
+          "categories": [
+            "dev-tools",
+            "docs"
+          ],
+          "samplePrompt": "Using Context7, show the current docs for Hono middleware."
+        }
+      }
+    },
+    {
+      "name": "org.openalex/openalex",
+      "title": "OpenAlex",
+      "description": "Searches scholarly works, authors, institutions and funders in OpenAlex. Read-only; queries use your OpenAlex account's API budget.",
+      "version": "0.5.0",
+      "repository": {
+        "url": "https://github.com/ourresearch/openalex-mcp-server",
+        "source": "github"
+      },
+      "websiteUrl": "https://help.openalex.org/access/connector/",
+      "packages": [],
+      "remotes": [
+        {
+          "type": "streamable-http",
+          "url": "https://mcp.openalex.org/mcp",
+          "headers": []
+        }
+      ],
+      "_meta": {
+        "io.pmcpg/curation": {
+          "tier": "approved",
+          "reviewedAt": "2026-11-27",
+          "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+          "source": "https://github.com/ourresearch/openalex-mcp-server",
+          "auth": {
+            "type": "oauth",
+            "registration": "dcr",
+            "credentials": []
+          },
+          "trust": [
+            "external-content"
+          ],
+          "privacy": "standard",
+          "audience": [
+            "social-impact",
+            "general"
+          ],
+          "categories": [
+            "research",
+            "open-data"
+          ],
+          "samplePrompt": "Using OpenAlex, find the most cited 2025 papers on community health workers."
+        }
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "communications",
+      "name": "Communications",
+      "description": "Messages, website, contacts and shared files. Asks before publishing or sending.",
+      "audience": [
+        "social-impact"
+      ],
+      "servers": [
+        "com.slack/mcp",
+        "com.webflow/mcp",
+        "com.hubspot/mcp",
+        "com.box/mcp"
+      ],
+      "privacy": "standard",
+      "approvals": "careful"
+    },
+    {
+      "id": "fundraising-donors",
+      "name": "Fundraising and donors",
+      "description": "Donor CRM, shared files, notes and meetings. Strict masking on donor details; asks before any change or anything is sent.",
+      "audience": [
+        "social-impact"
+      ],
+      "servers": [
+        "com.hubspot/mcp",
+        "com.box/mcp",
+        "com.notion/mcp",
+        "ai.granola/mcp"
+      ],
+      "privacy": "strict",
+      "approvals": "careful"
+    },
+    {
+      "id": "grants-research",
+      "name": "Grants research",
+      "description": "Funder and research data, web search and notes. Asks before sending anything out after reading web content.",
+      "audience": [
+        "social-impact"
+      ],
+      "servers": [
+        "ai.devexplorer/devexplorer",
+        "org.openalex/openalex",
+        "ai.exa/exa",
+        "com.notion/mcp"
+      ],
+      "privacy": "standard",
+      "approvals": "balanced"
+    },
+    {
+      "id": "me-reporting",
+      "name": "M&E and reporting",
+      "description": "Data tables, databases and document drafting for monitoring and evaluation. Strict masking; asks before any change to source data.",
+      "audience": [
+        "social-impact"
+      ],
+      "servers": [
+        "com.airtable/mcp",
+        "com.supabase/mcp",
+        "com.notion/mcp",
+        "com.box/mcp"
+      ],
+      "privacy": "strict",
+      "approvals": "careful"
+    },
+    {
+      "id": "program-data",
+      "name": "Program data",
+      "description": "Programme records and open development data such as IATI. Strict masking; asks before every write.",
+      "audience": [
+        "social-impact"
+      ],
+      "servers": [
+        "ai.devexplorer/devexplorer",
+        "com.airtable/mcp",
+        "org.openalex/openalex"
+      ],
+      "privacy": "strict",
+      "approvals": "careful"
+    }
+  ]
+}

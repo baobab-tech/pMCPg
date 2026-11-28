@@ -41,6 +41,24 @@ One JSON file, `https://pmcpg.io/catalog/v1/catalog.json`, with a detached signa
 
 Entries are curated, not mirrored: each is a file under `website/catalog/`, added and changed by pull request.
 
+## Propose a server
+
+Each entry is one file, `website/catalog/servers/<slug>.json`; each preset is `website/catalog/presets/<id>.json`. Open a pull request that adds or changes one.
+
+1. If the server is in the [official registry](https://registry.modelcontextprotocol.io), start from a draft: `bun run catalog:import <registry-name>` in `website/`. Otherwise copy a similar entry.
+2. Replace every `TODO`. The build refuses a file that still has one.
+3. Run `bun run catalog:build` in `website/`. It validates every file and rewrites `public/catalog/v1/catalog.json`. Commit both.
+
+Checklist for the pull request:
+
+- [ ] **Source read.** `curation.source` links the operator's own docs or repository, not a directory listing. The URL, sign-in type and package name come from that page.
+- [ ] **URL check passed.** For a remote server, an `initialize` request to the URL answers as MCP (or with `401` and OAuth metadata). Note whether OAuth allows self-registration (`dcr`), a client metadata document (`cimd`), or needs a client ID made by hand (`manual`).
+- [ ] **Version and hash pinned.** Packages name one exact `version`. An `mcpb` bundle has its `fileSha256`. For a remote server without sign-in, add `toolsHash` from the tool list you saw.
+- [ ] **Trust labels set.** `trust` lists `private-data`, `external-content` and `can-send` where they apply; `privacy` is `strict` for donor, beneficiary, payment or health data; `approvalHints` asks before writes that move money or delete data.
+- [ ] **Plain description.** One or two sentences on what the tools read and change.
+
+A maintainer reviews, signs and merges; see "Signing" below.
+
 ## What an approval covers
 
 - **Packages** are approved at one exact version. `npm` runs as `npx -y name@version`, `pypi` as `uvx name==version`, `oci` as `docker run -i --rm image:version`. An `mcpb` bundle is checked against `fileSha256` before install. A new version needs a new review.
@@ -63,7 +81,7 @@ bun scripts/catalog-keygen.ts
 Put the printed public key in `CATALOG_PUBLIC_KEYS`, set `CATALOG_KEY_IS_PLACEHOLDER` to `false`, and ship a release. To sign a build:
 
 ```bash
-bun scripts/catalog-sign.ts website/out/catalog/v1/catalog.json
+bun scripts/catalog-sign.ts website/public/catalog/v1/catalog.json
 ```
 
 To rotate: make a new key with `--replace` on a second machine or after saving the old one, add its public key next to the old one, ship a release, sign with the new key, then remove the old public key in a later release.

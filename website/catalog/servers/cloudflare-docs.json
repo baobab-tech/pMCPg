@@ -1,0 +1,42 @@
+{
+  "name": "com.cloudflare/docs",
+  "title": "Cloudflare Docs",
+  "description": "Searches Cloudflare's reference documentation. Read-only.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/cloudflare/mcp-server-cloudflare",
+    "source": "github"
+  },
+  "websiteUrl": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://docs.mcp.cloudflare.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "auth": {
+        "type": "none",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "dev-tools",
+        "docs"
+      ],
+      "samplePrompt": "Using Cloudflare Docs, how do I bind a D1 database to a Worker?"
+    }
+  }
+}

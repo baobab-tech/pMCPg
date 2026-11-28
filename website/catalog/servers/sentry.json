@@ -1,0 +1,42 @@
+{
+  "name": "io.github.getsentry/sentry-mcp",
+  "title": "Sentry",
+  "description": "Searches Sentry errors and performance data, reads docs, and helps triage issues.",
+  "version": "0.51.0",
+  "repository": {
+    "url": "https://github.com/getsentry/sentry-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://mcp.sentry.dev",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.sentry.dev/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://mcp.sentry.dev/",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "dev-tools"
+      ],
+      "samplePrompt": "Using Sentry, show the top unresolved errors from the last 24 hours."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "communications",
+  "name": "Communications",
+  "description": "Messages, website, contacts and shared files. Asks before publishing or sending.",
+  "audience": [
+    "social-impact"
+  ],
+  "servers": [
+    "com.slack/mcp",
+    "com.webflow/mcp",
+    "com.hubspot/mcp",
+    "com.box/mcp"
+  ],
+  "privacy": "standard",
+  "approvals": "careful"
+}

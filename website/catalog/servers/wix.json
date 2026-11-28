@@ -1,0 +1,43 @@
+{
+  "name": "com.wix/mcp",
+  "title": "Wix",
+  "description": "Searches Wix docs, lists your sites, and calls Wix APIs on a site, including updating and publishing it.",
+  "version": "1.0.2",
+  "repository": {
+    "url": "https://github.com/wix/wix-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://dev.wix.com/docs/sdk/articles/use-the-wix-mcp/about-the-wix-mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.wix.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://dev.wix.com/docs/sdk/articles/use-the-wix-mcp/about-the-wix-mcp",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "websites"
+      ],
+      "samplePrompt": "Using Wix, list my sites."
+    }
+  }
+}

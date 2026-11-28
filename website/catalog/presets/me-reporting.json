@@ -1,0 +1,16 @@
+{
+  "id": "me-reporting",
+  "name": "M&E and reporting",
+  "description": "Data tables, databases and document drafting for monitoring and evaluation. Strict masking; asks before any change to source data.",
+  "audience": [
+    "social-impact"
+  ],
+  "servers": [
+    "com.airtable/mcp",
+    "com.supabase/mcp",
+    "com.notion/mcp",
+    "com.box/mcp"
+  ],
+  "privacy": "strict",
+  "approvals": "careful"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "org.openalex/openalex",
+  "title": "OpenAlex",
+  "description": "Searches scholarly works, authors, institutions and funders in OpenAlex. Read-only; queries use your OpenAlex account's API budget.",
+  "version": "0.5.0",
+  "repository": {
+    "url": "https://github.com/ourresearch/openalex-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://help.openalex.org/access/connector/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.openalex.org/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://github.com/ourresearch/openalex-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "social-impact",
+        "general"
+      ],
+      "categories": [
+        "research",
+        "open-data"
+      ],
+      "samplePrompt": "Using OpenAlex, find the most cited 2025 papers on community health workers."
+    }
+  }
+}

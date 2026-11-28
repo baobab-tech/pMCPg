@@ -1,0 +1,42 @@
+{
+  "name": "io.github.upstash/context7",
+  "title": "Context7",
+  "description": "Fetches current documentation and code examples for software libraries. Read-only; an optional API key raises rate limits.",
+  "version": "4.9.1",
+  "repository": {
+    "url": "https://github.com/upstash/context7",
+    "source": "github"
+  },
+  "websiteUrl": "https://context7.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://github.com/upstash/context7",
+      "auth": {
+        "type": "none",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "dev-tools",
+        "docs"
+      ],
+      "samplePrompt": "Using Context7, show the current docs for Hono middleware."
+    }
+  }
+}

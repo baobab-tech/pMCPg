@@ -1,0 +1,40 @@
+{
+  "name": "com.hubspot/mcp",
+  "title": "HubSpot",
+  "description": "Reads and writes CRM records such as contacts, companies, deals and tickets. Needs an MCP connector created in HubSpot's developer settings.",
+  "version": "1.0.0",
+  "websiteUrl": "https://developers.hubspot.com/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.hubspot.com",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "manual",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "crm"
+      ],
+      "samplePrompt": "Using HubSpot, list the contacts added this week."
+    }
+  }
+}

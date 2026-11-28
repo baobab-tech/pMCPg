@@ -1,0 +1,39 @@
+{
+  "name": "com.intercom/mcp",
+  "title": "Intercom",
+  "description": "Searches and reads conversations, contacts and companies, adds internal notes, and manages Help Center articles. US workspaces; EU uses mcp.eu.intercom.com.",
+  "version": "1.0.0",
+  "websiteUrl": "https://developers.intercom.com/docs/guides/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.intercom.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.intercom.com/docs/guides/mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general"
+      ],
+      "categories": [
+        "crm"
+      ],
+      "samplePrompt": "Using Intercom, summarize the open conversations from today."
+    }
+  }
+}

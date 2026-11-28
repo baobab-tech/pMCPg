@@ -1,0 +1,40 @@
+{
+  "name": "com.airtable/mcp",
+  "title": "Airtable",
+  "description": "Reads Airtable bases, and creates and updates records within your base permissions.",
+  "version": "0.1.0",
+  "websiteUrl": "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.airtable.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "databases"
+      ],
+      "samplePrompt": "Using Airtable, summarize the records added to my tracker this month."
+    }
+  }
+}

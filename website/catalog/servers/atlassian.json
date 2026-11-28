@@ -1,0 +1,44 @@
+{
+  "name": "com.atlassian/atlassian-mcp-server",
+  "title": "Atlassian (Jira and Confluence)",
+  "description": "Searches and reads Jira and Confluence, and creates or updates work items, pages and comments.",
+  "version": "2.0.0",
+  "repository": {
+    "url": "https://github.com/atlassian/atlassian-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://support.atlassian.com/atlassian-rovo-mcp-server/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.atlassian.com/v2/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "developers"
+      ],
+      "categories": [
+        "project-management",
+        "docs"
+      ],
+      "samplePrompt": "Using Jira, list my open issues."
+    }
+  }
+}

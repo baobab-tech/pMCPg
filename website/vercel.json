@@ -3,6 +3,22 @@
     {
       "source": "/(opengraph-image|twitter-image)",
       "headers": [{ "key": "Content-Type", "value": "image/png" }]
+    },
+    {
+      "source": "/catalog/v1/catalog.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/catalog/v1/catalog.json.sig",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
   ]
 }

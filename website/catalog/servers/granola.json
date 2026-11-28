@@ -1,0 +1,39 @@
+{
+  "name": "ai.granola/mcp",
+  "title": "Granola",
+  "description": "Searches and reads your meeting notes and transcripts. Paid plans can also edit titles, notes and folders.",
+  "version": "1.0.0",
+  "websiteUrl": "https://www.granola.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.granola.ai/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.granola.ai/help-center/sharing/integrations/mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "meetings"
+      ],
+      "samplePrompt": "Using Granola, list the action items from my meetings this week."
+    }
+  }
+}

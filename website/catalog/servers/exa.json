@@ -1,0 +1,44 @@
+{
+  "name": "ai.exa/exa",
+  "title": "Exa",
+  "description": "Searches the web and fetches page content. Read-only.",
+  "version": "3.5.1",
+  "repository": {
+    "url": "https://github.com/exa-labs/exa-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://exa.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.exa.ai/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.exa.ai/reference/exa-mcp",
+      "auth": {
+        "type": "none",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact",
+        "developers"
+      ],
+      "categories": [
+        "search",
+        "research"
+      ],
+      "samplePrompt": "Using Exa, find recent reports on cash transfer programmes in East Africa."
+    }
+  }
+}

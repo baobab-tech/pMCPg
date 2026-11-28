@@ -1,0 +1,51 @@
+{
+  "name": "com.squareup/mcp",
+  "title": "Square",
+  "description": "Calls the Square API for customers, orders, catalog items and payments. Production accounts only.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/square/square-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://developer.squareup.com/docs/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.squareup.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developer.squareup.com/docs/mcp",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "write"
+          },
+          "then": "ask",
+          "reason": "Changes here can move money or bill customers."
+        }
+      ],
+      "audience": [
+        "general"
+      ],
+      "categories": [
+        "payments"
+      ],
+      "samplePrompt": "Using Square, list yesterday's orders."
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "com.clickup/mcp",
+  "title": "ClickUp",
+  "description": "Searches and manages ClickUp tasks across lists and spaces. No delete tools.",
+  "version": "1.0.0",
+  "websiteUrl": "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.clickup.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "project-management"
+      ],
+      "samplePrompt": "Using ClickUp, list my tasks due this week."
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "com.netlify/mcp",
+  "title": "Netlify",
+  "description": "Creates, builds, deploys and manages Netlify projects.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/netlify/netlify-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.netlify.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "hosting"
+      ],
+      "samplePrompt": "Using Netlify, list my sites and their last deploy."
+    }
+  }
+}

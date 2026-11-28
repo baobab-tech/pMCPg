@@ -1,0 +1,44 @@
+{
+  "name": "co.huggingface/hf-mcp-server",
+  "title": "Hugging Face",
+  "description": "Searches models, datasets, Spaces, papers and docs on the Hugging Face Hub. Without sign-in it gets the public read-only tools.",
+  "version": "0.2.33",
+  "repository": {
+    "url": "https://github.com/huggingface/hf-mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://huggingface.co/docs/hub/hf-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://huggingface.co/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://github.com/huggingface/hf-mcp-server",
+      "auth": {
+        "type": "none",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "developers",
+        "social-impact"
+      ],
+      "categories": [
+        "ai-models",
+        "research"
+      ],
+      "samplePrompt": "Using Hugging Face, find three small open models for translating French to English."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "com.webflow/mcp",
+  "title": "Webflow",
+  "description": "Edits Webflow sites: pages, elements, styles, assets and CMS collections, and publishes CMS items.",
+  "version": "2.0.0",
+  "repository": {
+    "url": "https://github.com/webflow/mcp-server",
+    "source": "github"
+  },
+  "websiteUrl": "https://developers.webflow.com/mcp/reference/overview",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.webflow.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.webflow.com/mcp/reference/getting-started",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "websites"
+      ],
+      "samplePrompt": "Using Webflow, list the CMS collections on my site."
+    }
+  }
+}

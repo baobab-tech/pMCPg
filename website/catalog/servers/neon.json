@@ -1,0 +1,52 @@
+{
+  "name": "com.neon/mcp",
+  "title": "Neon",
+  "description": "Manages Neon projects, branches and computes, and runs SQL and migrations.",
+  "version": "2.0.0",
+  "repository": {
+    "url": "https://github.com/neondatabase/mcp-server-neon",
+    "source": "github"
+  },
+  "websiteUrl": "https://neon.com/docs/ai/neon-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.neon.tech/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://neon.com/docs/ai/neon-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "destructive"
+          },
+          "then": "ask",
+          "reason": "This tool can delete projects or data."
+        }
+      ],
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "databases"
+      ],
+      "samplePrompt": "Using Neon, list my projects and their branches."
+    }
+  }
+}

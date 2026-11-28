@@ -1,0 +1,41 @@
+{
+  "name": "ai.devexplorer/devexplorer",
+  "title": "DevExplorer",
+  "description": "Searches IATI international development programmes and their documents, and saves results to your DevExplorer workspaces. Sign in with a DevExplorer account.",
+  "version": "1.0.0",
+  "websiteUrl": "https://devexplorer.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://app.devexplorer.ai/api/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "baobab-built",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://app.devexplorer.ai",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "social-impact",
+        "general"
+      ],
+      "categories": [
+        "open-data",
+        "research"
+      ],
+      "samplePrompt": "Using DevExplorer, find UK-funded water and sanitation programmes in Kenya."
+    }
+  }
+}
