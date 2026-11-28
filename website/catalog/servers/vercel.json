@@ -1,0 +1,44 @@
+{
+  "name": "com.vercel/vercel-mcp",
+  "title": "Vercel",
+  "description": "Searches Vercel docs, manages projects and deployments, and reads deployment logs.",
+  "version": "0.0.3",
+  "repository": {
+    "url": "https://github.com/vercel/vercel-mcp-overview",
+    "source": "github"
+  },
+  "websiteUrl": "https://vercel.com/docs/agent-resources/vercel-mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.vercel.com",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://vercel.com/docs/agent-resources/vercel-mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "cimd",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "hosting",
+        "dev-tools"
+      ],
+      "samplePrompt": "Using Vercel, show my latest failed deployment and its build log."
+    }
+  }
+}

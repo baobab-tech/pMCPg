@@ -1,0 +1,39 @@
+{
+  "name": "com.deepwiki/mcp",
+  "title": "DeepWiki",
+  "description": "Reads generated documentation for public GitHub repositories and answers questions about them. Read-only.",
+  "version": "1.0.0",
+  "websiteUrl": "https://deepwiki.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.deepwiki.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.devin.ai/work-with-devin/deepwiki-mcp",
+      "auth": {
+        "type": "none",
+        "credentials": []
+      },
+      "trust": [
+        "external-content"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "developers"
+      ],
+      "categories": [
+        "dev-tools",
+        "research"
+      ],
+      "samplePrompt": "Using DeepWiki, explain what the modelcontextprotocol/typescript-sdk repository does."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "com.zapier/mcp",
+  "title": "Zapier",
+  "description": "Runs actions in the apps you connect to Zapier, such as sending messages, creating tasks and updating records.",
+  "version": "1.0.2",
+  "repository": {
+    "url": "https://github.com/zapier/zapier-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://docs.zapier.com/mcp/home",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zapier.com/api/v1/connect",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.zapier.com/mcp/overview/how-connections-work",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "automation"
+      ],
+      "samplePrompt": "Using Zapier, what actions do I have set up?"
+    }
+  }
+}

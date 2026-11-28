@@ -1,0 +1,16 @@
+{
+  "id": "grants-research",
+  "name": "Grants research",
+  "description": "Funder and research data, web search and notes. Asks before sending anything out after reading web content.",
+  "audience": [
+    "social-impact"
+  ],
+  "servers": [
+    "ai.devexplorer/devexplorer",
+    "org.openalex/openalex",
+    "ai.exa/exa",
+    "com.notion/mcp"
+  ],
+  "privacy": "standard",
+  "approvals": "balanced"
+}

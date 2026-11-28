@@ -1,0 +1,52 @@
+{
+  "name": "com.supabase/mcp",
+  "title": "Supabase",
+  "description": "Manages Supabase projects and branches, runs SQL and migrations, and reads docs and logs.",
+  "version": "0.21.0",
+  "repository": {
+    "url": "https://github.com/supabase/mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://supabase.com/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.supabase.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://supabase.com/docs/guides/getting-started/mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "destructive"
+          },
+          "then": "ask",
+          "reason": "This tool can delete projects or data."
+        }
+      ],
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "databases"
+      ],
+      "samplePrompt": "Using Supabase, list the tables in my project."
+    }
+  }
+}

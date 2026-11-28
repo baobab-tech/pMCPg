@@ -1,0 +1,40 @@
+{
+  "name": "app.linear/linear",
+  "title": "Linear",
+  "description": "Finds, creates and updates Linear issues, projects and comments.",
+  "version": "1.0.2",
+  "websiteUrl": "https://linear.app",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.linear.app/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://linear.app/docs/mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "developers"
+      ],
+      "categories": [
+        "project-management"
+      ],
+      "samplePrompt": "Using Linear, show the issues assigned to me."
+    }
+  }
+}

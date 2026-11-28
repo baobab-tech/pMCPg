@@ -1,0 +1,40 @@
+{
+  "name": "com.asana/mcp",
+  "title": "Asana",
+  "description": "Reads and searches Asana work, and creates and manages tasks and projects. Needs an MCP app registered in Asana's developer console.",
+  "version": "2.0.0",
+  "websiteUrl": "https://developers.asana.com/docs/using-asanas-mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.asana.com/v2/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.asana.com/docs/integrating-with-asanas-mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "manual",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "project-management"
+      ],
+      "samplePrompt": "Using Asana, list the tasks due this week."
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "ai.fireflies/fireflies",
+  "title": "Fireflies",
+  "description": "Reads meeting transcripts and summaries, and can share meetings by email and change titles or privacy.",
+  "version": "1.1.0",
+  "websiteUrl": "https://docs.fireflies.ai/mcp-tools/overview",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.fireflies.ai/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.fireflies.ai/getting-started/mcp-configuration",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "meetings"
+      ],
+      "samplePrompt": "Using Fireflies, summarize yesterday's team meeting."
+    }
+  }
+}

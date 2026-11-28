@@ -1,0 +1,40 @@
+{
+  "name": "com.slack/mcp",
+  "title": "Slack",
+  "description": "Searches and reads Slack messages, channels, users and canvases, and sends messages. Needs your own internal Slack app's client ID and secret.",
+  "version": "1.0.0",
+  "websiteUrl": "https://docs.slack.dev/ai/mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.slack.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.slack.dev/ai/mcp-server",
+      "auth": {
+        "type": "oauth",
+        "registration": "manual",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "communication"
+      ],
+      "samplePrompt": "Using Slack, summarize what I missed in #general today."
+    }
+  }
+}

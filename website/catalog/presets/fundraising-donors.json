@@ -1,0 +1,16 @@
+{
+  "id": "fundraising-donors",
+  "name": "Fundraising and donors",
+  "description": "Donor CRM, shared files, notes and meetings. Strict masking on donor details; asks before any change or anything is sent.",
+  "audience": [
+    "social-impact"
+  ],
+  "servers": [
+    "com.hubspot/mcp",
+    "com.box/mcp",
+    "com.notion/mcp",
+    "ai.granola/mcp"
+  ],
+  "privacy": "strict",
+  "approvals": "careful"
+}

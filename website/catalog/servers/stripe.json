@@ -1,0 +1,51 @@
+{
+  "name": "com.stripe/mcp",
+  "title": "Stripe",
+  "description": "Reads and writes Stripe objects such as customers, invoices, subscriptions, refunds and payment links, and searches Stripe docs.",
+  "version": "0.2.4",
+  "repository": {
+    "url": "https://github.com/stripe/agent-toolkit",
+    "source": "github"
+  },
+  "websiteUrl": "https://docs.stripe.com/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.stripe.com",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://docs.stripe.com/mcp",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "write"
+          },
+          "then": "ask",
+          "reason": "Changes here can move money or bill customers."
+        }
+      ],
+      "audience": [
+        "general"
+      ],
+      "categories": [
+        "payments"
+      ],
+      "samplePrompt": "Using Stripe, list this month's failed payments."
+    }
+  }
+}

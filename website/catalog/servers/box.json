@@ -1,0 +1,40 @@
+{
+  "name": "com.box/mcp",
+  "title": "Box",
+  "description": "Searches, reads and uploads Box files and folders, and runs Box AI. An admin creates the client ID and secret in the Box Admin Console.",
+  "version": "1.0.0",
+  "websiteUrl": "https://developer.box.com/guides/box-mcp/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.box.com",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developer.box.com/guides/box-mcp/remote/",
+      "auth": {
+        "type": "oauth",
+        "registration": "manual",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "strict",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "files"
+      ],
+      "samplePrompt": "Using Box, find last quarter's board report."
+    }
+  }
+}

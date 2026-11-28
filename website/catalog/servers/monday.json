@@ -1,0 +1,53 @@
+{
+  "name": "com.monday/monday.com",
+  "title": "monday.com",
+  "description": "Creates and updates boards, items, column values and updates. An account admin approves each new connection.",
+  "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/mondaycom/mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://developer.monday.com/api-reference/docs/mondaycom-mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.monday.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developer.monday.com/api-reference/docs/integrate-with-monday-mcp",
+      "auth": {
+        "type": "oauth",
+        "registration": "dcr",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "destructive"
+          },
+          "then": "ask",
+          "reason": "This tool can delete projects or data."
+        }
+      ],
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "project-management"
+      ],
+      "samplePrompt": "Using monday.com, list the items assigned to me."
+    }
+  }
+}

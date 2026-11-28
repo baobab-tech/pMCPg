@@ -1,0 +1,52 @@
+{
+  "name": "com.cloudflare/api",
+  "title": "Cloudflare",
+  "description": "Reaches the whole Cloudflare API through search and execute tools, so it can read and change account resources you grant.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/cloudflare/mcp-server-cloudflare",
+    "source": "github"
+  },
+  "websiteUrl": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.cloudflare.com/mcp",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "approvalHints": [
+        {
+          "when": {
+            "annotation": "destructive"
+          },
+          "then": "ask",
+          "reason": "This tool can delete projects or data."
+        }
+      ],
+      "audience": [
+        "developers"
+      ],
+      "categories": [
+        "hosting",
+        "dev-tools"
+      ],
+      "samplePrompt": "Using Cloudflare, list my Workers and when each was last deployed."
+    }
+  }
+}

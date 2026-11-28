@@ -1,0 +1,43 @@
+{
+  "name": "com.make/mcp-server",
+  "title": "Make",
+  "description": "Runs your Make scenarios as tools, and on paid plans views and changes scenarios, connections and data stores.",
+  "version": "2.0.0",
+  "repository": {
+    "url": "https://github.com/integromat/make-skills",
+    "source": "github"
+  },
+  "websiteUrl": "https://developers.make.com/mcp-server",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.make.com/v2",
+      "headers": []
+    }
+  ],
+  "_meta": {
+    "io.pmcpg/curation": {
+      "tier": "approved",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "baobab-tech (vendor docs read 2026-11-27)",
+      "source": "https://developers.make.com/mcp-server",
+      "auth": {
+        "type": "oauth",
+        "credentials": []
+      },
+      "trust": [
+        "private-data",
+        "can-send"
+      ],
+      "privacy": "standard",
+      "audience": [
+        "general",
+        "social-impact"
+      ],
+      "categories": [
+        "automation"
+      ],
+      "samplePrompt": "Using Make, list my active scenarios."
+    }
+  }
+}
