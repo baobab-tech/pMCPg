@@ -15,12 +15,12 @@
     "@modelcontextprotocol/client": "2.4.0",
     "@modelcontextprotocol/hono": "2.0.2",
     "@modelcontextprotocol/server": "2.4.0",
-    "hono": "4.13.20",
+    "hono": "4.13.22",
     "minisearch": "7.2.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.8",
+    "@biomejs/biome": "^2.6.9",
     "@types/bun": "^1.4.5",
     "typescript": "^7.0.2"
   },
