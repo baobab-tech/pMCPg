@@ -11,3 +11,4 @@ src/api/ui-assets.gen.ts
 # Full security review reports stay private; docs/security-registry.md is the public record
 docs/security-review-*.md
 .vercel/
+src/catalog/snapshot.gen.ts
