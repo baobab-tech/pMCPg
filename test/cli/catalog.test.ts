@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { CATALOG_URL } from "../../src/catalog/key.ts";
 import { CATALOG_ENABLED, CATALOG_SOON, catalogSearch } from "../../src/cli/commands-catalog.ts";
 import { run } from "../../src/cli/main.ts";
 
@@ -45,7 +46,7 @@ describe("catalog gate", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  test("no source file holds a catalog or registry URL", () => {
+  test("only src/catalog/key.ts holds a catalog or registry URL", () => {
     const src = join(import.meta.dir, "..", "..", "src");
     const files = readdirSync(src, { recursive: true, encoding: "utf8" }).filter((f) => f.endsWith(".ts"));
     const hits = files.filter((f) =>
@@ -53,6 +54,7 @@ describe("catalog gate", () => {
         readFileSync(join(src, f), "utf8"),
       ),
     );
-    expect(hits).toEqual([]);
+    expect(hits).toEqual([join("catalog", "key.ts")]);
+    expect(CATALOG_URL).toBe("https://pmcpg.io/catalog/v1/catalog.json");
   });
 });

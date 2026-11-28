@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { embeddedAssets, type UiAssets } from "../api/assets.ts";
 import { createUiApi } from "../api/routes.ts";
+import { emptyCatalogView } from "../catalog/view.ts";
 import type { Connector, ConnectorDeps, OAuthController } from "../connectors/connector.ts";
 import { createOAuthController } from "../connectors/oauth.ts";
 import { createRemoteConnector } from "../connectors/remote.ts";
@@ -365,6 +366,8 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<Gateway> 
     activity,
     pins,
     skills: skills.handle(),
+    catalog: async () => emptyCatalogView(),
+    refreshCatalog: async () => emptyCatalogView(),
   };
 
   // The UI answers / and /api/ui/* itself, ahead of the CLI's /api/* admin-token check.

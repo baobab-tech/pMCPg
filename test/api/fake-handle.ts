@@ -1,4 +1,5 @@
 // A GatewayHandle backed by memory, for UI API tests.
+import { emptyCatalogView } from "../../src/catalog/view.ts";
 import type { OAuthController } from "../../src/connectors/connector.ts";
 import type { Config } from "../../src/core/config.ts";
 import { validateConfig } from "../../src/core/config-store.ts";
@@ -90,6 +91,8 @@ export function fakeHandle(raw: unknown = {}): FakeHandle {
       return { sessions: 1, placeholders: 3 };
     },
     keySource: "env",
+    catalog: async () => emptyCatalogView(),
+    refreshCatalog: async () => emptyCatalogView(),
     calls,
     states,
     toolCounts: tools,
